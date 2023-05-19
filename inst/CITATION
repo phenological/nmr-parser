@@ -1,0 +1,10 @@
+
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{nor-parser}: reading what is required from NMR IVDr data",
+         author = c(person("Julien", "Wist")),
+         year = year,
+         note = note,
+         url = "https://github.com/phenological/nmr-parser")
