@@ -2,8 +2,10 @@ Package: nmr.parser
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person("Julien", "Wist", , "julien.wist@murdoch.edu.au", role = c("aut", "cre"),
+    c(person("Julien", "Wist", , "julien.wist@murdoch.edu.au", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3416-2572"))
+      person("Reika", "Masuda", , "reika.masuda@murdoch.edu.au", role = c("aut"),
+           comment = c(ORCID = "")))
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
