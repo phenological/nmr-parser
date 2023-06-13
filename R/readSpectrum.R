@@ -48,6 +48,7 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
       im <- options$im
     } else {
       im = FALSE
+      cat(crayon::bgRed("test"))
     }
 
     if (im) {
