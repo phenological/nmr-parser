@@ -48,7 +48,6 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
       im <- options$im
     } else {
       im = FALSE
-      cat(crayon::bgRed("test"))
     }
 
     if (im) {
@@ -119,12 +118,12 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
     # reading imaginary data if necessary
     if (im) {
       yi <- read1r(path1i, size, nc, endian)
-    }
 
-    # check for length
-    if (length(yi) != length(y)) {
-      cat(crayon::yellow("fusion::readSpectrum >> Im and Re have different dimensions", path, "\n"))
-      return(NULL)
+      # check for length
+      if (length(yi) != length(y)) {
+        cat(crayon::yellow("fusion::readSpectrum >> Im and Re have different dimensions", path, "\n"))
+        return(NULL)
+      }
     }
 
     # applying eretic correction if provided
