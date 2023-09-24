@@ -1,4 +1,9 @@
-
+#' extract a parameter from a bruker file (procs or acqus)
+#'
+#' @param filePath - the path to the expName folder
+#' @return the parameter
+#'
+#' @export
 readParams <- function(filePath) {
   if (file.exists(filePath)) {
     buf <- file(filePath, open = "r")
