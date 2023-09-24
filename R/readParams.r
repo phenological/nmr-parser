@@ -15,14 +15,47 @@ readParams <- function(filePath) {
       # get titles
       if (grepl("^##[A-Z]", line)) {
         param <- strsplit(line, "= ")[[1]]
+        value <- param[2]
+        cleanValue <- gsub("\\t", " ", value)
+        cleanValue <- gsub("\\$\\$", "", cleanValue)
+        cleanValue <- gsub("\\s+", " ", cleanValue)
         content <- c(content, list(c(path = path[length(path)],
                                      name = gsub("##", "", param[1]),
-                                     value = param[2])))
+                                     value = cleanValue)))
+      }
+      # get audit info
+      if (grepl("^\\$\\$\\s", line)) {
+        param <- gsub("\\$\\$\\s", "", line)
+        param <- gsub("\\s+", " ", param)
+        if (grepl("^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]", param)) {
+          date <- strsplit(param, " ")[[1]][1]
+          time <- strsplit(param, " ")[[1]][2]
+          timezone <- strsplit(param, " ")[[1]][3]
+          instrument <- strsplit(param, " ")[[1]][4]
+          content <- c(content, list(c(path = path[length(path)],
+                                       name = "date",
+                                       value = date)))
+          content <- c(content, list(c(path = path[length(path)],
+                                       name = "time",
+                                       value = time)))
+          content <- c(content, list(c(path = path[length(path)],
+                                       name = "timezone",
+                                       value = timezone)))
+          content <- c(content, list(c(path = path[length(path)],
+                                       name = "instrument",
+                                       value = instrument)))
+        }
+
+        # cleanValue <- gsub("\\t", " ", value)
+        # cleanValue <- gsub("\\$\\$", "", cleanValue)
+        # cleanValue <- gsub("\\s+", " ", cleanValue)
+        # content <- c(content, list(c(path = path[length(path)],
+        #                              name = gsub("\\$\\$\\s", "", param[1]),
+        #                              value = cleanValue)))
       }
       # get params
       if (grepl("^##\\$", line)) {
         param <- strsplit(line, "= ")[[1]]
-        # value <- gsub("[<->]", "", param[2])
         value <- param[2]
         # look for vectors
         if (grepl("\\([0-9]+..[0-9]+\\)", value)) {
@@ -35,9 +68,10 @@ readParams <- function(filePath) {
                                          value = value[[1]][i])))
           }
         } else {
+          cleanValue <- gsub("[<->]", "", value)
           content <- c(content, list(c(path = path[length(path)],
                                        name = gsub("##\\$", "", param[1]),
-                                       value = gsub("[<->]", "", value))))
+                                       value = cleanValue)))
         }
       }
       counter <- counter + 1
@@ -51,7 +85,7 @@ readParams <- function(filePath) {
                       value = unlist(ret$value)))
     # return(ret)
   } else {
-    cat(crayon::yellow("fusion::getParams >>", filePath, " file not found\n"))
+    cat(crayon::yellow("fusion::readParams >>", filePath, " file not found\n"))
   }
 }
 

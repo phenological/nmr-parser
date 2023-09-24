@@ -6,18 +6,18 @@
 #'
 #' @export
 readParam <- function(path, paramName){
+  if (file.exists(path)) {
   buf <- file(path, open = "r")
   txt <- readLines(buf, n = -1, warn = FALSE)
-  if (length(txt) == 0) {
-    cat(crayon::red("fusion::readParam file", paramName, "is empty\n"))
-    close(buf)
-    return(NULL)
-  }
   close(buf)
   parameter <- strsplit(txt[grep(paste0(paramName, "="), txt)], "=")[[1]][2]
   if (grepl("<", parameter) == TRUE) {
     return(gsub(" ", "", (gsub("<", "", (gsub(">", "", parameter))))))
   } else {
     return(as.numeric(parameter))
+  }
+  } else {
+    cat(crayon::yellow("fusion::readParam file does not exist\n"))
+    return(NULL)
   }
 }
