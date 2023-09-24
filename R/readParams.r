@@ -45,7 +45,6 @@ readParams <- function(filePath) {
                                        name = "instrument",
                                        value = instrument)))
         }
-
       }
       # get params
       if (grepl("^##\\$", line)) {
