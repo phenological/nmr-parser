@@ -11,4 +11,4 @@
 #' @name lipo
 #' @usage data(lipo)
 #' @format A data frame with 112 lipoproteins values
-data(lipo)
+data("lipo", envir = asNamespace("nmr.parser"))

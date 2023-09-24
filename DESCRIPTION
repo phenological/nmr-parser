@@ -2,10 +2,15 @@ Package: nmr.parser
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    c(person("Julien", "Wist", , "julien.wist@murdoch.edu.au", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-3416-2572"))
-      person("Reika", "Masuda", , "reika.masuda@murdoch.edu.au", role = c("aut"),
-           comment = c(ORCID = "")))
+    c(person(given = "Julien",
+           family = "Wist",
+           role = c("aut", "cre"),
+           email = "julien.wist@murdoch.edu.au",
+           comment = c(ORCID = "0000-0002-3416-2572")),
+      person(given = "Reika",
+           family = "Masuda",
+           role = c("aut"),
+           email = "reika.masuda@murdoch.edu.au"))
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -14,7 +19,9 @@ RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Depends: R (>= 2.10)
 Imports: 
     data.table,
     signal,
-    xml2
+    xml2,
+    crayon

@@ -4,7 +4,7 @@
 #' @return the title
 #'
 #' @export
-#' @importFrom xml2 read_xml
+#' @importFrom xml2 read_xml xml_text
 getEretic <- function(path){
   path <- file.path(path, "QuantFactorSample.xml")
   if (file.exists(path)) {

@@ -45,9 +45,10 @@ getLipoprotein <- function(path){
 
 #' get names and description of lipoproteins IVDr parameters
 #' @return a data.frame with information
+#' @importFrom utils data
 #' @export
 getLipoTable <- function() {
-  data(lipo)
+  lipo <- get0("lipo", envir = asNamespace("nmr.parser"))
   lipo$range <- paste0(lipo$refMin, " - ", lipo$refMax,
                        " (", lipo$refUnit, ")")
   names(lipo) <-c("Fraction",

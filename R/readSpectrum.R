@@ -2,11 +2,7 @@
 #'
 #' @param path - the path to the expNo folder
 #' @param procs - the name of the folder with experiments
-#' @param options - options
-#' @param options$uncalibrate - if true, calibration will be removed (SR set to 0)
-#' @param options$eretic - provide eretic correction to be applied
-#' @param options$fromTo - provide lower and upper bound for common grid
-#' @param options$length.out -set the length of the final data
+#' @param options - options (uncalibrate, eretic, fromTo, length.out)
 #' @return a vector with spectra (real part and x axis)
 #' @importFrom signal interp1
 #' @importFrom data.table data.table
