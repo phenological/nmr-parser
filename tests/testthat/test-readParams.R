@@ -44,18 +44,18 @@ test_that("checking instrument", {
 test_that("checking date", {
   path <- system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser")
   param <- readParams(path)
-  expect_equal(param$value[param$name == "date"], "2020-07-01")
+  expect_equal(param$value[param$name == "instrumentDate"], "2020-07-01")
 })
 
 test_that("checking time", {
   path <- system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser")
   param <- readParams(path)
-  expect_equal(param$value[param$name == "time"], "16:55:49.592")
+  expect_equal(param$value[param$name == "instrumentTime"], "16:55:49.592")
 })
 
 test_that("checking timezone", {
   path <- system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser")
   param <- readParams(path)
-  expect_equal(param$value[param$name == "timezone"], "+0200")
+  expect_equal(param$value[param$name == "instrumentTimeZone"], "+0200")
 })
 

@@ -38,13 +38,13 @@ readParams <- function(filePath) {
           timezone <- strsplit(param, " ")[[1]][3]
           instrument <- strsplit(param, " ")[[1]][4]
           content <- c(content, list(c(path = path[length(path)],
-                                       name = "date",
+                                       name = "instrumentDate",
                                        value = date)))
           content <- c(content, list(c(path = path[length(path)],
-                                       name = "time",
+                                       name = "instrumentTime",
                                        value = time)))
           content <- c(content, list(c(path = path[length(path)],
-                                       name = "timezone",
+                                       name = "instrumentTimeZone",
                                        value = timezone)))
           content <- c(content, list(c(path = path[length(path)],
                                        name = "instrument",
