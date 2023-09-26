@@ -19,6 +19,17 @@ readParams <- function(filePath) {
       path <- strsplit(filePath, "/")[[1]]
       # get titles
       if (grepl("^##[A-Z]", line)) {
+
+        # get version first to get info right
+        if (grepl("^##TITLE", line)) {
+          title <- strsplit(line, "= ")[[1]][2]
+          if (grepl("xwin-nmr", tolower(title))) {
+            version <- "xwinnmr"
+          } else if (grepl("topspin", tolower(title))) {
+            version <- "topsping"
+          }
+        }
+
         param <- strsplit(line, "= ")[[1]]
         value <- param[2]
         cleanValue <- gsub("\\t", " ", value)
@@ -27,16 +38,28 @@ readParams <- function(filePath) {
         content <- c(content, list(c(path = path[length(path)],
                                      name = gsub("##", "", param[1]),
                                      value = cleanValue)))
-      }
+      } else
+
       # get audit info
       if (grepl("^\\$\\$\\s", line)) {
+        date <- time <- timezone <- instrument <- NULL
         param <- gsub("\\$\\$\\s", "", line)
         param <- gsub("\\s+", " ", param)
+
         if (grepl("^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]", param)) {
           date <- strsplit(param, " ")[[1]][1]
           time <- strsplit(param, " ")[[1]][2]
           timezone <- strsplit(param, " ")[[1]][3]
           instrument <- strsplit(param, " ")[[1]][4]
+        } else if (grepl("^[A-Z][a-z][a-z]\\s[A-Z][a-z][a-z]\\s[0-9]", param)) {
+          param <- gsub("\\s+", " ", param)
+          date <- paste0(strsplit(param, " ")[[1]][c(1:3,5)], collapse = " ")
+          time <- strsplit(param, " ")[[1]][4]
+          timezone <- paste0(strsplit(param, " ")[[1]][c(6,7)], collapse = " ")
+          instrument <- strsplit(param, " ")[[1]][8]
+        }
+
+        if (!is.null(date) & !is.null(time) & !is.null(timezone) & !is.null(instrument)) {
           content <- c(content, list(c(path = path[length(path)],
                                        name = "instrumentDate",
                                        value = date)))
@@ -50,7 +73,9 @@ readParams <- function(filePath) {
                                        name = "instrument",
                                        value = instrument)))
         }
-      }
+
+      } else
+
       # get params
       if (grepl("^##\\$", line)) {
         param <- strsplit(line, "= ")[[1]]

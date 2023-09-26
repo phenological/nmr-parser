@@ -59,3 +59,27 @@ test_that("checking timezone", {
   expect_equal(param$value[param$name == "instrumentTimeZone"], "+0200")
 })
 
+test_that("checking timezone xwinnmr", {
+  path <- system.file("xwinnmr_acqus", package = "nmr.parser")
+  param <- readParams(path)
+  expect_equal(param$value[param$name == "instrumentTimeZone"], "BST (UT+1h)")
+})
+
+test_that("checking time xwinnmr", {
+  path <- system.file("xwinnmr_acqus", package = "nmr.parser")
+  param <- readParams(path)
+  expect_equal(param$value[param$name == "instrumentTime"], "12:08:08")
+})
+
+test_that("checking date xwinnmr", {
+  path <- system.file("xwinnmr_acqus", package = "nmr.parser")
+  param <- readParams(path)
+  expect_equal(param$value[param$name == "instrumentDate"], "Wed Jun 2 2004")
+})
+
+test_that("checking instrument xwinnmr", {
+  path <- system.file("xwinnmr_acqus", package = "nmr.parser")
+  param <- readParams(path)
+  expect_equal(param$value[param$name == "instrument"], "comet@bc-jkn-17.sk.med.ic.ac.uk")
+})
+
