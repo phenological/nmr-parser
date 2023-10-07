@@ -108,13 +108,15 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
 
     # computing increment, ppm axis and reading spectra
     y <- read1r(path1r, size, nc, endian)
+    y <- rev(y)
     inc <- sw / (length(y) - 1) # ok
     x <- seq(from = offset, to = (offset - sw), by = -inc)
+    x <- rev(x)
 
     # reading imaginary data if necessary
     if (im) {
       yi <- read1r(path1i, size, nc, endian)
-
+      yi <- rev(yi)
       # check for length
       if (length(yi) != length(y)) {
         cat(crayon::yellow("fusion::readSpectrum >> Im and Re have different dimensions", path, "\n"))
@@ -161,14 +163,14 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
                    xi = newX,
                    method = "spline")
 
-      xr <- newX
-
       if (im) {
         yi <- interp1(x = x,
                       y = yi,
                       xi = newX,
                       method = "spline")
       }
+
+      x <- newX
 
       cat(crayon::blue("fusion::readSpectrum >> spectra in common grid (from:",
                        from,
@@ -185,10 +187,10 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
               SR = SR)
     if (im) {
       spec <- list(info  = info,
-                   spec = data.table(xr, y, yi))
+                   spec = data.table(x, y, yi))
     } else {
       spec <- list(info  = info,
-                   spec = data.table(xr, y))
+                   spec = data.table(x, y))
     }
 
     return(spec)
