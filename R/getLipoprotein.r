@@ -98,3 +98,24 @@ getLipoTable <- function() {
   return(lipo[,c(1,2,4,11, 12)])
 }
 
+#' get lipo for rolodex
+#' @param path - path to the data
+#' @return a triad
+#' @importFrom xml2 read_xml xml_attr xml_find_all xml_find_first
+#' @export
+roldx_getLipo <- function(path){
+  if (file.exists(path)) {
+    xml <- read_xml(path, options = "NOBLANKS")
+    version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
+    version <- strsplit(version, " ")[[1]][1]
+    id <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
+    value <- xml_attr(xml_find_all(xml, ".//VALUE"), "value")
+
+    # there is one duplicated id
+    fi <- duplicated(id)
+    return(list(id = id[!fi], value = as.numeric(value[!fi]), version = version))
+  } else {
+    cat(crayon::yellow("fusion::getLipoprotein >>", path, "not found\n"))
+  }
+}
+
