@@ -9,6 +9,13 @@ readParams <- function(filePath) {
     buf <- file(filePath, open = "r")
     txt <- readLines(buf, n = -1, warn = FALSE)
     close(buf)
+
+    # test for AMIX files
+    if (txt[1] == "A000") {
+      cat(crayon::yellow("fusion::readParams >>", filePath, " file is AMIX\n"))
+      return(NULL)
+    }
+
     content <- list()
     counter <- 1 # line counter
     while (counter < length(txt)) {

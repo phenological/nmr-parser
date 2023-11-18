@@ -83,3 +83,8 @@ test_that("checking instrument xwinnmr", {
   expect_equal(param$value[param$name == "instrument"], "comet@bc-jkn-17.sk.med.ic.ac.uk")
 })
 
+test_that("handling amix files", {
+  path <- system.file("hydroxyproline", "1dno-d2o-7-g", "acqus", package = "nmr.parser")
+  param <- readParams(path)
+  expect_equal(param, NULL)
+})
