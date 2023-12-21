@@ -7,7 +7,7 @@
 #'
 #' @export
 #' @importFrom xml2 read_xml xml_attr xml_find_all
-getQcReport <- function(path, reportName){
+readQc <- function(path, reportName){
   path <- file.path(path, "pdata", "1", reportName)
   if (file.exists(path)) {
     xml <- read_xml(path, options = "NOBLANKS")
@@ -26,7 +26,7 @@ getQcReport <- function(path, reportName){
                     paste(name, "value")))
     return(res)
   } else {
-    cat(crayon::yellow("fusion::getQcReport >>", path, "not found\n"))
+    cat(crayon::yellow("fusion::readQc >>", path, "not found\n"))
   }
 }
 

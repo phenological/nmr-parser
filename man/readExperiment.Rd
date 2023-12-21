@@ -4,7 +4,13 @@
 \alias{readExperiment}
 \title{read experiment from a bruker folder (expno)}
 \usage{
-readExperiment(path, acqus = TRUE, procs = TRUE)
+readExperiment(
+  path,
+  what = c("acqus", "procs", "title", "eretic", "spec", "lipo", "ivdr", "pacs", "all",
+    "specOnly"),
+  options = list(specOpts = list(uncalibrate = FALSE, fromTo = c(-0.1, 10), length.out =
+    44079))
+)
 }
 \arguments{
 \item{path}{\itemize{

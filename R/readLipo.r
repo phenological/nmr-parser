@@ -5,7 +5,7 @@
 #'
 #' @export
 #' @importFrom xml2 read_xml xml_attr xml_find_all
-getLipoprotein <- function(path){
+readLipo <- function(path){
   path <- file.path(path, "pdata", "1", "lipo_results.xml")
   if (file.exists(path)) {
     xml <- read_xml(path, options = "NOBLANKS")
@@ -35,7 +35,7 @@ getLipoprotein <- function(path){
     fi <- duplicated(res$id)
     return(res[!fi,])
   } else {
-    cat(crayon::yellow("fusion::getLipoprotein >>", path, "not found\n"))
+    cat(crayon::yellow("fusion::readLipo >>", path, "not found\n"))
   }
 }
 
@@ -115,7 +115,7 @@ roldx_getLipo <- function(path){
     fi <- duplicated(id)
     return(list(id = id[!fi], value = as.numeric(value[!fi]), version = version))
   } else {
-    cat(crayon::yellow("fusion::getLipoprotein >>", path, "not found\n"))
+    cat(crayon::yellow("fusion::readLipo >>", path, "not found\n"))
   }
 }
 

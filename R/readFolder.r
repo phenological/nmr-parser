@@ -29,7 +29,7 @@ readFolder <- function(path) {
 # }
 
 # X <- t(sapply(d$noesy, function(x) x$spec$y))
-# eretic <- sapply(d$noesy, function(x) getEreticFactor(x$eretic))
+# eretic <- sapply(d$noesy, function(x) readEreticFactor(x$eretic))
 # fac <- sapply(eretic, function(x) x[[1]])
 # ref <- sapply(eretic, function(x) x[[2]])
 # ppm <- d$noesy[[1]]$spec$x

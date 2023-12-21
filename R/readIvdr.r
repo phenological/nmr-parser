@@ -6,7 +6,7 @@
 #'
 #' @export
 
-getIvdr <- function(path, reportName){
+readIvdr <- function(path, reportName){
   path <- file.path(path, "pdata", "1", reportName)
   if (file.exists(path)) {
     xml <- read_xml(path, options = "NOBLANKS")
@@ -53,7 +53,7 @@ getIvdr <- function(path, reportName){
                       errConcUnit,
                       refMax, refMin, refUnit))
   } else {
-    cat(crayon::yellow("fusion::getIvdr >>", path, "not found\n"))
+    cat(crayon::yellow("fusion::readIvdr >>", path, "not found\n"))
   }
 }
 

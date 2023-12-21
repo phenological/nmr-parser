@@ -24,4 +24,5 @@ Imports:
     data.table,
     signal,
     xml2,
-    crayon
+    crayon,
+    fusion
