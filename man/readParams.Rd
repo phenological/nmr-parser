@@ -4,10 +4,10 @@
 \alias{readParams}
 \title{extract a parameter from a bruker file (procs or acqus)}
 \usage{
-readParams(filePath)
+readParams(file)
 }
 \arguments{
-\item{filePath}{\itemize{
+\item{file}{\itemize{
 \item the path to the expName folder
 }}
 }

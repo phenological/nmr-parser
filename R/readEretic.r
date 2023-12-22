@@ -6,7 +6,7 @@
 #' @export
 #' @importFrom xml2 read_xml xml_text
 readEretic <- function(path){
-  path <- file.path(path, "QuantFactorSample.xml")
+  path <- file.path(path)
   if (file.exists(path)) {
     xml <- read_xml(path, options = "NOBLANKS")
     calEreticPosition <- as.numeric(xml_text(xml_find_all(xml, ".//Artificial_Eretic_Position")))

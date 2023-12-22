@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Eretic_definition>
+   <Reference>
+      <version>2</version>
+      <refname>Water</refname>
+      <file>C:\Screening\data\Reference\Water__AIS80-4-2023-09-20\2\pdata\1\1r</file>
+      <Acquisition_date>2023-09-20 06:31:24</Acquisition_date>
+      <Processing_date>2023-09-20 08:37:44</Processing_date>
+      <Regions>[0;10]</Regions>
+      <one_mol_integral>379625212.4195</one_mol_integral>
+      <one_mol_per_region>379625212.419485</one_mol_per_region>
+      <D1>30</D1>
+      <P1>10.72</P1>
+      <RG>1</RG>
+      <NS>8</NS>
+      <SW>20.1315</SW>
+      <SI>32768</SI>
+      <OFFSET>16.2408</OFFSET>
+      <PL9>67.358</PL9>
+      <PL1>0</PL1>
+      <DS>2</DS>
+      <TE>298</TE>
+      <D8>0</D8>
+      <sysname>&lt;Fourier&gt;</sysname>
+      <PROBHD>&lt;Z181180_000062 (PH F-SEI80B-H/C-F-5.0-Z)&gt;</PROBHD>
+   </Reference>
+   <Sample>
+      <version>2</version>
+      <file>C:\Screening\data\CL-PS-SOLOMON_PARK_RESEARCH_LABS-230227_2023-KW38\32565\20\pdata\1\1r</file>
+      <Acquisition_date>2023-09-20 23:03:39</Acquisition_date>
+      <Processing_date>2023-09-21 01:18:54</Processing_date>
+      <one_mol_integral>4467976882.4925</one_mol_integral>
+      <D1>4</D1>
+      <P1>10.93</P1>
+      <RG>1</RG>
+      <NS>96</NS>
+      <SW>29.7179</SW>
+      <SI>32768</SI>
+      <OFFSET>19.6863</OFFSET>
+      <PL9>63.6646</PL9>
+      <PL1>0</PL1>
+      <DS>4</DS>
+      <TE>298</TE>
+      <D8>0.05</D8>
+      <sysname>&lt;Fourier&gt;</sysname>
+      <PROBHD>&lt;Z181180_000062 (PH F-SEI80B-H/C-F-5.0-Z)&gt;</PROBHD>
+   </Sample>
+</Eretic_definition>

@@ -1,18 +1,18 @@
 #' extract a parameter from a bruker file (procs or acqus)
 #'
-#' @param filePath - the path to the expName folder
+#' @param file - the path to the expName folder
 #' @return the parameter
 #'
 #' @export
-readParams <- function(filePath) {
-  if (file.exists(filePath)) {
-    buf <- file(filePath, open = "r")
+readParams <- function(file) {
+  if (file.exists(file)) {
+    buf <- file(file, open = "r")
     txt <- readLines(buf, n = -1, warn = FALSE)
     close(buf)
 
     # test for AMIX files
     if (txt[1] == "A000") {
-      cat(crayon::yellow("fusion::readParams >>", filePath, " file is AMIX\n"))
+      cat(crayon::yellow("fusion::readParams >>", file, " file is AMIX\n"))
       return(NULL)
     }
 
@@ -23,7 +23,7 @@ readParams <- function(filePath) {
       if (grepl("^##END=", line)) {
         break
       }
-      path <- strsplit(filePath, "/")[[1]]
+      path <- strsplit(file, "/")[[1]]
       # get titles
       if (grepl("^##[A-Z]", line)) {
 
@@ -115,6 +115,6 @@ readParams <- function(filePath) {
                       value = unlist(ret$value)))
     # return(ret)
   } else {
-    cat(crayon::yellow("fusion::readParams >>", filePath, " file not found\n"))
+    cat(crayon::yellow("fusion::readParams >>", file, " file not found\n"))
   }
 }

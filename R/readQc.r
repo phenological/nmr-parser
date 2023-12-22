@@ -1,32 +1,41 @@
-#' extract lipoprotein  quantification information from a bruker xml
+#' read Qc info for importation into rolodex
 #'
-#' @param path - the path to the expName folder
-#' @param reportName - the file name of the report
-#' (plamsa_qc_report.xml / urine_qc_report.xml)
+#' @param file - the path to the expName folder (plamsa_qc_report.xml / urine_qc_report.xml)
 #' @return the values
 #'
 #' @export
-#' @importFrom xml2 read_xml xml_attr xml_find_all
-readQc <- function(path, reportName){
-  path <- file.path(path, "pdata", "1", reportName)
-  if (file.exists(path)) {
-    xml <- read_xml(path, options = "NOBLANKS")
-    sampleName <- xml_attr(xml_find_all(xml, ".//INFO"), "name")
-    sampleValue <- xml_attr(xml_find_all(xml, ".//INFO"), "value")
+#' @importFrom xml2 read_xml xml_attr xml_attrs xml_find_all
+roldx_readQc <- function(file){
+  if (file.exists(file)) {
+    xml <- read_xml(file, options = "NOBLANKS")
 
-    name <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
-    comment <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "comment")
-    type <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "type")
-    value <- xml_attr(xml_find_all(xml, ".//VALUE"), "value")
+    infos <- list(name = (xml_attr(xml_find_all(xml, ".//INFO"), "name")),
+               value = (xml_attr(xml_find_all(xml, ".//INFO"), "value")))
+    infos <- mapply(list, infos$name, infos$value, SIMPLIFY = FALSE)
+    infos <- lapply(infos, function(x) setNames(x, c("name", "value")))
+    infoNames <- unname(sapply(infos, function(x) cleanNames(strsplit(tolower(x), "\\(")[[1]][1])))
 
-    res <- c(sampleValue, rbind(type, comment, value))
-    names(res) <- c(sampleName,
-                    rbind(paste(name, "type"),
-                    paste(name, "comment"),
-                    paste(name, "value")))
+    tests <- xml_find_all(xml, ".//PARAMETER")
+    names <- xml_attr(tests, "name")
+    testNames <- unname(sapply(names, function(x) cleanNames(strsplit(tolower(x), "\\(")[[1]][1])))
+    tests <- lapply(tests, function(x) {
+      c(unlist(xml_attrs(x, ".//PARAMETER")),
+        value = unlist(xml_attr(xml_find_all(x, ".//VALUE"), "value")),
+        unit = unlist(xml_attr(xml_find_all(x, ".//VALUE"), "unit")),
+        xml_attrs(xml_find_all(x, ".//REFERENCE")))
+    })
+
+    res <- list(infos = infos,
+                infoNames = infoNames,
+                tests = tests,
+                testNames = testNames)
+
     return(res)
   } else {
-    cat(crayon::yellow("fusion::readQc >>", path, "not found\n"))
+    cat(crayon::yellow("fusion::roldx_readQc >>", file, "not found\n"))
   }
+
 }
+
+
 

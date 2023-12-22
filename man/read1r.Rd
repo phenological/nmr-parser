@@ -4,13 +4,9 @@
 \alias{read1r}
 \title{read spectrum (processed)}
 \usage{
-read1r(filePath, numberOfPoints, nc = 0, endian = "little")
+read1r(file, numberOfPoints, nc = 0, endian = "little")
 }
 \arguments{
-\item{filePath}{\itemize{
-\item the path to the spectrum (processed)
-}}
-
 \item{numberOfPoints}{\itemize{
 \item the number of points that should be read
 }}
@@ -21,6 +17,10 @@ read1r(filePath, numberOfPoints, nc = 0, endian = "little")
 
 \item{endian}{\itemize{
 \item endianness
+}}
+
+\item{filePath}{\itemize{
+\item the path to the spectrum (processed)
 }}
 }
 \value{

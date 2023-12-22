@@ -6,7 +6,7 @@
 #' @export
 #' @importFrom xml2 read_xml xml_text
 readEreticF80 <- function(path){
-  path <- file.path(path, "pdata", "1", "eretic_file.xml")
+  path <- file.path(path)
   if (file.exists(path)) {
     xml <- read_xml(path, options = "NOBLANKS")
     refName <- xml_text(xml_find_first(xml, "//Reference/refname"))

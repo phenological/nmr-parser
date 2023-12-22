@@ -8,8 +8,8 @@
 #'
 #' @export
 
-read1r <- function(filePath, numberOfPoints, nc = 0, endian = "little"){
-  spec <- readBin(filePath,
+read1r <- function(file, numberOfPoints, nc = 0, endian = "little"){
+  spec <- readBin(file,
                   what = "int",
                   n = numberOfPoints,
                   size = 4,
