@@ -17,6 +17,8 @@ readLipo <- function(file){
     refMax <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmax")
     refMin <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmin")
     refUnit <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "unit")
+    version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
+    version <- strsplit(version, " ")[[1]][1]
 
     fraction <- sapply(comment, function(x) strsplit(x, ",")[[1]][1])
     name <- sapply(comment, function(x) strsplit(x, ",")[[1]][2])
@@ -33,7 +35,7 @@ readLipo <- function(file){
                       refMin = as.numeric(refMin),
                       refUnit)
     fi <- duplicated(res$id)
-    return(res[!fi,])
+    return(list(data = res[!fi,], version = version))
   } else {
     cat(crayon::yellow("fusion::readLipo >>", file, "not found\n"))
   }

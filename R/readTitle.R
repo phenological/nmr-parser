@@ -17,10 +17,11 @@ readTitle <- function(file){
         content <- c(content, list(c(path = "title", name = "title", value = cnt)))
       }
     }
-    res <- do.call(rbind, content)
-    return(res)
+    content <- sapply(content, function(x) unname(x[3]))
+    cnt <- paste0(content, collapse = "\n")
+    return(list(path = "title", name = "title", value = cnt))
   } else {
-    return("no title")
+    cat(crayon::yellow("fusion::readTitle >>", file, "not found\n"))
   }
 }
 
