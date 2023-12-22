@@ -4,9 +4,8 @@
 #' @return the values
 #'
 #' @export
-#' @importFrom xml2 read_xml xml_attr xml_find_all
+#' @importFrom xml2 read_xml xml_attr xml_find_all xml_find_first
 readLipo <- function(file){
-  path <- file.path(path, "pdata", "1", "lipo_results.xml")
   if (file.exists(file)) {
     xml <- read_xml(file, options = "NOBLANKS")
     comment <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "comment")

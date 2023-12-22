@@ -1,12 +1,12 @@
 test_that("reading inexistent file", {
   path <- system.file("..", "tests", "testthat", "plasma_qc_report", package = "nmr.parser")
-  qc <- roldx_readQc(path)
+  qc <- readQc(path)
   expect_equal(qc, NULL)
 })
 
 test_that("reading file", {
   path <- system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser")
-  qc <- roldx_readQc(path)
+  qc <- readQc(path)
   expect_equal(length(qc), 4)
   expect_equal(length(qc$infos), 24)
   expect_equal(length(qc$infoNames), 24)

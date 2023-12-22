@@ -1,14 +1,13 @@
 #' extract xml quantification information from a bruker xml
 #'
-#' @param path - the path to the expName folder
+#' @param file - the path to the expName folder
 #' @return the title
 #'
 #' @export
-#' @importFrom xml2 read_xml xml_text
-readEreticF80 <- function(path){
-  path <- file.path(path)
-  if (file.exists(path)) {
-    xml <- read_xml(path, options = "NOBLANKS")
+#' @importFrom xml2 read_xml xml_text xml_find_first
+readEreticF80 <- function(file){
+  if (file.exists(file)) {
+    xml <- read_xml(file, options = "NOBLANKS")
     refName <- xml_text(xml_find_first(xml, "//Reference/refname"))
     refFile <- xml_text(xml_find_first(xml, "//Reference/file"))
     refAcquDate <- xml_text(xml_find_first(xml, "//Reference/Acquisition_date"))
@@ -49,7 +48,7 @@ readEreticF80 <- function(path){
     samPROBHD <- gsub("<|>", "", xml_text(xml_find_first(xml, "//Sample/PROBHD")))
 
     dt <- data.table(field = 80,
-                     RefName,
+                     refName,
                      refFile,
                      refAcquDate,
                      refProcDate,
@@ -89,7 +88,7 @@ readEreticF80 <- function(path){
                      )
     return(dt)
   } else {
-    cat(crayon::yellow("fusion::readEreticF80 >>", path, "not found\n"))
+    cat(crayon::yellow("fusion::readEreticF80 >>", file, "not found\n"))
     return(NULL)
   }
 }

@@ -5,7 +5,8 @@
 #'
 #' @export
 #' @importFrom xml2 read_xml xml_attr xml_attrs xml_find_all
-roldx_readQc <- function(file){
+#' @importFrom stats setNames
+readQc <- function(file){
   if (file.exists(file)) {
     xml <- read_xml(file, options = "NOBLANKS")
 
@@ -32,7 +33,7 @@ roldx_readQc <- function(file){
 
     return(res)
   } else {
-    cat(crayon::yellow("fusion::roldx_readQc >>", file, "not found\n"))
+    cat(crayon::yellow("fusion::readQc >>", file, "not found\n"))
   }
 
 }

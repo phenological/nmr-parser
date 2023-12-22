@@ -6,6 +6,7 @@
 #' @return a list with all read elements
 #'
 #' @export
+#' @importFrom stats reshape
 readExperiment <- function(path, what = c("acqus",
                                           "procs",
                                           "title",
@@ -112,9 +113,9 @@ readExperiment <- function(path, what = c("acqus",
 
   if ("ivdr" %in% what | "all" %in% what) {
     if (file.exists(file.path(path, "pdata", "1", "plasma_quant_report.xml"))) {
-      ivdr <- readIvdr(path, "plasma_quant_report.xml")
+      ivdr <- readQuant(path, "plasma_quant_report.xml")
     } else if (file.exists(file.path(path, "pdata", "1", "urine_quant_report_e.xml"))) {
-      ivdr <- readIvdr(path, "urine_quant_report_e.xml")
+      ivdr <- readQuant(path, "urine_quant_report_e.xml")
     } else {
       ivdr <- NULL
     }

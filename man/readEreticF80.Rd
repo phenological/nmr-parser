@@ -4,10 +4,10 @@
 \alias{readEreticF80}
 \title{extract xml quantification information from a bruker xml}
 \usage{
-readEreticF80(path)
+readEreticF80(file)
 }
 \arguments{
-\item{path}{\itemize{
+\item{file}{\itemize{
 \item the path to the expName folder
 }}
 }

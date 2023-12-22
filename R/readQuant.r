@@ -1,15 +1,13 @@
 #' extract small molecules  quantification information from a bruker xml
 #'
-#' @param path - the path to the expName folder
-#' @param reportName - name of the file (as it may change)
+#' @param file - the path to the expName folder
 #' @return the values
-#'
+#' @importFrom xml2 xml_find_first xml_find_all xml_attr
 #' @export
 
-readIvdr <- function(path, reportName){
-  path <- file.path(path, "pdata", "1", reportName)
-  if (file.exists(path)) {
-    xml <- read_xml(path, options = "NOBLANKS")
+readQuant <- function(file){
+  if (file.exists(file)) {
+    xml <- read_xml(file, options = "NOBLANKS")
     name <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
     conc_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "conc")
     concUnit_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "concUnit")
@@ -32,28 +30,30 @@ readIvdr <- function(path, reportName){
     refMax <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmax")
     refMin <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmin")
     refUnit <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "unit")
-    return(data.frame(name,
-                      conc_v,
-                      concUnit_v,
-                      lod_v,
-                      lodUnit_v,
-                      loq_v,
-                      loqUnit_v,
-                      conc_vr,
-                      concUnit_vr,
-                      lod_vr,
-                      lodUnit_vr,
-                      loq_vr,
-                      loqUnit_vr,
-                      sigCorrUnit,
-                      sigCorr,
-                      rawConcUnit,
-                      rawConc,
-                      errConc,
-                      errConcUnit,
-                      refMax, refMin, refUnit))
+    version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
+    data <- data.frame(name,
+                       conc_v,
+                       concUnit_v,
+                       lod_v,
+                       lodUnit_v,
+                       loq_v,
+                       loqUnit_v,
+                       conc_vr,
+                       concUnit_vr,
+                       lod_vr,
+                       lodUnit_vr,
+                       loq_vr,
+                       loqUnit_vr,
+                       sigCorrUnit,
+                       sigCorr,
+                       rawConcUnit,
+                       rawConc,
+                       errConc,
+                       errConcUnit,
+                       refMax, refMin, refUnit)
+    return(list(data = data, version = version))
   } else {
-    cat(crayon::yellow("fusion::readIvdr >>", path, "not found\n"))
+    cat(crayon::yellow("fusion::readQuant >>", file, "not found\n"))
   }
 }
 

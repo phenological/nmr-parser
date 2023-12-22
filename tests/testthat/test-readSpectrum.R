@@ -24,7 +24,7 @@ test_that("reading spectrum from 0 to 10", {
 
 test_that("reading spectrum and apply eretic", {
   path <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  eretic <- readEretic(path)
+  eretic <- readEretic(file.path(path, "QuantFactorSample.xml"))
   spec <- readSpectrum(path,
                        options = list("fromTo" = c(-.3, 10),
                                       "eretic" = eretic$ereticFactor))
@@ -38,7 +38,7 @@ test_that("reading spectrum and apply eretic", {
 
 test_that("reading spectrum with imaginary part", {
   path <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  eretic <- readEretic(path)
+  eretic <- readEretic(file.path(path, "QuantFactorSample.xml"))
   spec <- readSpectrum(path,
                        options = list("fromTo" = c(-.3, 10),
                                       "eretic" = eretic$ereticFactor,
@@ -53,7 +53,7 @@ test_that("reading spectrum with imaginary part", {
 
 test_that("reading spectrum of length 8k", {
   path <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  eretic <- readEretic(path)
+  eretic <- readEretic(file.path(path, "QuantFactorSample.xml"))
   spec <- readSpectrum(path,
                        options = list("fromTo" = c(-.3, 10),
                                       "eretic" = eretic$ereticFactor,
@@ -71,7 +71,7 @@ test_that("reading spectrum of length 8k", {
 
 test_that("reading spectrum and uncalibrate", {
   path <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  eretic <- readEretic(path)
+  eretic <- readEretic(file.path(path, "QuantFactorSample.xml"))
   spec <- readSpectrum(path,
                        options = list("fromTo" = c(-.3, 10),
                                       "eretic" = eretic$ereticFactor,
