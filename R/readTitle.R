@@ -1,13 +1,13 @@
 #' extract title from a bruker folder
 #'
-#' @param filePath - the path to the expName folder
+#' @param file - the path to the expName folder
 #' @return the title
 #'
 #' @export
 
-readTitle <- function(filePath){
-  if (file.exists(filePath)) {
-    buf <- file(filePath, open = "r")
+readTitle <- function(file){
+  if (file.exists(file)) {
+    buf <- file(file, open = "r")
     txt <- readLines(buf, n = -1, warn = FALSE)
     close(buf)
     content <- list()

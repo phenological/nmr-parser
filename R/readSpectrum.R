@@ -1,45 +1,45 @@
 #' read a spectrum (processed) from a Bruker expno folder
 #'
-#' @param path - the path to the expNo folder
+#' @param file - the path to the expNo folder
 #' @param procs - the name of the folder with experiments
 #' @param options - options (uncalibrate, eretic, fromTo, length.out)
 #' @return a vector with spectra (real part and x axis)
 #' @importFrom signal interp1
 #' @importFrom data.table data.table
 #' @export
-readSpectrum <- function(path, procs = TRUE, options = list()){
-  path1r <- file.path(path, "pdata", "1", "1r")
-  path1i <- file.path(path, "pdata", "1", "1i")
+readSpectrum <- function(expno, procs = TRUE, options = list()){
+  file1r <- file.path(expno, "pdata", "1", "1r")
+  file1i <- file.path(expno, "pdata", "1", "1i")
 
   if (is.logical(procs) && isTRUE(procs)) {
-    pathProcs <- file.path(path, "pdata", "1", "procs")
+    fileProcs <- file.path(expno, "pdata", "1", "procs")
   } else {
-    pathProcs <- procs
+    fileProcs <- procs
   }
-  pathAcqus <- file.path(path, "acqus")
+  fileAcqus <- file.path(expno, "acqus")
 
   # checking that file is not empty
-  if (file.exists(pathProcs)) {
-    if (is.null(readParam(pathProcs, "NC_proc"))) {
-      cat(crayon::yellow("fusion::readSpectrum >> empty procs file for", path, "\n"))
+  if (file.exists(fileProcs)) {
+    if (is.null(readParam(fileProcs, "NC_proc"))) {
+      cat(crayon::yellow("fusion::readSpectrum >> empty procs file for", expno, "\n"))
       return(NULL)
     }
   } else {
-    cat(crayon::yellow("fusion::readSpectrum >> procs file not found for", path, "\n"))
+    cat(crayon::yellow("fusion::readSpectrum >> procs file not found for", expno, "\n"))
     return(NULL)
   }
 
-  if (file.exists(pathAcqus)) {
-    if (is.null(readParam(pathAcqus, "BF1"))) {
-      cat(crayon::yellow("fusion::readSpectrum >> empty acqus for", path, "\n"))
+  if (file.exists(fileAcqus)) {
+    if (is.null(readParam(fileAcqus, "BF1"))) {
+      cat(crayon::yellow("fusion::readSpectrum >> empty acqus for", expno, "\n"))
       return(NULL)
     }
   } else {
-    cat(crayon::yellow("fusion::readSpectrum >> acqus file not found for", path, "\n"))
+    cat(crayon::yellow("fusion::readSpectrum >> acqus file not found for", expno, "\n"))
     return(NULL)
   }
 
-  if (file.exists(path1r)) {
+  if (file.exists(file1r)) {
     if ("im" %in% names(options)) {
       im <- options$im
     } else {
@@ -47,8 +47,8 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
     }
 
     if (im) {
-      if (!file.exists(path1i)) {
-        cat(crayon::yellow("fusion::readSpectrum >> imaginary data not found for", path, "\n"))
+      if (!file.exists(file1i)) {
+        cat(crayon::yellow("fusion::readSpectrum >> imaginary data not found for", expno, "\n"))
         return(NULL)
       }
     }
@@ -60,29 +60,29 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
     }
 
     # reading important parameters
-    if(readParam(pathProcs, "BYTORDP") == 0) {
+    if(readParam(fileProcs, "BYTORDP") == 0) {
       endian <- "little"
     } else {
       endian = "big"
     }
 
-    nc <- readParam(pathProcs, "NC_proc")
-    size <- readParam(pathProcs, "FTSIZE") # it should be equivalent to use SI
-    sf <-readParam(pathProcs, "SF") # SF is equal to acqus/BF1
-    sw_p <- readParam(pathProcs, "SW_p")
-    offset <- readParam(pathProcs, "OFFSET")
+    nc <- readParam(fileProcs, "NC_proc")
+    size <- readParam(fileProcs, "FTSIZE") # it should be equivalent to use SI
+    sf <-readParam(fileProcs, "SF") # SF is equal to acqus/BF1
+    sw_p <- readParam(fileProcs, "SW_p")
+    offset <- readParam(fileProcs, "OFFSET")
 
     # read additional information for output
-    phc0 <- readParam(pathProcs, "PHC0")
-    phc1 <- readParam(pathProcs, "PHC1")
+    phc0 <- readParam(fileProcs, "PHC0")
+    phc1 <- readParam(fileProcs, "PHC1")
 
-    bf1 <- readParam(pathAcqus, "BF1")
+    bf1 <- readParam(fileAcqus, "BF1")
 
     # checking for empty params
     params <- c(endian, nc, size, sf, sw_p, offset, phc0, phc1, bf1)
     fi <- is.na(params)
     if (sum(fi) > 0) {
-      cat(crayon::yellow("fusion::readSpectrum >> empty parameter for", path, "\n"))
+      cat(crayon::yellow("fusion::readSpectrum >> empty parameter for", expno, "\n"))
       return(NULL)
     }
 
@@ -107,7 +107,7 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
     }
 
     # computing increment, ppm axis and reading spectra
-    y <- read1r(path1r, size, nc, endian)
+    y <- read1r(file1r, size, nc, endian)
     y <- rev(y)
     inc <- sw / (length(y) - 1) # ok
     x <- seq(from = offset, to = (offset - sw), by = -inc)
@@ -115,11 +115,11 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
 
     # reading imaginary data if necessary
     if (im) {
-      yi <- read1r(path1i, size, nc, endian)
+      yi <- read1r(file1i, size, nc, endian)
       yi <- rev(yi)
       # check for length
       if (length(yi) != length(y)) {
-        cat(crayon::yellow("fusion::readSpectrum >> Im and Re have different dimensions", path, "\n"))
+        cat(crayon::yellow("fusion::readSpectrum >> Im and Re have different dimensions", expno, "\n"))
         return(NULL)
       }
     }
@@ -196,6 +196,6 @@ readSpectrum <- function(path, procs = TRUE, options = list()){
     return(spec)
 
   } else {
-    cat(crayon::yellow("fusion::readSpectrum >> data not found for", path, "\n"))
+    cat(crayon::yellow("fusion::readSpectrum >> data not found for", expno, "\n"))
   }
 }

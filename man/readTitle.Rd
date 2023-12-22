@@ -4,10 +4,10 @@
 \alias{readTitle}
 \title{extract title from a bruker folder}
 \usage{
-readTitle(filePath)
+readTitle(file)
 }
 \arguments{
-\item{filePath}{\itemize{
+\item{file}{\itemize{
 \item the path to the expName folder
 }}
 }
