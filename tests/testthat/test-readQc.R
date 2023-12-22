@@ -1,0 +1,22 @@
+test_that("reading inexistent file", {
+  path <- system.file("..", "tests", "testthat", "plasma_qc_report", package = "nmr.parser")
+  qc <- roldx_readQc(path)
+  expect_equal(qc, NULL)
+})
+
+test_that("reading file", {
+  path <- system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser")
+  qc <- roldx_readQc(path)
+  expect_equal(length(qc), 4)
+  expect_equal(length(qc$infos), 24)
+  expect_equal(length(qc$infoNames), 24)
+  expect_equal(length(qc$tests), 22)
+  expect_equal(length(qc$testNames), 22)
+  expect_equal(qc$testNames[1], "linewidth-in-hz")
+  expect_equal(qc$infoNames[1], "nmr-experiment-quality-test")
+  expect_equal(qc$infos[[1]]$name, "NMR Experiment Quality Test")
+  expect_equal(qc$infos[[1]]$value, "not passed" )
+  expect_equal(qc$tests[[1]]$comment, "not passed")
+  expect_equal(qc$tests[[1]]$value, "1.6" )
+  expect_equal(length(qc$tests[[1]]), 6 )
+})
