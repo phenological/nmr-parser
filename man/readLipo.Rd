@@ -4,10 +4,10 @@
 \alias{readLipo}
 \title{extract lipoprotein  quantification information from a bruker xml}
 \usage{
-readLipo(path)
+readLipo(file)
 }
 \arguments{
-\item{path}{\itemize{
+\item{file}{\itemize{
 \item the path to the expName folder
 }}
 }
