@@ -88,7 +88,7 @@ readEreticF80 <- function(file){
                      )
     return(dt)
   } else {
-    cat(crayon::yellow("fusion::readEreticF80 >>", file, "not found\n"))
+    cat(crayon::yellow("readEreticF80 >>", file, "not found\n"))
     return(NULL)
   }
 }

@@ -1,6 +1,6 @@
 #' read a spectrum (processed) from a Bruker expno folder
 #'
-#' @param file - the path to the expNo folder
+#' @param expno - the path to the expNo folder
 #' @param procs - the name of the folder with experiments
 #' @param options - options (uncalibrate, eretic, fromTo, length.out)
 #' @return a vector with spectra (real part and x axis)
@@ -21,21 +21,21 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
   # checking that file is not empty
   if (file.exists(fileProcs)) {
     if (is.null(readParam(fileProcs, "NC_proc"))) {
-      cat(crayon::yellow("fusion::readSpectrum >> empty procs file for", expno, "\n"))
+      cat(crayon::yellow("readSpectrum >> empty procs file for", expno, "\n"))
       return(NULL)
     }
   } else {
-    cat(crayon::yellow("fusion::readSpectrum >> procs file not found for", expno, "\n"))
+    cat(crayon::yellow("readSpectrum >> procs file not found for", expno, "\n"))
     return(NULL)
   }
 
   if (file.exists(fileAcqus)) {
     if (is.null(readParam(fileAcqus, "BF1"))) {
-      cat(crayon::yellow("fusion::readSpectrum >> empty acqus for", expno, "\n"))
+      cat(crayon::yellow("readSpectrum >> empty acqus for", expno, "\n"))
       return(NULL)
     }
   } else {
-    cat(crayon::yellow("fusion::readSpectrum >> acqus file not found for", expno, "\n"))
+    cat(crayon::yellow("readSpectrum >> acqus file not found for", expno, "\n"))
     return(NULL)
   }
 
@@ -48,7 +48,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
 
     if (im) {
       if (!file.exists(file1i)) {
-        cat(crayon::yellow("fusion::readSpectrum >> imaginary data not found for", expno, "\n"))
+        cat(crayon::yellow("readSpectrum >> imaginary data not found for", expno, "\n"))
         return(NULL)
       }
     }
@@ -82,12 +82,12 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
     params <- c(endian, nc, size, sf, sw_p, offset, phc0, phc1, bf1)
     fi <- is.na(params)
     if (sum(fi) > 0) {
-      cat(crayon::yellow("fusion::readSpectrum >> empty parameter for", expno, "\n"))
+      cat(crayon::yellow("readSpectrum >> empty parameter for", expno, "\n"))
       return(NULL)
     }
 
     if (phc1 != 0) {
-      cat(crayon::yellow("fusion::readSpectrum >> phc1 is expected to be 0 in IVDr experiments,\n",
+      cat(crayon::yellow("readSpectrum >> phc1 is expected to be 0 in IVDr experiments,\n",
                          "instead phc1 was found to be:",
                          phc1,
                          "\n"))
@@ -101,7 +101,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
       # a negative SR value means an uncalibrated signal on the right of 0
       offset <- offset + SR_p
 
-      cat(crayon::blue("fusion::readSpectrum >> calibration (SR) removed:",
+      cat(crayon::blue("readSpectrum >> calibration (SR) removed:",
                        SR_p, "ppm", SR, "Hz",
                        "\n"))
     }
@@ -119,7 +119,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
       yi <- rev(yi)
       # check for length
       if (length(yi) != length(y)) {
-        cat(crayon::yellow("fusion::readSpectrum >> Im and Re have different dimensions", expno, "\n"))
+        cat(crayon::yellow("readSpectrum >> Im and Re have different dimensions", expno, "\n"))
         return(NULL)
       }
     }
@@ -131,7 +131,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
         yi <- yi / options$eretic
       }
 
-      cat(crayon::blue("fusion::readSpectrum >> spectra corrected for eretic:",
+      cat(crayon::blue("readSpectrum >> spectra corrected for eretic:",
                        options$eretic,
                        "\n"))
     }
@@ -144,7 +144,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
       to <- options$fromTo[2]
 
       if (from > to) {
-        cat(crayon::blue("fusion::readSpectrum >> from should be smaller than to\n"))
+        cat(crayon::blue("readSpectrum >> from should be smaller than to\n"))
       }
 
       if ("length.out" %in% names(options)) {
@@ -172,7 +172,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
 
       x <- newX
 
-      cat(crayon::blue("fusion::readSpectrum >> spectra in common grid (from:",
+      cat(crayon::blue("readSpectrum >> spectra in common grid (from:",
                        from,
                        "to:",
                        to,
@@ -196,6 +196,6 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
     return(spec)
 
   } else {
-    cat(crayon::yellow("fusion::readSpectrum >> data not found for", expno, "\n"))
+    cat(crayon::yellow("readSpectrum >> data not found for", expno, "\n"))
   }
 }

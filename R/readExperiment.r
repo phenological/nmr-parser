@@ -1,19 +1,21 @@
 #' read experiment from a bruker folder (expno)
 #'
-#' @param path - the path to the expNo folder
-#' @param acqus - object with acquisiton parameters, if TRUE reads from the file
-#' @param procs - object with processing parameters, if TRUE reads from the file
+#' @param file - the path to the expNo folder
+#' @param what - choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
+#' @param options - object with processing parameters, if TRUE reads from the file
 #' @return a list with all read elements
 #'
 #' @export
 #' @importFrom stats reshape
-readExperiment <- function(path, what = c("acqus",
+#' @importFrom data.table setDT
+readExperiment <- function(file, what = c("acqus",
                                           "procs",
+                                          "qc",
                                           "title",
                                           "eretic",
                                           "spec",
                                           "lipo",
-                                          "ivdr",
+                                          "quant",
                                           "pacs",
                                           "all",
                                           "specOnly"),
@@ -21,107 +23,223 @@ readExperiment <- function(path, what = c("acqus",
                                                           fromTo = c(-0.1, 10),
                                                           length.out = 44079))) {
 
-  if (is.character(path)) {
-    path <- as.list(path)
+  if (is.character(file)) {
+    file <- as.list(file)
   }
 
   res <- list()
 
   lst <- list()
-  for (l in 1:length(path)) {
+  for (l in 1:length(file)) {
     if ("acqus" %in% what | "all" %in% what) {
-      parms<- readParams(file.path(path[[l]], "acqus"))
-      lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+      path <- file.path(file[[l]], "acqus")
+      if (file.exists(path)) {
+        parms<- readParams(path)
+        parms$path <- path
+        lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+      }
     }
   }
   common_columns <- Reduce(intersect, lapply(lst, names))
-  res$acqus <- data.frame(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
+  res$acqus <- data.table(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
+  colnames(res$acqus) <- gsub("value.", "acqus.", colnames(res$acqus))
   cat(crayon::blue("readExperiment >>", nrow(res$acqus), "found acqus params\n"))
 
   lst <- list()
-  for (l in 1:length(path)) {
+  for (l in 1:length(file)) {
     if ("procs" %in% what | "all" %in% what) {
-      parms <- readParams(file.path(path[[l]], "pdata", "1", "procs"))
-      lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+      path <- file.path(file[[l]], "pdata", "1", "procs")
+      if (file.exists(path)) {
+        parms <- readParams(path)
+        parms$path <- path
+        lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+      }
     }
   }
   common_columns <- Reduce(intersect, lapply(lst, names))
-  res$procs <- data.frame(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
-  cat(crayon::blue("readExperiment >>", nrow(res$procs), "found acqus params\n"))
+  res$procs <- data.table(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
+  colnames(res$acqus) <- gsub("value.", "procs.", colnames(res$acqus))
+  cat(crayon::blue("readExperiment >>", nrow(res$procs), "found procs params\n"))
 
   lst <- list()
-  for (l in 1:length(path)) {
-    if ("title" %in% what | "all" %in% what) {
-      lst[[l]] <- list(path = path[[l]], title = readTitle(file.path(path[[l]], "pdata", "1", "title"))[[3]])
+  for (l in 1:length(file)) {
+    if ("qc" %in% what | "all" %in% what) {
+      path_serum <- file.path(file[[l]], "pdata", "1", "plasma_qc_report.xml")
+      path_urine <- file.path(file[[l]], "pdata", "1", "urine_qc_report.xml")
+      if (file.exists(path_serum)) {
+        qc <- readQc(path_serum)
+      } else if (file.exists(path_urine)) {
+        qc <- readQc(path_urine)
+      } else {
+        qc <- NULL
+      }
+      if (!is.null(qc)) {
+        qc$path <- path
+        lst[[l]] <- qc
+      }
     }
   }
-  res$title <- do.call("rbind", lst)
+  res$qc <- data.table(do.call("rbind", lst))
+  if (is.null(nrow(res$qc))) {
+    cat(crayon::yellow("readExperiment >> 0 found qc\n"))
+  } else {
+    cat(crayon::blue("readExperiment >>", nrow(res$qc), "found qc\n"))
+  }
+
+  lst <- list()
+  for (l in 1:length(file)) {
+    if ("title" %in% what | "all" %in% what) {
+      path <- file.path(file[[l]], "pdata", "1", "title")
+      if (file.exists(path)) {
+        lst[[l]] <- c(path = file[[l]], title = readTitle(path)[[3]])
+      }
+    }
+  }
+  res$title <- data.table(do.call("rbind", lst))
   cat(crayon::blue("readExperiment >>", nrow(res$title), "found titles\n"))
 
   lst <- list()
-  for (l in 1:length(path)) {
-    if ("eretic" %in% what | "all" %in% what |
-        "specOnly" %in% what | "spec" %in% what) {
-      if (file.exists(file.path(path[[l]], "QuantFactorSample.xml"))) {
-        eretic <- readEretic(path[[l]])
+  for (l in 1:length(file)) {
+    if ("eretic" %in% what | "all" %in% what) {
+      if (file.exists(file.path(file[[l]], "QuantFactorSample.xml"))) {
+        eretic <- readEretic(file.path(file[[l]], "QuantFactorSample.xml"))
         ereticFactor <- eretic$ereticFactor
-      } else if (file.exists(file.path(path[[l]], "pdata", "1", "eretic_file.xml"))) {
-        eretic <- readEreticF80(path[[l]])
-        ereticFactor <- eretic$samOneMolInt
+      } else if (file.exists(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))) {
+        eretic <- readEreticF80(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))
+        ifelse(!is.null(eretic), ereticFactor = eretic$samOneMolInt)
       } else {
         ereticFactor <- NULL
       }
-      lst[[l]] <- ereticFactor
+      if (!is.null(ereticFactor)) {
+        lst[[l]] <- c(path = file[[l]], ereticFactor = ereticFactor)
+      }
     }
   }
-  res$eretic <- do.call("rbind", lst)
+  res$eretic <- data.table(do.call("rbind", lst))
   cat(crayon::blue("readExperiment >>", nrow(res$eretic), "found ereticFactors\n"))
 
   lst <- list()
-  for (l in 1:length(path)) {
+  for (l in 1:length(file)) {
     if ("spec" %in% what | "all" %in% what | "specOnly" %in% what) {
       specOpts <- options$specOpts
 
-      if (!is.null(eretic)) {
+      if (file.exists(file.path(file[[l]], "QuantFactorSample.xml"))) {
+        eretic <- readEretic(file.path(file[[l]], "QuantFactorSample.xml"))
+        ereticFactor <- eretic$ereticFactor
+      } else if (file.exists(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))) {
+        eretic <- readEreticF80(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))
+        ifelse(!is.null(eretic), ereticFactor = eretic$samOneMolInt)
+      } else {
+        ereticFactor <- NULL
+      }
+
+      if (!is.null(ereticFactor)) {
         specOpts$eretic <- ereticFactor
       }
-
-      res$spec <- readSpectrum(path, procs = TRUE, options = specOpts)
-    }
-  }
-  res$spec <- do.call("rbind", lst)
-  cat(crayon::blue("readExperiment >>", nrow(res$spec), "found spectrum(a)\n"))
-
-  if ("lipo" %in% what | "all" %in% what) {
-    if (file.exists(file.path(path, "pdata", "1", "lipo_results.xml"))) {
-      lipoproteins <- readLipo(path)
-      if (!is.null(lipoproteins)) {
-        res$lipo <- lipoproteins
+      spec <- readSpectrum(file[[l]], procs = TRUE, options = specOpts)
+      if (!is.null(spec)) {
+        lst[[l]] <- list(path = file[[l]], spec = spec)
       }
     }
   }
+  res$spec <- data.table(do.call("rbind", lst))
+  if (length(spec) == 0) {
+    cat(crayon::yellow("readExperiment >> 0 found spectrum(a)\n"))
+  } else {
+    cat(crayon::blue("readExperiment >>", nrow(res$spec), "found spectrum(a)\n"))
+  }
 
-
-  # if ("pacs" %in% what | "all" %in% what) {
-  #   if (file.exists(file.path(path, "pdata", "1", "plasma_pacs_report.xml"))) {
-  #     pacs <- readPacs(path)
-  #     if (!is.null(pacs)) {
-  #       res$pacs <- pacs
-  #     }
-  #   }
-  # }
-
-  if ("ivdr" %in% what | "all" %in% what) {
-    if (file.exists(file.path(path, "pdata", "1", "plasma_quant_report.xml"))) {
-      ivdr <- readQuant(path, "plasma_quant_report.xml")
-    } else if (file.exists(file.path(path, "pdata", "1", "urine_quant_report_e.xml"))) {
-      ivdr <- readQuant(path, "urine_quant_report_e.xml")
-    } else {
-      ivdr <- NULL
+  lst <- list()
+  for (l in 1:length(file)) {
+    if ("lipo" %in% what | "all" %in% what) {
+      path <- file.path(file[[l]], "pdata", "1", "lipo_results.xml")
+      if (file.exists(path)) {
+        lipoproteins <- readLipo(path)
+        lipoproteins$path <- path
+        if (!is.null(lipoproteins)) {
+          lst[[l]] <- lipoproteins
+        }
+      }
     }
-    if (!is.null(ivdr)) {
-      res$ivdr <- ivdr
+  }
+  res$lipo <- data.table(do.call("rbind", lst))
+  if (length(res$lipo) == 0) {
+    cat(crayon::yellow("readExperiment >> 0 found lipo\n"))
+  } else {
+    cat(crayon::blue("readExperiment >>", nrow(res$lipo), "found lipo\n"))
+    lipo <- lapply(res$lipo$data,
+                   function(x) reshape(setDT(x)[, .(id, path, value, unit, refMax, refMin),],
+                                       idvar = "path",
+                                       timevar = "id",
+                                       direction = "wide"))
+    lipo <- do.call("rbind", lipo)
+    res$lipo <- lipo
+  }
+
+  lst <- list()
+  for (l in 1:length(file)) {
+    if ("pacs" %in% what | "all" %in% what) {
+      path <- file.path(file[[l]], "pdata", "1", "plasma_pacs_report.xml")
+      if (file.exists(path)) {
+        pacs <- readPacs(path)
+      } else {
+        pacs <- NULL
+      }
+      if (!is.null(pacs)) {
+        pacs$path <- path
+        lst[[l]] <- pacs
+      }
     }
+  }
+  res$pacs <- data.table(do.call("rbind", lst))
+
+  if (length(res$pacs) == 0) {
+    cat(crayon::yellow("readExperiment >> 0 found pacs\n"))
+  } else {
+    pacs <- lapply(res$pacs$data,
+                   function(x) reshape(setDT(x)[, .(name, path, conc_v, concUnit_v, refMax, refMin),],
+                                       idvar = "path",
+                                       timevar = "name",
+                                       direction = "wide"))
+    pacs <- do.call("rbind", pacs)
+    colnames(pacs) <- gsub("conc_v.", "value.", colnames(pacs))
+    colnames(pacs) <- gsub("concUnit_v.", "unit.", colnames(pacs))
+    res$pacs <- pacs
+    cat(crayon::blue("readExperiment >>", nrow(res$pacs), "found pacs\n"))
+  }
+
+  lst <- list()
+  for (l in 1:length(file)) {
+    if ("quant" %in% what | "all" %in% what) {
+      path_serum <- file.path(file[[l]], "pdata", "1", "plasma_quant_report.xml")
+      path_urine <- file.path(file[[l]], "pdata", "1", "urine_quant_report_e.xml")
+      if (file.exists(path_serum)) {
+        quant <- readQuant(path_serum)
+      } else if (file.exists(path_urine)) {
+        quant <- readQuant(path_urine)
+      } else {
+        quant <- NULL
+      }
+      if (!is.null(quant)) {
+        quant$path <- path
+        lst[[l]] <- quant
+      }
+    }
+  }
+  res$quant <- data.table(do.call("rbind", lst))
+  if (length(res$quant) == 0) {
+    cat(crayon::yellow("readExperiment >> 0 found quant\n"))
+  } else {
+    quant <- lapply(res$quant$data,
+                    function(x) reshape(setDT(x)[, .(name, path, rawConc, concUnit_v, refMax, refMin),],
+                                        idvar = "path",
+                                        timevar = "name",
+                                        direction = "wide"))
+    quant <- do.call("rbind", quant)
+    colnames(quant) <- gsub("rawConc.", "value.", colnames(quant))
+    colnames(quant) <- gsub("concUnit_v.", "unit.", colnames(quant))
+    res$quant <- quant
+    cat(crayon::blue("readExperiment >>", nrow(res$quant), "found quant\n"))
   }
 
   return(res)

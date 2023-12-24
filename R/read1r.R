@@ -1,6 +1,6 @@
 #' read spectrum (processed)
 #'
-#' @param filePath - the path to the spectrum (processed)
+#' @param file - the path to the spectrum (processed)
 #' @param numberOfPoints - the number of points that should be read
 #' @param nc - power factor
 #' @param endian - endianness

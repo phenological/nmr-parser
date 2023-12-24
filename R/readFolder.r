@@ -1,7 +1,7 @@
 
 readFolder <- function(path) {
   expList <- dir(path)
-  cat(crayon::blue("fusion::readFolder >> ", length(expList), "expnames found\n"))
+  cat(crayon::blue("readFolder >> ", length(expList), "expnames found\n"))
   noesy <- list()
   cpmg <- list()
   for (exp in expList) {
@@ -15,12 +15,12 @@ readFolder <- function(path) {
           cpmg <- c(cpmg, list(newExp))
         }
       } else {
-        cat(crayon::yellow("fusion::readFolder >>", expPath, "ivdr or lipoproteins not found\n"))
+        cat(crayon::yellow("readFolder >>", expPath, "ivdr or lipoproteins not found\n"))
       }
     }
   }
-  cat(crayon::blue("fusion::readFolder >>", length(noesy), "noesy read\n"))
-  cat(crayon::blue("fusion::readFolder >>", length(cpmg), "cpmg read\n"))
+  cat(crayon::blue("readFolder >>", length(noesy), "noesy read\n"))
+  cat(crayon::blue("readFolder >>", length(cpmg), "cpmg read\n"))
   return(list(noesy = noesy, cpmg = cpmg))
 }
 

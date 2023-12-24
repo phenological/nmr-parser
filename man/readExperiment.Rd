@@ -5,23 +5,23 @@
 \title{read experiment from a bruker folder (expno)}
 \usage{
 readExperiment(
-  path,
-  what = c("acqus", "procs", "title", "eretic", "spec", "lipo", "ivdr", "pacs", "all",
-    "specOnly"),
+  file,
+  what = c("acqus", "procs", "qc", "title", "eretic", "spec", "lipo", "quant", "pacs",
+    "all", "specOnly"),
   options = list(specOpts = list(uncalibrate = FALSE, fromTo = c(-0.1, 10), length.out =
     44079))
 )
 }
 \arguments{
-\item{path}{\itemize{
+\item{file}{\itemize{
 \item the path to the expNo folder
 }}
 
-\item{acqus}{\itemize{
-\item object with acquisiton parameters, if TRUE reads from the file
+\item{what}{\itemize{
+\item choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
 }}
 
-\item{procs}{\itemize{
+\item{options}{\itemize{
 \item object with processing parameters, if TRUE reads from the file
 }}
 }

@@ -53,7 +53,7 @@ readQuant <- function(file){
                        refMax, refMin, refUnit)
     return(list(data = data, version = version))
   } else {
-    cat(crayon::yellow("fusion::readQuant >>", file, "not found\n"))
+    cat(crayon::yellow("readQuant >>", file, "not found\n"))
   }
 }
 

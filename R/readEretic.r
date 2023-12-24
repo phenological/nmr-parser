@@ -34,7 +34,7 @@ readEretic <- function(path){
                      P1)
     return(df)
   } else {
-    cat(crayon::yellow("fusion::readEretic >>", path, "not found\n"))
+    cat(crayon::yellow("readEretic >>", path, "not found\n"))
     return(NULL)
   }
 }

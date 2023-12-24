@@ -2,7 +2,8 @@
 % Please edit documentation in R/readQc.R
 \name{readQc}
 \alias{readQc}
-\title{read Qc info for importation into rolodex}
+\title{read Qc info for importation into rolodex
+extract qc information}
 \usage{
 readQc(file)
 }
@@ -16,4 +17,5 @@ the values
 }
 \description{
 read Qc info for importation into rolodex
+extract qc information
 }

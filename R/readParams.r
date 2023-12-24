@@ -12,7 +12,7 @@ readParams <- function(file) {
 
     # test for AMIX files
     if (txt[1] == "A000") {
-      cat(crayon::yellow("fusion::readParams >>", file, " file is AMIX\n"))
+      cat(crayon::yellow("readParams >>", file, " file is AMIX\n"))
       return(NULL)
     }
 
@@ -115,6 +115,6 @@ readParams <- function(file) {
                       value = unlist(ret$value)))
     # return(ret)
   } else {
-    cat(crayon::yellow("fusion::readParams >>", file, " file not found\n"))
+    cat(crayon::yellow("readParams >>", file, " file not found\n"))
   }
 }

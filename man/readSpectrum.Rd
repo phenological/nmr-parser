@@ -7,16 +7,16 @@
 readSpectrum(expno, procs = TRUE, options = list())
 }
 \arguments{
+\item{expno}{\itemize{
+\item the path to the expNo folder
+}}
+
 \item{procs}{\itemize{
 \item the name of the folder with experiments
 }}
 
 \item{options}{\itemize{
 \item options (uncalibrate, eretic, fromTo, length.out)
-}}
-
-\item{file}{\itemize{
-\item the path to the expNo folder
 }}
 }
 \value{

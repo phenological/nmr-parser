@@ -17,7 +17,7 @@ readParam <- function(path, paramName){
     return(as.numeric(parameter))
   }
   } else {
-    cat(crayon::yellow("fusion::readParam file does not exist\n"))
+    cat(crayon::yellow("readParam file does not exist\n"))
     return(NULL)
   }
 }

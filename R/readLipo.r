@@ -36,7 +36,7 @@ readLipo <- function(file){
     fi <- duplicated(res$id)
     return(list(data = res[!fi,], version = version))
   } else {
-    cat(crayon::yellow("fusion::readLipo >>", file, "not found\n"))
+    cat(crayon::yellow("readLipo >>", file, "not found\n"))
   }
 }
 

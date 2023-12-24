@@ -21,7 +21,7 @@ readTitle <- function(file){
     cnt <- paste0(content, collapse = "\n")
     return(list(path = "title", name = "title", value = cnt))
   } else {
-    cat(crayon::yellow("fusion::readTitle >>", file, "not found\n"))
+    cat(crayon::yellow("readTitle >>", file, "not found\n"))
   }
 }
 

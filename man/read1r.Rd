@@ -7,6 +7,10 @@
 read1r(file, numberOfPoints, nc = 0, endian = "little")
 }
 \arguments{
+\item{file}{\itemize{
+\item the path to the spectrum (processed)
+}}
+
 \item{numberOfPoints}{\itemize{
 \item the number of points that should be read
 }}
@@ -17,10 +21,6 @@ read1r(file, numberOfPoints, nc = 0, endian = "little")
 
 \item{endian}{\itemize{
 \item endianness
-}}
-
-\item{filePath}{\itemize{
-\item the path to the spectrum (processed)
 }}
 }
 \value{
