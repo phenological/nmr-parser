@@ -23,6 +23,9 @@ readExperiment <- function(file, what = c("acqus",
                                                           fromTo = c(-0.1, 10),
                                                           length.out = 44079))) {
 
+  name <- path <- conc_v <- concUnit_v <- refMax <- refMin <- NULL
+  id <- value <- unit <- rawConc <- NULL
+
   if (is.character(file)) {
     file <- as.list(file)
   }
@@ -106,7 +109,7 @@ readExperiment <- function(file, what = c("acqus",
         ereticFactor <- eretic$ereticFactor
       } else if (file.exists(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))) {
         eretic <- readEreticF80(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))
-        ifelse(!is.null(eretic), ereticFactor = eretic$samOneMolInt)
+        ereticFactor <- eretic$samOneMolInt
       } else {
         ereticFactor <- NULL
       }
@@ -128,7 +131,7 @@ readExperiment <- function(file, what = c("acqus",
         ereticFactor <- eretic$ereticFactor
       } else if (file.exists(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))) {
         eretic <- readEreticF80(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))
-        ifelse(!is.null(eretic), ereticFactor = eretic$samOneMolInt)
+        ereticFactor <- eretic$samOneMolInt
       } else {
         ereticFactor <- NULL
       }
