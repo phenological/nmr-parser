@@ -5,6 +5,7 @@
 #' @importFrom data.table data.table
 #' @importFrom stats setNames
 #' @importFrom utils stack menu
+#' @export
 
 scanFolder <- function(folder, options = list()) {
 
