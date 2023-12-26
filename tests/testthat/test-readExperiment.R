@@ -17,6 +17,7 @@ test_that("reading experiment folder", {
   expect_equal(expe$lipo$value.TPTG, 139.84)
   expect_equal(expe$quant$value.Ethanol, "0.000")
   expect_equal(expe$lipo$value.TPTG, 139.84)
+  expect_equal(expe$quant$value.Acetone, "0.418")
 })
 
 test_that("reading experiment folder acqus", {
@@ -61,6 +62,22 @@ test_that("reading experiment folder spec", {
   expect_equal(sum(expe$spec$spec[[1]]$spec$y), 4358580.9)
 })
 
+test_that("reading experiment folder lipo", {
+  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
+  expe<- readExperiment(file, options = list(what = c("lipo")))
+  expect_length(expe, 1)
+  # expect_equal(expe$lipo$path, "/Users/jul/git/phenological/nmr-parser/inst/HB-COVID0001/10")
+  expect_equal(expe$lipo$value.TPTG, 139.84)
+})
+
+test_that("reading experiment folder quant", {
+  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
+  expe<- readExperiment(file, options = list(what = c("quant")))
+  expect_length(expe, 1)
+  # expect_equal(expe$quant$path, "/Users/jul/git/phenological/nmr-parser/inst/HB-COVID0001/10")
+  expect_equal(expe$quant$value.Ethanol, "0.000")
+})
+
 # test_that("reading experiment folders", {
 #   folder <- file.path("~", "Downloads", "BRUKER_600_80", "600")
 #   lof <- paste0(folder, "/", dir(folder), "/10")
@@ -78,5 +95,9 @@ test_that("reading experiment folder spec", {
 #   expect_equal(expe$qc$tests[[2]]$value[1], "1.1")
 #   expect_equal(expe$qc$tests[[1]]$name[2], "Residual Water Signal in mmol/L")
 #   expect_equal(expe$qc$tests[[1]]$value[2], "20.0")
+#   expect_equal(expe$lipo$value.TPTG[1], 304.05)
+#   expect_equal(expe$quant$value.Acetone[1], "0.089")
+#   expect_equal(expe$lipo$value.TPTG[2], 58.86)
+#   expect_equal(expe$quant$value.Acetone[2], "0.062")
 # })
 

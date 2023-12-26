@@ -6,23 +6,22 @@
 \usage{
 readExperiment(
   file,
-  what = c("acqus", "procs", "qc", "title", "eretic", "spec", "lipo", "quant", "pacs",
-    "all", "specOnly"),
-  options = list(specOpts = list(uncalibrate = FALSE, fromTo = c(-0.1, 10), length.out =
-    44079))
+  options = list(what = c("acqus", "procs", "qc", "title", "eretic", "spec", "lipo",
+    "quant", "pacs", "all", "specOnly"), specOpts = list(uncalibrate = FALSE, fromTo =
+    c(-0.1, 10), length.out = 44079))
 )
 }
 \arguments{
 \item{file}{\itemize{
-\item the path to the expNo folder
-}}
-
-\item{what}{\itemize{
-\item choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
+\item a path (or list of) to the expNo folder(s)
 }}
 
 \item{options}{\itemize{
 \item object with processing parameters, if TRUE reads from the file
+}}
+
+\item{what}{\itemize{
+\item choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
 }}
 }
 \value{

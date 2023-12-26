@@ -40,8 +40,8 @@ readExperiment <- function(file,
     for (l in 1:length(file)) {
       path <- file.path(file[[l]], "acqus")
       if (file.exists(path)) {
-        parms<- readParams(path)
-        parms$path <- path
+        parms <- readParams(path)
+        parms$path <- file[[l]]
         lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
       }
     }
@@ -59,7 +59,7 @@ readExperiment <- function(file,
       path <- file.path(file[[l]], "pdata", "1", "procs")
       if (file.exists(path)) {
         parms <- readParams(path)
-        parms$path <- path
+        parms$path <- file[[l]]
         lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
       }
     }
@@ -84,7 +84,7 @@ readExperiment <- function(file,
         qc <- NULL
       }
       if (!is.null(qc)) {
-        qc$path <- path
+        qc$path <- file[[l]]
         lst[[l]] <- qc
       }
     }
@@ -184,8 +184,8 @@ readExperiment <- function(file,
       path <- file.path(file[[l]], "pdata", "1", "lipo_results.xml")
       if (file.exists(path)) {
         lipoproteins <- readLipo(path)
-        lipoproteins$path <- path
         if (!is.null(lipoproteins)) {
+          lipoproteins$data$path <- file[[l]]
           lst[[l]] <- lipoproteins
         }
       }
@@ -195,9 +195,6 @@ readExperiment <- function(file,
     if (length(res$lipo) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found lipo\n")))
     } else {
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$lipo),
-                               "found lipo\n")))
       lipo <- lapply(res$lipo$data,
                      function(x) reshape(setDT(x)[, .(id, path, value, unit, refMax, refMin),],
                                          idvar = "path",
@@ -205,6 +202,9 @@ readExperiment <- function(file,
                                          direction = "wide"))
       lipo <- do.call("rbind", lipo)
       res$lipo <- lipo
+      message(cat(crayon::blue("readExperiment >>",
+                               nrow(res$lipo),
+                               "found lipo\n")))
     }
   }
 
@@ -219,7 +219,7 @@ readExperiment <- function(file,
         pacs <- NULL
       }
       if (!is.null(pacs)) {
-        pacs$path <- path
+        pacs$data$path <- file[[l]]
         lst[[l]] <- pacs
       }
     }
@@ -245,7 +245,6 @@ readExperiment <- function(file,
   if ("quant" %in% what | "all" %in% what) {
     lst <- list()
     for (l in 1:length(file)) {
-
       path_serum <- file.path(file[[l]], "pdata", "1", "plasma_quant_report.xml")
       path_urine <- file.path(file[[l]], "pdata", "1", "urine_quant_report_e.xml")
       if (file.exists(path_serum)) {
@@ -256,7 +255,7 @@ readExperiment <- function(file,
         quant <- NULL
       }
       if (!is.null(quant)) {
-        quant$path <- path
+        quant$data$path <- file[[l]]
         lst[[l]] <- quant
       }
     }
