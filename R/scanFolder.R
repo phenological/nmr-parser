@@ -61,7 +61,7 @@ scanFolder <- function(folder, options = list()) {
                                     ": ",
                                     res$values[i]))))
   }
-  expList$file <- as.list(gsub("/acqus", "", expList$file))
+  expList$file <- gsub("/acqus", "", expList$file)
   return(expList)
 }
 
