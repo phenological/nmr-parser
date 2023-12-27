@@ -1,5 +1,5 @@
 #' function to scan a folder and get a list of paths to parse
-#' @param folder - the root folder to scan
+#' @param folder - the root folder(s) to scan
 #' @param options - options to skip the prompt
 #' @returns a list of paths
 #' @importFrom data.table data.table
@@ -27,10 +27,14 @@ scanFolder <- function(folder, options = list()) {
   fi <- grepl("99999/acqus|98888/acqus", acqusFiles)
   acqusFiles <- acqusFiles[!fi]
 
+  # remove trailing slash
+  acqusFiles <- gsub("//", "/", acqusFiles)
+
   expList <- lapply(acqusFiles,
                     function(a) c(file = a,
                                   EXP = readParam(a, "EXP"),
-                                  PULPROG = readParam(a, "PULPROG")))
+                                  PULPROG = readParam(a, "PULPROG"),
+                                  USERA2 = readParam(a, "USERA2")))
   expList <- data.table(do.call("rbind", expList))
 
   res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
@@ -57,8 +61,8 @@ scanFolder <- function(folder, options = list()) {
                                     ": ",
                                     res$values[i]))))
   }
-
-  return(as.list(gsub("/acqus", "", expList$file)))
+  expList$file <- as.list(gsub("/acqus", "", expList$file))
+  return(expList)
 }
 
 
