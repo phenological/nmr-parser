@@ -8,7 +8,7 @@ scanFolder(folder, options = list())
 }
 \arguments{
 \item{folder}{\itemize{
-\item the root folder to scan
+\item the root folder(s) to scan
 }}
 
 \item{options}{\itemize{
