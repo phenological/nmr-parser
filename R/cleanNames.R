@@ -7,7 +7,7 @@
 #' cleanNames(originalID)
 #' @export
 cleanNames <- function(names) {
-  gsub("\\\\", "", names)
+  names <- gsub("\\\\", " ", names)
   # first we remove trailing spaces
   names <-gsub("\\s+$", "", names)
   # second we remove spaces at the beginning of each lines
