@@ -63,7 +63,7 @@ readParams <- function(file) {
           date <- paste0(strsplit(param, " ")[[1]][c(1:3,5)], collapse = " ")
           time <- strsplit(param, " ")[[1]][4]
           timezone <- paste0(strsplit(param, " ")[[1]][c(6,7)], collapse = " ")
-          instrument <- strsplit(param, " ")[[1]][8]
+          instrument <- cleanNames(strsplit(param, " ")[[1]][8])
         }
 
         if (!is.null(date) & !is.null(time) & !is.null(timezone) & !is.null(instrument)) {
