@@ -57,7 +57,7 @@ readParams <- function(file) {
           date <- strsplit(param, " ")[[1]][1]
           time <- strsplit(param, " ")[[1]][2]
           timezone <- strsplit(param, " ")[[1]][3]
-          instrument <- strsplit(param, " ")[[1]][4]
+          instrument <- cleanNames(strsplit(param, " ")[[1]][4])
         } else if (grepl("^[A-Z][a-z][a-z]\\s[A-Z][a-z][a-z]\\s[0-9]", param)) {
           param <- gsub("\\s+", " ", param)
           date <- paste0(strsplit(param, " ")[[1]][c(1:3,5)], collapse = " ")
