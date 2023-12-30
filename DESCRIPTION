@@ -1,6 +1,6 @@
 Package: nmr.parser
 Title: What the Package Does (One Line, Title Case)
-Version: 0.1.8
+Version: 0.1.9
 Authors@R: 
     c(person(given = "Julien",
            family = "Wist",
