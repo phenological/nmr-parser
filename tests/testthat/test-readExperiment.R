@@ -1,13 +1,11 @@
 test_that("reading inexistent folder", {
-  file <- system.file("HB-COVID0001", "101", "acqus", package = "nmr.parser")
-  expe <- readExperiment(file)
+  expe <- readExperiment(system.file("HB-COVID0001", "101", "acqus", package = "nmr.parser"))
   expect_equal(nrow(expe$acqus), 0)
   expect_length(expe, 9)
 })
 
 test_that("reading experiment folder", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file)
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"))
   expect_length(expe, 9)
   expect_equal(expe$acqus$acqus.TITLE, "Parameter file, TopSpin 3.5 pl 4")
   expect_equal(expe$acqus$acqus.NS, "32")
@@ -21,30 +19,26 @@ test_that("reading experiment folder", {
 })
 
 test_that("reading experiment folder acqus", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file, options = list(what = c("acqus")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("acqus")))
   expect_length(expe, 1)
   expect_equal(expe$acqus$acqus.TITLE, "Parameter file, TopSpin 3.5 pl 4")
   expect_equal(expe$acqus$acqus.NS, "32")
 })
 
 test_that("reading experiment folder procs", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file, options = list(what = c("procs")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("procs")))
   expect_length(expe, 1)
   expect_equal(expe$procs$procs.PHC0, "-7.223511")
 })
 
 test_that("reading experiment folder eretic", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file, options = list(what = c("eretic")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("eretic")))
   expect_length(expe, 1)
   expect_equal(expe$eretic$ereticFactor, "3808.27187511")
 })
 
 test_that("reading experiment folder qc", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file, options = list(what = c("qc")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("qc")))
   expect_length(expe, 1)
   expect_equal(expe$qc$infos[[1]]$name[1], "NMR Experiment Quality Test")
   expect_equal(expe$qc$tests[[1]]$name[1], "LineWidth in Hz")
@@ -52,8 +46,7 @@ test_that("reading experiment folder qc", {
 })
 
 test_that("reading experiment folder spec", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file, options = list(what = c("spec")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("spec")))
   expect_length(expe, 1)
   expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
   expect_length(expe$spec$spec[[1]]$spec$x, 44079)
@@ -63,16 +56,14 @@ test_that("reading experiment folder spec", {
 })
 
 test_that("reading experiment folder lipo", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file, options = list(what = c("lipo")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("lipo")))
   expect_length(expe, 1)
   # expect_equal(expe$lipo$path, "/Users/jul/git/phenological/nmr-parser/inst/HB-COVID0001/10")
   expect_equal(expe$lipo$value.TPTG, 139.84)
 })
 
 test_that("reading experiment folder quant", {
-  file <- system.file("HB-COVID0001", "10", package = "nmr.parser")
-  expe<- readExperiment(file, options = list(what = c("quant")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("quant")))
   expect_length(expe, 1)
   # expect_equal(expe$quant$path, "/Users/jul/git/phenological/nmr-parser/inst/HB-COVID0001/10")
   expect_equal(expe$quant$value.Ethanol, "0.000")
