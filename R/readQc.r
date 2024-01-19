@@ -27,8 +27,13 @@ readQc <- function(file){
                   unit = unlist(xml_attr(xml_find_first(tests, ".//VALUE"), "unit")),
                   refMax = unlist(xml_attr(xml_find_first(tests, ".//REFERENCE"), "vmax")),
                   refMin = unlist(xml_attr(xml_find_first(tests, ".//REFERENCE"), "vmin")))
+
+      # some values need cleaning
+      cnt <- gsub("\\\\textless", "< ", cnt)
+
       return(cnt)
     })
+
     vals <- data.table(do.call(rbind, vals))
     vals <- lapply(vals, function(column) setNames(column, vals$Name))
     tests <- c(headers, vals)

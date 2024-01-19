@@ -8,6 +8,7 @@
 #' @export
 #' @importFrom stats reshape
 #' @importFrom data.table setDT
+# curl -X 'GET' $ROLDX_URL/link\?runName\=EXTr01 | jq '.list | .noesygppr1d | .[0] | keys'
 readExperiment <- function(file,
                            options = list(what = c("acqus",
                                                    "procs",
