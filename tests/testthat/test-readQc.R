@@ -7,7 +7,7 @@ test_that("reading file", {
   qc <- readQc(system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser"))
   expect_equal(length(qc), 4)
   expect_equal(length(qc$infos), 2)
-  expect_equal(length(qc$infoNames), 2)
+  expect_equal(length(qc$infoNames), 24)
   expect_equal(length(qc$tests), 7)
   expect_equal(length(qc$testNames), 22)
   expect_equal(qc$testNames[1], "linewidth-in-hz")

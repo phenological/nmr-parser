@@ -14,7 +14,7 @@ readQc <- function(file){
                value = (xml_attr(xml_find_all(xml, ".//INFO"), "value")))
     # infos <- mapply(list, infos$name, infos$value, SIMPLIFY = FALSE)
     # infos <- lapply(infos, function(x) setNames(x, c("name", "value")))
-    infoNames <- unname(sapply(infos, function(x) cleanNames(strsplit(tolower(x), "\\(")[[1]][1])))
+    infoNames <- unname(sapply(infos$name, function(x) cleanNames(strsplit(tolower(x), "\\(")[[1]][1])))
 
     tests <- xml_find_all(xml, ".//PARAMETER")
     names <- xml_attr(tests, "name")
