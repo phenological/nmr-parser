@@ -42,9 +42,9 @@ readParams <- function(file) {
         cleanValue <- gsub("\\t", " ", value)
         cleanValue <- gsub("\\$\\$", "", cleanValue)
         cleanValue <- gsub("\\s+", " ", cleanValue)
-        content <- c(content, list(c(path = path[length(path)],
+        content[[counter]] <- list(path = path[length(path)],
                                      name = gsub("##", "", param[1]),
-                                     value = cleanValue)))
+                                     value = cleanValue)
       } else
 
       # get audit info
@@ -67,18 +67,18 @@ readParams <- function(file) {
         }
 
         if (!is.null(date) & !is.null(time) & !is.null(timezone) & !is.null(instrument)) {
-          content <- c(content, list(c(path = path[length(path)],
+          content[[counter]] <- list(path = path[length(path)],
                                        name = "instrumentDate",
-                                       value = date)))
-          content <- c(content, list(c(path = path[length(path)],
+                                       value = date)
+          content[[counter]] <- list(path = path[length(path)],
                                        name = "instrumentTime",
-                                       value = time)))
-          content <- c(content, list(c(path = path[length(path)],
+                                       value = time)
+          content[[counter]] <- list(path = path[length(path)],
                                        name = "instrumentTimeZone",
-                                       value = timezone)))
-          content <- c(content, list(c(path = path[length(path)],
+                                       value = timezone)
+          content[[counter]] <- list(path = path[length(path)],
                                        name = "instrument",
-                                       value = instrument)))
+                                       value = instrument)
         }
 
       } else
@@ -93,15 +93,15 @@ readParams <- function(file) {
           vect <- txt[[counter]]
           value <- strsplit(vect, " ")
           for (i in 1:length(value[[1]])) {
-            content <- c(content, list(c(path = path[length(path)],
+            content[[counter]] <- list(path = path[length(path)],
                                          name = paste0(gsub("##\\$", "", param[1]), "_", i - 1),
-                                         value = value[[1]][i])))
+                                         value = value[[1]][i])
           }
         } else {
           cleanValue <- gsub("[<->]", "", value)
-          content <- c(content, list(c(path = path[length(path)],
+          content[[counter]] <- list(path = path[length(path)],
                                        name = gsub("##\\$", "", param[1]),
-                                       value = cleanValue)))
+                                       value = cleanValue)
         }
       }
       counter <- counter + 1

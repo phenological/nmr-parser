@@ -29,17 +29,25 @@ scanFolder <- function(folder, options = list()) {
 
   # remove trailing slash
   acqusFiles <- gsub("//", "/", acqusFiles)
-
-  expList <- lapply(acqusFiles,
-                    function(a) c(file = a,
-                                  EXP = readParam(a, "EXP"),
-                                  PULPROG = readParam(a, "PULPROG"),
-                                  USERA2 = readParam(a, "USERA2")))
+  
+  
+  expList <- list() 
+  for (i in 1:length(acqusFiles)) {
+    prms <- readParam(acqusFiles[i], c("EXP", "PULPROG", "USERA2"))
+    cat("Scanning:", i, "/", length(acqusFiles), "\r")
+    
+    expList[[i]] <- c(file = acqusFiles[i],
+                      EXP = cleanNames(prms[[1]]),
+                      PULPROG = cleanNames(prms[[2]]),
+                      USERA2 = prms[[3]])
+  }
   expList <- data.table(do.call("rbind", expList))
-
+  
+  
   res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
   res <- setNames(res, c("count", "EXP@PULPROG"))
-
+  
+  
   if (EXP == "" & PULPROG == "") {
     question <- paste0("Choose what to parse.")
     choice <- menu(choices = paste0(res$`EXP@PULPROG`, " (", res$count, ")"),
@@ -54,6 +62,7 @@ scanFolder <- function(folder, options = list()) {
     expList <- expList[fi,]
   }
 
+  
   res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
   for (i in 1:nrow(res)) {
     message(cat(crayon::blue("scanFolder >> ",

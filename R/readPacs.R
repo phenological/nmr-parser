@@ -25,6 +25,7 @@ readPacs <- function(file){
     return(list(data = data, version = version))
   } else {
     cat(crayon::yellow("readPacs >>", file, "not found\n"))
+    return(NULL)
   }
 }
 

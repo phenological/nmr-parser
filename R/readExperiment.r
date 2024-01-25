@@ -39,6 +39,8 @@ readExperiment <- function(file,
   if ("acqus" %in% what | "all" %in% what) {
     lst <- list()
     for (l in 1:length(file)) {
+      cat("Reading:", l, "/", length(file), "\r")
+      
       path <- file.path(file[[l]], "acqus")
       if (file.exists(path)) {
         parms <- readParams(path)
@@ -57,6 +59,8 @@ readExperiment <- function(file,
   if ("procs" %in% what | "all" %in% what) {
     lst <- list()
     for (l in 1:length(file)) {
+      cat("Reading:", l, "/", length(file), "\r")
+      
       path <- file.path(file[[l]], "pdata", "1", "procs")
       if (file.exists(path)) {
         parms <- readParams(path)
@@ -75,6 +79,8 @@ readExperiment <- function(file,
   if ("qc" %in% what | "all" %in% what) {
     lst <- list()
     for (l in 1:length(file)) {
+      cat("Reading:", l, "/", length(file), "\r")
+      
       path_serum <- file.path(file[[l]], "pdata", "1", "plasma_qc_report.xml")
       path_urine <- file.path(file[[l]], "pdata", "1", "urine_qc_report.xml")
       if (file.exists(path_serum)) {
