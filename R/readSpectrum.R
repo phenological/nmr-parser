@@ -10,8 +10,8 @@
 readSpectrum <- function(expno, procs = TRUE, options = list()){
   file1r <- file.path(expno, "pdata", "1", "1r")
   file1i <- file.path(expno, "pdata", "1", "1i")
-  
-  
+
+
 
   if (is.logical(procs) && isTRUE(procs)) {
     fileProcs <- file.path(expno, "pdata", "1", "procs")
@@ -133,7 +133,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
 
       cat(crayon::blue("readSpectrum >> spectra corrected for eretic:",
                        options$eretic,
-                       "\n"))
+                       "\r"))
     }
 
     # if upper and lower bounds are provided the spectra is extrapolated to fit
@@ -164,15 +164,15 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
                      xi = newX,
                      method = "spline")
       } else {
-        
+
         cat(crayon::red("readSpectrum >> x and y are of different length\n"))
         cat(crayon::blue("readSpectrum >>", expno, "\n"))
         cat(crayon::blue("readSpectrum >> length(x)", length(x), "\n"))
         cat(crayon::blue("readSpectrum >> length(y)", length(y), "\n"))
         return(NULL)
-        
+
       }
-      
+
 
       if (im) {
         yi <- interp1(x = x,
