@@ -151,6 +151,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
         length.out <- options$length.out
       } else {
         fi <- x > from & x < to
+        trimmedSize <- sum(fi)
         length.out <- sum(fi)
       }
 
@@ -191,6 +192,8 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
                        length.out,
                        "orig.size:",
                        size,
+                       "trimmed.size:",
+                       trimmedSize,
                        ")\r"))
     }
 
