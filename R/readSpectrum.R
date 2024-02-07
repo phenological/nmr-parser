@@ -149,6 +149,7 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
 
       if ("length.out" %in% names(options)) {
         length.out <- options$length.out
+        trimmedSize <- length.out
       } else {
         fi <- x > from & x < to
         trimmedSize <- sum(fi)
