@@ -21,11 +21,11 @@ readExperiment <- function(file,
                                                    "pacs",
                                                    "all",
                                                    "specOnly"),
-                                          specOpts = list(uncalibrate = FALSE,
+                                          specOpts = list(
                                                           fromTo = c(-0.1, 10),
                                                           length.out = 44079))) {
 
-  name <- path <- conc_v <- concUnit_v <- refMax <- refMin <- NULL
+  name <- path <- conc_v <- concUnit_v <- refMax <- refMin <- sigCorr<- NULL
   id <- value <- unit <- rawConc <- NULL
 
   what <- options$what
@@ -150,7 +150,7 @@ readExperiment <- function(file,
       if("specOpts" %in% names(options)) {
         specOpts <- options$specOpts
       } else {
-        specOpts = list(uncalibrate = FALSE,
+        specOpts = list(
                         fromTo = c(-0.1, 10),
                         length.out = 44079)
       }
@@ -272,13 +272,14 @@ readExperiment <- function(file,
       message(cat(crayon::yellow("readExperiment >> 0 found quant\n")))
     } else {
       quant <- lapply(res$quant$data,
-                      function(x) reshape(setDT(x)[, .(name, path, rawConc, concUnit_v, refMax, refMin),],
+                      function(x) reshape(setDT(x)[, .(name, path, rawConc, concUnit_v, refMax, refMin,sigCorr),],
                                           idvar = "path",
                                           timevar = "name",
                                           direction = "wide"))
       quant <- do.call("rbind", quant)
       colnames(quant) <- gsub("rawConc.", "value.", colnames(quant))
       colnames(quant) <- gsub("concUnit_v.", "unit.", colnames(quant))
+      colnames(quant) <- gsub("sigCorr", "fit.", colnames(quant))
       res$quant <- quant
       message(cat(crayon::blue("readExperiment >>",
                                nrow(res$quant),
