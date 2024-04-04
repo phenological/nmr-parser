@@ -1,5 +1,5 @@
 Package: nmr.parser
-Title: What the Package Does (One Line, Title Case)
+Title: reading what is required from NMR IVDr data
 Version: 0.2.1
 Authors@R: 
     c(person(given = "Julien",
