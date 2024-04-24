@@ -4,7 +4,7 @@
 \name{nmr.parser-package}
 \alias{nmr.parser}
 \alias{nmr.parser-package}
-\title{nmr.parser: What the Package Does (One Line, Title Case)}
+\title{nmr.parser: reading what is required from NMR IVDr data}
 \description{
 What the package does (one paragraph).
 }

@@ -1,6 +1,7 @@
 #' extend_lipo
 #' calculate the total lipids and its percentage using data.frame "res" from readLipo.r
-#' 
+#' @param res - data frame with lipoprotein data
+#' @return - a data frame with new parameters
 extend_lipo<-function(res){
   tdf<-data.frame(t(res$value))
   colnames(tdf)<-res$id
@@ -118,6 +119,6 @@ extend_lipo<-function(res){
   tdf$perc.L6PN = round(tdf$L6PN/tdf$calc.TBPN,4)*100
   tdf<-tdf[,-which(colnames(tdf) %in% res$id)]
 return(tdf)
-  
+
 }
 
