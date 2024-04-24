@@ -2,6 +2,7 @@
 #' calculate the total lipids and its percentage using data.frame "res" from readLipo.r
 #' @param res - data frame with lipoprotein data
 #' @return - a data frame with new parameters
+#' @export
 extend_lipo<-function(res){
   tdf<-data.frame(t(res$value))
   colnames(tdf)<-res$id
