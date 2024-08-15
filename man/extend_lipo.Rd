@@ -3,21 +3,25 @@
 \name{extend_lipo}
 \alias{extend_lipo}
 \title{extend_lipo
-calculate the total lipids and its percentage using data.frame "res" from readLipo.r}
+Calculates total lipids, fractions and percentages using data.frame "res"
+from readLipo.r}
 \usage{
 extend_lipo(res)
 }
 \arguments{
-\item{res}{\itemize{
-\item data frame with lipoprotein data
-}}
+\item{res}{Data frame with lipoprotein data for a single sample}
 }
 \value{
-\itemize{
-\item a data frame with new parameters
-}
+Data frame with new parameters.
+\strong{calc} is from the summation of the raw values to find TL (total lipid) and
+CH - FC to calculate CE.
+\strong{pct} looks at subfractions considering the lipid composition, so what
+portion does each of the raw V1TG, V1CH, V1PL contribute to the calculated V1TL.
+\strong{frac} looks at subfractions considering the lipid distribution, so what
+portion do each of V1TG, V2TG, V3TG, V4TG, V5TG contribute to VLTG
 }
 \description{
 extend_lipo
-calculate the total lipids and its percentage using data.frame "res" from readLipo.r
+Calculates total lipids, fractions and percentages using data.frame "res"
+from readLipo.r
 }

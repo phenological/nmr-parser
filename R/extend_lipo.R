@@ -1,125 +1,173 @@
 #' extend_lipo
-#' calculate the total lipids and its percentage using data.frame "res" from readLipo.r
-#' @param res - data frame with lipoprotein data
-#' @return - a data frame with new parameters
+#' Calculates total lipids, fractions and percentages using data.frame "res"
+#' from readLipo.r
+#' @param res Data frame with lipoprotein data for a single sample
+#' @return Data frame with new parameters.
+#' **calc** is from the summation of the raw values to find TL (total lipid) and
+#' CH - FC to calculate CE.
+#' **pct** looks at subfractions considering the lipid composition, so what
+#' portion does each of the raw V1TG, V1CH, V1PL contribute to the calculated V1TL.
+#' **frac** looks at subfractions considering the lipid distribution, so what
+#' portion do each of V1TG, V2TG, V3TG, V4TG, V5TG contribute to VLTG
 #' @export
-extend_lipo<-function(res){
-  tdf<-data.frame(t(res$value))
-  colnames(tdf)<-res$id
-  tdf$calc.HDTL = tdf$HDTG+tdf$HDCH+tdf$HDPL
-  tdf$calc.HDCE = tdf$HDCH-tdf$HDFC
-  tdf$perc.HDTG = round(tdf$HDTG/tdf$calc.HDTL,4)*100
-  tdf$perc.H1TG = round(tdf$H1TG/tdf$HDTG,4)*100
-  tdf$perc.H2TG = round(tdf$H2TG/tdf$HDTG,4)*100
-  tdf$perc.H3TG = round(tdf$H3TG/tdf$HDTG,4)*100
-  tdf$perc.H4TG = round(tdf$H4TG/tdf$HDTG,4)*100
-  tdf$perc.HDCH = round(tdf$HDCH/tdf$calc.HDTL,4)*100
-  tdf$perc.H1CH = round(tdf$H1CH/tdf$HDCH,4)*100
-  tdf$perc.H2CH = round(tdf$H2CH/tdf$HDCH,4)*100
-  tdf$perc.H3CH = round(tdf$H3CH/tdf$HDCH,4)*100
-  tdf$perc.H4CH = round(tdf$H4CH/tdf$HDCH,4)*100
-  tdf$perc.HDFC = round(tdf$HDFC/tdf$calc.HDTL,4)*100
-  tdf$perc.H1FC = round(tdf$H1FC/tdf$HDFC,4)*100
-  tdf$perc.H2FC = round(tdf$H2FC/tdf$HDFC,4)*100
-  tdf$perc.H3FC = round(tdf$H3FC/tdf$HDFC,4)*100
-  tdf$perc.H4FC = round(tdf$H4FC/tdf$HDFC,4)*100
-  tdf$perc.HDCE = round(tdf$calc.HDCE/tdf$calc.HDTL,4)*100
-  tdf$perc.H1CE = round(c(tdf$H1CH-tdf$H1FC)/tdf$calc.HDCE,4)*100
-  tdf$perc.H2CE = round(c(tdf$H2CH-tdf$H2FC)/tdf$calc.HDCE,4)*100
-  tdf$perc.H3CE = round(c(tdf$H3CH-tdf$H3FC)/tdf$calc.HDCE,4)*100
-  tdf$perc.H4CE = round(c(tdf$H4CH-tdf$H4FC)/tdf$calc.HDCE,4)*100
-  tdf$perc.HDPL = round(tdf$HDPL/tdf$calc.HDTL,4)*100
-  tdf$perc.H1PL = round(tdf$H1PL/tdf$HDPL,4)*100
-  tdf$perc.H2PL = round(tdf$H2PL/tdf$HDPL,4)*100
-  tdf$perc.H3PL = round(tdf$H3PL/tdf$HDPL,4)*100
-  tdf$perc.H4PL = round(tdf$H4PL/tdf$HDPL,4)*100
-  tdf$calc.VLTL = tdf$VLTG+tdf$VLCH+tdf$VLPL
-  tdf$calc.VLCE = tdf$VLCH-tdf$VLFC
-  tdf$perc.VLTG = round(tdf$VLTG/tdf$calc.VLTL,4)*100
-  tdf$perc.V1TG = round(tdf$V1TG/tdf$VLTG,4)*100
-  tdf$perc.V2TG = round(tdf$V2TG/tdf$VLTG,4)*100
-  tdf$perc.V3TG = round(tdf$V3TG/tdf$VLTG,4)*100
-  tdf$perc.V4TG = round(tdf$V4TG/tdf$VLTG,4)*100
-  tdf$perc.V5TG = round(tdf$V5TG/tdf$VLTG,4)*100
-  tdf$perc.VLCH = round(tdf$VLCH/tdf$calc.VLTL,4)*100
-  tdf$perc.V1CH = round(tdf$V1CH/tdf$VLCH,4)*100
-  tdf$perc.V2CH = round(tdf$V2CH/tdf$VLCH,4)*100
-  tdf$perc.V3CH = round(tdf$V3CH/tdf$VLCH,4)*100
-  tdf$perc.V4CH = round(tdf$V4CH/tdf$VLCH,4)*100
-  tdf$perc.V5CH = round(tdf$V5CH/tdf$VLCH,4)*100
-  tdf$perc.VLFC = round(tdf$VLFC/tdf$calc.VLTL,4)*100
-  tdf$perc.V1FC = round(tdf$V1FC/tdf$VLFC,4)*100
-  tdf$perc.V2FC = round(tdf$V2FC/tdf$VLFC,4)*100
-  tdf$perc.V3FC = round(tdf$V3FC/tdf$VLFC,4)*100
-  tdf$perc.V4FC = round(tdf$V4FC/tdf$VLFC,4)*100
-  tdf$perc.V5FC = round(tdf$V5FC/tdf$VLFC,4)*100
-  tdf$perc.VLCE = round(tdf$calc.VLCE/tdf$calc.VLTL,4)*100
-  tdf$perc.V1CE = round(c(tdf$V1CH-tdf$V1FC)/tdf$calc.VLCE,4)*100
-  tdf$perc.V2CE = round(c(tdf$V2CH-tdf$V2FC)/tdf$calc.VLCE,4)*100
-  tdf$perc.V3CE = round(c(tdf$V3CH-tdf$V3FC)/tdf$calc.VLCE,4)*100
-  tdf$perc.V4CE = round(c(tdf$V4CH-tdf$V4FC)/tdf$calc.VLCE,4)*100
-  tdf$perc.V5CE = round(c(tdf$V5CH-tdf$V5FC)/tdf$calc.VLCE,4)*100
-  tdf$perc.VLPL = round(tdf$VLPL/tdf$calc.VLTL,4)*100
-  tdf$perc.V1PL = round(tdf$V1PL/tdf$VLPL,4)*100
-  tdf$perc.V2PL = round(tdf$V2PL/tdf$VLPL,4)*100
-  tdf$perc.V3PL = round(tdf$V3PL/tdf$VLPL,4)*100
-  tdf$perc.V4PL = round(tdf$V4PL/tdf$VLPL,4)*100
-  tdf$perc.V5PL = round(tdf$V5PL/tdf$VLPL,4)*100
-  tdf$calc.IDTL = tdf$IDTG+tdf$IDCH+tdf$IDPL
-  tdf$calc.IDCE = tdf$IDCH-tdf$IDFC
-  tdf$perc.IDTG = round(tdf$IDTG/tdf$calc.IDTL,4)*100
-  tdf$perc.IDCH = round(tdf$IDCH/tdf$calc.IDTL,4)*100
-  tdf$perc.IDFC = round(tdf$IDFC/tdf$calc.IDTL,4)*100
-  tdf$perc.IDCE = round(tdf$calc.IDCE/tdf$calc.IDTL,4)*100
-  tdf$perc.IDPL = round(tdf$IDPL/tdf$calc.IDTL,4)*100
-  tdf$calc.LDTL = tdf$LDTG+tdf$LDCH+tdf$LDPL
-  tdf$calc.LDCE = tdf$LDCH-tdf$LDFC
-  tdf$perc.LDTG = round(tdf$LDTG/tdf$calc.LDTL,4)*100
-  tdf$perc.L1TG = round(tdf$L1TG/tdf$LDTG,4)*100
-  tdf$perc.L2TG = round(tdf$L2TG/tdf$LDTG,4)*100
-  tdf$perc.L3TG = round(tdf$L3TG/tdf$LDTG,4)*100
-  tdf$perc.L4TG = round(tdf$L4TG/tdf$LDTG,4)*100
-  tdf$perc.L5TG = round(tdf$L5TG/tdf$LDTG,4)*100
-  tdf$perc.L6TG = round(tdf$L6TG/tdf$LDTG,4)*100
-  tdf$perc.LDCH = round(tdf$LDCH/tdf$calc.LDTL,4)*100
-  tdf$perc.L1CH = round(tdf$L1CH/tdf$LDCH,4)*100
-  tdf$perc.L2CH = round(tdf$L2CH/tdf$LDCH,4)*100
-  tdf$perc.L3CH = round(tdf$L3CH/tdf$LDCH,4)*100
-  tdf$perc.L4CH = round(tdf$L4CH/tdf$LDCH,4)*100
-  tdf$perc.L5CH = round(tdf$L5CH/tdf$LDCH,4)*100
-  tdf$perc.L6CH = round(tdf$L6CH/tdf$LDCH,4)*100
-  tdf$perc.LDFC = round(tdf$LDFC/tdf$calc.LDTL,4)*100
-  tdf$perc.L1FC = round(tdf$L1FC/tdf$LDFC,4)*100
-  tdf$perc.L2FC = round(tdf$L2FC/tdf$LDFC,4)*100
-  tdf$perc.L3FC = round(tdf$L3FC/tdf$LDFC,4)*100
-  tdf$perc.L4FC = round(tdf$L4FC/tdf$LDFC,4)*100
-  tdf$perc.L5FC = round(tdf$L5FC/tdf$LDFC,4)*100
-  tdf$perc.L6FC = round(tdf$L6FC/tdf$calc.LDTL,4)*100
-  tdf$perc.LDCE = round(tdf$calc.LDCE/tdf$calc.LDTL,4)*100
-  tdf$perc.L1CE = round(c(tdf$L1CH-tdf$L1FC)/tdf$calc.LDCE,4)*100
-  tdf$perc.L2CE = round(c(tdf$L2CH-tdf$L2FC)/tdf$calc.LDCE,4)*100
-  tdf$perc.L3CE = round(c(tdf$L3CH-tdf$L3FC)/tdf$calc.LDCE,4)*100
-  tdf$perc.L4CE = round(c(tdf$L4CH-tdf$L4FC)/tdf$calc.LDCE,4)*100
-  tdf$perc.L5CE = round(c(tdf$L5CH-tdf$L5FC)/tdf$calc.LDCE,4)*100
-  tdf$perc.L6CE = round(c(tdf$L6CH-tdf$L6FC)/tdf$calc.LDCE,4)*100
-  tdf$perc.LDPL = round(tdf$LDPL/tdf$calc.LDTL,4)*100
-  tdf$perc.L1PL = round(tdf$L1PL/tdf$LDPL,4)*100
-  tdf$perc.L2PL = round(tdf$L2PL/tdf$LDPL,4)*100
-  tdf$perc.L3PL = round(tdf$L3PL/tdf$LDPL,4)*100
-  tdf$perc.L4PL = round(tdf$L4PL/tdf$LDPL,4)*100
-  tdf$perc.L5PL = round(tdf$L5PL/tdf$LDPL,4)*100
-  tdf$perc.L6PL = round(tdf$L6PL/tdf$LDPL,4)*100
-  tdf$calc.TBPN = tdf$VLPN+tdf$IDPN+tdf$L1PN+tdf$L2PN+tdf$L3PN+tdf$L4PN+tdf$L5PN+tdf$L6PN
-  tdf$perc.VLPN = round(tdf$VLPN/tdf$calc.TBPN,4)*100
-  tdf$perc.IDPN = round(tdf$IDPN/tdf$calc.TBPN,4)*100
-  tdf$perc.L1PN = round(tdf$L1PN/tdf$calc.TBPN,4)*100
-  tdf$perc.L2PN = round(tdf$L2PN/tdf$calc.TBPN,4)*100
-  tdf$perc.L3PN = round(tdf$L3PN/tdf$calc.TBPN,4)*100
-  tdf$perc.L4PN = round(tdf$L4PN/tdf$calc.TBPN,4)*100
-  tdf$perc.L5PN = round(tdf$L5PN/tdf$calc.TBPN,4)*100
-  tdf$perc.L6PN = round(tdf$L6PN/tdf$calc.TBPN,4)*100
-  tdf<-tdf[,-which(colnames(tdf) %in% res$id)]
-return(tdf)
 
+
+extend_lipo<-function(res){
+
+  df <- as.data.frame(t(res$value))
+  colnames(df) <- res$id
+
+#######calc###########
+  #create the required column (all in the names already)
+  calc <- data.frame(
+    HDTL = df$HDTG + df$HDCH + df$HDPL,
+    HDCE = df$HDCH - df$HDFC,
+    VLTL = df$VLTG + df$VLCH + df$VLPL,
+    VLCE = df$VLCH - df$VLFC,
+    IDTL = df$IDTG + df$IDCH + df$IDPL,
+    IDCE = df$IDCH - df$IDFC,
+    LDTL = df$LDTG + df$LDCH + df$LDPL,
+    LDCE = df$LDCH - df$LDFC,
+    TBPN = df$VLPN + df$IDPN + df$L1PN + df$L2PN + df$L3PN + df$L4PN + df$L5PN + df$L6PN,
+    HDA1 = df$H1A1 + df$H2A1 + df$H3A1 + df$H4A1,
+    HDA2 = df$H1A2 + df$H2A2 + df$H3A2 + df$H4A2,
+    LDAB = df$L1AB + df$L2AB + df$L3AB + df$L4AB + df$L5AB + df$L6AB,
+    V1TL = df$V1TG + df$V1CH + df$V1PL,
+    V2TL = df$V2TG + df$V2CH + df$V2PL,
+    V3TL = df$V3TG + df$V3CH + df$V3PL,
+    V4TL = df$V4TG + df$V4CH + df$V4PL,
+    V5TL = df$V5TG + df$V5CH + df$V5PL,
+    L1TL = df$L1TG + df$L1CH + df$L1PL,
+    L2TL = df$L2TG + df$L2CH + df$L2PL,
+    L3TL = df$L3TG + df$L3CH + df$L3PL,
+    L4TL = df$L4TG + df$L4CH + df$L4PL,
+    L5TL = df$L5TG + df$L5CH + df$L5PL,
+    L6TL = df$L6TG + df$L6CH + df$L6PL,
+    H1TL = df$H1TG + df$H1CH + df$H1PL,
+    H2TL = df$H2TG + df$H2CH + df$H2PL,
+    H3TL = df$H3TG + df$H3CH + df$H3PL,
+    H4TL = df$H4TG + df$H4CH + df$H4PL
+  )
+
+  ############pct#######
+  #create fracentage df use calc and df
+  #initialisation (6 rows)
+  pct <- data.frame(
+    HDCE = round(calc$HDCE / calc$HDTL, 4) * 100,
+    VLCE = round(calc$VLCE / calc$VLTL, 4) * 100,
+    IDCE = round(calc$IDCE / calc$IDTL, 4) * 100,
+    LDCE = round(calc$LDCE / calc$LDTL, 4) * 100,
+    VLPN = round(df$VLPN / calc$TBPN, 4) * 100,
+    IDPN = round(df$IDPN / calc$TBPN, 4) * 100
+  )
+
+  letters <- c("H", "V", "L")
+  ranges <- list(H = 1:4, V = 1:5, L = 1:6)
+  prefixes <- c("HD", "VL", "ID", "LD")
+  suffixes <- c("TG", "CH", "FC", "PL")
+  suffixes2 <- c("A1", "A2")
+
+  #"H1CE" "H2CE" "H3CE" "H4CE" "V1CE" "V2CE" "V3CE" "V4CE" "V5CE" "L1CE" "L2CE" "L3CE" "L4CE" "L5CE" "L6CE"
+  for (letter in letters) {
+    for (i in ranges[[letter]]) {
+      ch_col <- paste0(letter, i, "CH")
+      fc_col <- paste0(letter, i, "FC")
+      ce_col <- paste0(letter, i, "CE")
+      calc_col <- paste0(letter, i, "TL")
+      pct[[ce_col]] <- round((df[[ch_col]] - df[[fc_col]]) / calc[[calc_col]], 4) * 100
+    }
+  }
+
+  #"H1TG" "H1FC"  "H1PL"  "H2TG"  "H2FC"  "H2PL"  "H3TG"  "H3FC"  "H3PL"  "H4TG"  "H4FC"  "H4PL"  "V1TG"  "V1FC"  "V1PL"  "V2TG"  "V2FC"  "V2PL"  "V3TG"
+  # "V3FC"  "V3PL"  "V4TG"  "V4FC"  "V4PL"  "V5TG"  "V5FC"  "V5PL"  "L1TG"  "L1FC"  "L1PL"  "L2TG"  "L2FC"  "L2PL"  "L3TG"  "L3FC"  "L3PL"  "L4TG"
+  # "L4FC"  "L4PL"  "L5TG"  "L5FC"  "L5PL"  "L6TG"  "L6FC"  "L6PL"
+  for (letter in letters) {
+    for (i in ranges[[letter]]) {
+      for (suffix in suffixes) {
+        if(suffix == "CH") next
+        col <- paste0(letter, i, suffix)
+        calc_col <- paste0(letter, i, "TL")
+        pct[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+      }
+    }
+  }
+
+  #"HDTG" "HDCH" "HDFC" "HDPL" "VLTG" "VLCH" "VLFC" "VLPL" "IDTG" "IDCH" "IDFC" "IDPL" "LDTG" "LDCH" "LDFC" "LDPL"
+  for (prefix in prefixes) {
+    for (suffix in suffixes) {
+      col <- paste0(prefix, suffix)
+      calc_col <- paste0(prefix, "TL")
+      pct[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+    }
+  }
+
+#########frac########
+
+  frac <- data.frame(test = rep_len(1, length.out = nrow(calc)))
+  #"H1CE" "H2CE" "H3CE" "H4CE" "V1CE" "V2CE" "V3CE" "V4CE" "V5CE" "L1CE" "L2CE" "L3CE" "L4CE" "L5CE" "L6CE"
+  for (letter in letters) {
+    for (i in ranges[[letter]]) {
+      ch_col <- paste0(letter, i, "CH")
+      fc_col <- paste0(letter, i, "FC")
+      ce_col <- paste0(letter, i, "CE")
+      calc_col <- if (letter == "V") "VLCE" else paste0(letter, "DCE")
+      frac[[ce_col]] <- round((df[[ch_col]] - df[[fc_col]]) / calc[[calc_col]], 4) * 100
+    }
+  }
+
+  #"H1TG" "H1CH" "H1FC" "H1PL" "H2TG" "H2CH" "H2FC" "H2PL" "H3TG" "H3CH" "H3FC" "H3PL" "H4TG" "H4CH" "H4FC" "H4PL" "V1TG" "V1CH" "V1FC" "V1PL" "V2TG" "V2CH" "V2FC" "V2PL" "V3TG"
+  #"V3CH" "V3FC" "V3PL" "V4TG" "V4CH" "V4FC" "V4PL" "V5TG" "V5CH" "V5FC" "V5PL" "L1TG" "L1CH" "L1FC" "L1PL" "L2TG" "L2CH" "L2FC" "L2PL" "L3TG" "L3CH" "L3FC" "L3PL"
+  #"L4TG" "L4CH" "L4FC" "L4PL" "L5TG" "L5CH" "L5FC" "L5PL" "L6TG" "L6CH" "L6FC" "L6PL"
+
+  #note that these values are calculated using only the raw data (df not calc denominator), this is still acceptable since, for example, V1PL_frac can be calculated using V1PL_raw/VLPL_raw
+  #OR V1PL_raw/(V1PL_raw + V2PL_raw + V4PL_raw + V4PL_raw + V5PL_raw). The denominators should be the same (the raw should be the sum of V1 to V5), sometimes there is a slight discrepancy
+  #between the raw and adding these parts but it is only slight and due to experimental error
+  for (letter in letters) {
+    for (i in ranges[[letter]]) {
+      for (suffix in suffixes) {
+        for (prefix in prefixes){
+          if (prefix == "ID") next  # Skip "ID"
+          col <- paste0(letter, i, suffix)
+          col2 <- paste0(prefix, suffix)
+          frac[[col]] <- round(df[[col]] / df[[col2]], 4) * 100
+        }
+      }
+    }
+  }
+
+  #"H1A1" "H1A2" "H2A1" "H2A2" "H3A1" "H3A2" "H4A1" "H4A2"
+  for (i in ranges[["H"]]) {
+    for (suffix in suffixes2) {
+      col <- paste0("H", i, suffix)
+      calc_col <- paste0("HD", suffix)
+      frac[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+    }
+  }
+
+  #"L1AB" "L1PN" "L2AB" "L2PN" "L3AB" "L3PN" "L4AB" "L4PN" "L5AB" "L5PN" "L6AB" "L6PN"
+  for (i in ranges[["L"]]) {
+    col <- paste0("L", i, "AB")
+    calc_col <- paste0("LDAB")
+    frac[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+
+    col <- paste0("L", i, "PN")
+    calc_col <- paste0("TBPN")
+    frac[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+  }
+
+  #column names
+  #calc
+  colnames(calc) <- paste(colnames(calc), "calc", sep = "_")
+
+  #pct
+  colnames(pct) <- paste(colnames(pct), "pct", sep = "_")
+
+  #frac
+  colnames(frac) <- paste(colnames(frac), "frac", sep = "_")
+
+  df <- cbind(df, calc, pct, frac)
+
+  return(df)
 }
+
 
