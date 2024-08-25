@@ -9,7 +9,7 @@
 #' @importFrom stats reshape
 #' @importFrom data.table setDT
 # curl -X 'GET' $ROLDX_URL/link\?runName\=EXTr01 | jq '.list | .noesygppr1d | .[0] | keys'
-readExperiment <- function(file,
+readExperiment <- function(expname,
                            options = list(what = c("acqus",
                                                    "procs",
                                                    "qc",
@@ -21,6 +21,7 @@ readExperiment <- function(file,
                                                    "pacs",
                                                    "all",
                                                    "specOnly"),
+                                          procno = 1,
                                           specOpts = list(uncalibrate = FALSE,
                                                           fromTo = c(-0.1, 10),
                                                           length.out = 44079))) {
@@ -30,21 +31,21 @@ readExperiment <- function(file,
 
   what <- options$what
 
-  if (is.character(file)) {
-    file <- as.list(file)
+  if (is.character(expname)) {
+    expname <- as.list(expname)
   }
 
   res <- list()
 
   if ("acqus" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
-      cat("Reading:", l, "/", length(file), "\r")
-      
-      path <- file.path(file[[l]], "acqus")
+    for (l in 1:length(expname)) {
+      cat("Reading:", l, "/", length(expname), "\r")
+
+      path <- file.path(expname[[l]], "acqus")
       if (file.exists(path)) {
         parms <- readParams(path)
-        parms$path <- file[[l]]
+        parms$path <- expname[[l]]
         lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
       }
     }
@@ -58,13 +59,13 @@ readExperiment <- function(file,
 
   if ("procs" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
-      cat("Reading:", l, "/", length(file), "\r")
-      
-      path <- file.path(file[[l]], "pdata", "1", "procs")
+    for (l in 1:length(expname)) {
+      cat("Reading:", l, "/", length(expname), "\r")
+
+      path <- file.path(expname[[l]], "pdata", "1", "procs")
       if (file.exists(path)) {
         parms <- readParams(path)
-        parms$path <- file[[l]]
+        parms$path <- expname[[l]]
         lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
       }
     }
@@ -78,11 +79,11 @@ readExperiment <- function(file,
 
   if ("qc" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
-      cat("Reading:", l, "/", length(file), "\r")
-      
-      path_serum <- file.path(file[[l]], "pdata", "1", "plasma_qc_report.xml")
-      path_urine <- file.path(file[[l]], "pdata", "1", "urine_qc_report.xml")
+    for (l in 1:length(expname)) {
+      cat("Reading:", l, "/", length(expname), "\r")
+
+      path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_qc_report.xml")
+      path_urine <- file.path(expname[[l]], "pdata", "1", "urine_qc_report.xml")
       if (file.exists(path_serum)) {
         qc <- readQc(path_serum)
       } else if (file.exists(path_urine)) {
@@ -91,7 +92,7 @@ readExperiment <- function(file,
         qc <- NULL
       }
       if (!is.null(qc)) {
-        qc$path <- file[[l]]
+        qc$path <- expname[[l]]
         lst[[l]] <- qc
       }
     }
@@ -106,11 +107,11 @@ readExperiment <- function(file,
 
   if ("title" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
+    for (l in 1:length(expname)) {
 
-      path <- file.path(file[[l]], "pdata", "1", "title")
+      path <- file.path(expname[[l]], "pdata", "1", "title")
       if (file.exists(path)) {
-        lst[[l]] <- c(path = file[[l]], title = readTitle(path)[[3]])
+        lst[[l]] <- c(path = expname[[l]], title = readTitle(path)[[3]])
       }
     }
 
@@ -122,19 +123,19 @@ readExperiment <- function(file,
 
   if ("eretic" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
+    for (l in 1:length(expname)) {
 
-      if (file.exists(file.path(file[[l]], "QuantFactorSample.xml"))) {
-        eretic <- readEretic(file.path(file[[l]], "QuantFactorSample.xml"))
+      if (file.exists(file.path(expname[[l]], "QuantFactorSample.xml"))) {
+        eretic <- readEretic(file.path(expname[[l]], "QuantFactorSample.xml"))
         ereticFactor <- eretic$ereticFactor
-      } else if (file.exists(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))) {
-        eretic <- readEreticF80(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))
+      } else if (file.exists(file.path(expname[[l]], "pdata", "1", "eretic_file.xml"))) {
+        eretic <- readEreticF80(file.path(expname[[l]], "pdata", "1", "eretic_file.xml"))
         ereticFactor <- eretic$samOneMolInt
       } else {
         ereticFactor <- NULL
       }
       if (!is.null(ereticFactor)) {
-        lst[[l]] <- c(path = file[[l]], ereticFactor = ereticFactor)
+        lst[[l]] <- c(path = expname[[l]], ereticFactor = ereticFactor)
       }
     }
 
@@ -144,9 +145,11 @@ readExperiment <- function(file,
                              "found ereticFactors\n")))
   }
 
+  ifelse("procno" %in% names(options), procno <- options$procno, procno <- 1)
+
   if ("spec" %in% what | "all" %in% what | "specOnly" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
+    for (l in 1:length(expname)) {
       if("specOpts" %in% names(options)) {
         specOpts <- options$specOpts
       } else {
@@ -155,22 +158,25 @@ readExperiment <- function(file,
                         length.out = 44079)
       }
 
-      if (file.exists(file.path(file[[l]], "QuantFactorSample.xml"))) {
-        eretic <- readEretic(file.path(file[[l]], "QuantFactorSample.xml"))
+      # we look for eretic in the rexpno + 0 folder
+      ereticPath <- paste0(substr(expname[[l]], 1, nchar(expname[[l]])-1), "0")
+      if (file.exists(file.path(ereticPath, "QuantFactorSample.xml"))) {
+        eretic <- readEretic(file.path(ereticPath, "QuantFactorSample.xml"))
         ereticFactor <- eretic$ereticFactor
-      } else if (file.exists(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))) {
-        eretic <- readEreticF80(file.path(file[[l]], "pdata", "1", "eretic_file.xml"))
+      } else if (file.exists(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))) {
+        eretic <- readEreticF80(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))
         ereticFactor <- eretic$samOneMolInt
       } else {
-        ereticFactor <- NULL
+        ereticFactor <- 1
+        cat(crayon::red("eretic:", ereticPath))
       }
 
       if (!is.null(ereticFactor)) {
         specOpts$eretic <- ereticFactor
       }
-      spec <- readSpectrum(file[[l]], procs = TRUE, options = specOpts)
+      spec <- readSpectrum(expname[[l]], procno, procs = TRUE, options = specOpts)
       if (!is.null(spec)) {
-        lst[[l]] <- list(path = file[[l]], spec = spec)
+        lst[[l]] <- list(path = expname[[l]], spec = spec)
       }
     }
 
@@ -186,13 +192,13 @@ readExperiment <- function(file,
 
   if ("lipo" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
+    for (l in 1:length(expname)) {
 
-      path <- file.path(file[[l]], "pdata", "1", "lipo_results.xml")
+      path <- file.path(expname[[l]], "pdata", "1", "lipo_results.xml")
       if (file.exists(path)) {
         lipoproteins <- readLipo(path)
         if (!is.null(lipoproteins)) {
-          lipoproteins$data$path <- file[[l]]
+          lipoproteins$data$path <- expname[[l]]
           lst[[l]] <- lipoproteins
         }
       }
@@ -217,16 +223,16 @@ readExperiment <- function(file,
 
   if ("pacs" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
+    for (l in 1:length(expname)) {
 
-      path <- file.path(file[[l]], "pdata", "1", "plasma_pacs_report.xml")
+      path <- file.path(expname[[l]], "pdata", "1", "plasma_pacs_report.xml")
       if (file.exists(path)) {
         pacs <- readPacs(path)
       } else {
         pacs <- NULL
       }
       if (!is.null(pacs)) {
-        pacs$data$path <- file[[l]]
+        pacs$data$path <- expname[[l]]
         lst[[l]] <- pacs
       }
     }
@@ -251,9 +257,9 @@ readExperiment <- function(file,
 
   if ("quant" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(file)) {
-      path_serum <- file.path(file[[l]], "pdata", "1", "plasma_quant_report.xml")
-      path_urine <- file.path(file[[l]], "pdata", "1", "urine_quant_report_e.xml")
+    for (l in 1:length(expname)) {
+      path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_quant_report.xml")
+      path_urine <- file.path(expname[[l]], "pdata", "1", "urine_quant_report_e.xml")
       if (file.exists(path_serum)) {
         quant <- readQuant(path_serum)
       } else if (file.exists(path_urine)) {
@@ -262,7 +268,7 @@ readExperiment <- function(file,
         quant <- NULL
       }
       if (!is.null(quant)) {
-        quant$data$path <- file[[l]]
+        quant$data$path <- expname[[l]]
         lst[[l]] <- quant
       }
     }

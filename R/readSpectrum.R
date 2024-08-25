@@ -7,14 +7,14 @@
 #' @importFrom signal interp1
 #' @importFrom data.table data.table
 #' @export
-readSpectrum <- function(expno, procs = TRUE, options = list()){
-  file1r <- file.path(expno, "pdata", "1", "1r")
-  file1i <- file.path(expno, "pdata", "1", "1i")
+readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
+  file1r <- file.path(expno, "pdata", procno, "1r")
+  file1i <- file.path(expno, "pdata", procno, "1i")
 
 
 
   if (is.logical(procs) && isTRUE(procs)) {
-    fileProcs <- file.path(expno, "pdata", "1", "procs")
+    fileProcs <- file.path(expno, "pdata", procno, "procs")
   } else {
     fileProcs <- procs
   }
@@ -126,14 +126,17 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
 
     # applying eretic correction if provided
     if ("eretic" %in% names(options)) {
-      y <- y / options$eretic
+      ereticFactor <- options$eretic
+      y <- y / ereticFactor
       if (im) {
-        yi <- yi / options$eretic
+        yi <- yi / ereticFactor
       }
 
       cat(crayon::blue("readSpectrum >> spectra corrected for eretic:",
-                       options$eretic,
+                       ereticFactor,
                        "\r"))
+    } else {
+      ereticFactor <- NULL
     }
 
     # if upper and lower bounds are provided the spectra is extrapolated to fit
@@ -201,7 +204,8 @@ readSpectrum <- function(expno, procs = TRUE, options = list()){
     info <- c(SF = sf,
               PHC0 = phc0,
               PHC1 = phc1,
-              SR = SR)
+              SR = SR,
+              ereticFactor = ereticFactor)
     if (im) {
       spec <- list(info  = info,
                    spec = data.table(x, y, yi))
