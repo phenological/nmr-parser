@@ -11,7 +11,7 @@ getSmTable <- function() {
 
   setDT(sm$data)
   cols <- c("name", "rawConcUnit", "refMin", "refMax", "refUnit", "range")
-  sm$data <- sm$data[, ..cols, ]
+  sm$data <- sm$data[, cols, with = FALSE]
 
   names(sm$data) <- c("Compound",
                   "Unit",
