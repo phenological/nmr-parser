@@ -4,11 +4,15 @@
 \alias{readSpectrum}
 \title{read a spectrum (processed) from a Bruker expno folder}
 \usage{
-readSpectrum(expno, procs = TRUE, options = list())
+readSpectrum(expno, procno = 1, procs = TRUE, options = list())
 }
 \arguments{
 \item{expno}{\itemize{
 \item the path to the expNo folder
+}}
+
+\item{procno}{\itemize{
+\item chose procno to read from
 }}
 
 \item{procs}{\itemize{

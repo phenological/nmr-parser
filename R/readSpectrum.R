@@ -1,6 +1,7 @@
 #' read a spectrum (processed) from a Bruker expno folder
 #'
 #' @param expno - the path to the expNo folder
+#' @param procno - chose procno to read from
 #' @param procs - the name of the folder with experiments
 #' @param options - options (uncalibrate, eretic, fromTo, length.out)
 #' @return a vector with spectra (real part and x axis)

@@ -1,7 +1,7 @@
-#' get names and description of lipoproteins IVDr parameters
-#' @param extended if TRUE, the extended_lipo information is attached below the lipoTable
+#' get names and description of brxsm plasma reports
 #' @return a data.frame with information
 #' @importFrom utils data
+#' @importFrom data.table setDT
 #' @export
 getSmTable <- function() {
   sm <- get0("brxsm_pla", envir = asNamespace("nmr.parser"))

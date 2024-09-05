@@ -4,7 +4,10 @@
 \alias{getLipoTable}
 \title{get names and description of lipoproteins IVDr parameters}
 \usage{
-getLipoTable()
+getLipoTable(extended = FALSE)
+}
+\arguments{
+\item{extended}{if TRUE, the extended_lipo information is attached below the lipoTable}
 }
 \value{
 a data.frame with information

@@ -1,6 +1,6 @@
 #' read experiment from a bruker folder (expno)
 #'
-#' @param file - a path (or list of) to the expNo folder(s)
+#' @param expname - a path (or list of) to the expNo folder(s)
 #' @param what - choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
 #' @param options - object with processing parameters, if TRUE reads from the file
 #' @return a list with all read elements

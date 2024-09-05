@@ -5,14 +5,14 @@
 \title{read experiment from a bruker folder (expno)}
 \usage{
 readExperiment(
-  file,
+  expname,
   options = list(what = c("acqus", "procs", "qc", "title", "eretic", "spec", "lipo",
-    "quant", "pacs", "all", "specOnly"), specOpts = list(uncalibrate = FALSE, fromTo =
-    c(-0.1, 10), length.out = 44079))
+    "quant", "pacs", "all", "specOnly"), procno = 1, specOpts = list(uncalibrate = FALSE,
+    fromTo = c(-0.1, 10), length.out = 44079))
 )
 }
 \arguments{
-\item{file}{\itemize{
+\item{expname}{\itemize{
 \item a path (or list of) to the expNo folder(s)
 }}
 
