@@ -1,5 +1,5 @@
 #' get names and description of lipoproteins IVDr parameters
-#' @param extended if TRUE, the extended_lipo information is attched below the lipoTable
+#' @param extended if TRUE, the extended_lipo information is attached below the lipoTable
 #' @return a data.frame with information
 #' @importFrom utils data
 #' @export
@@ -51,45 +51,53 @@ getLipoTable <- function(extended = FALSE) {
 
   lipo$tag <- tag
   if(!extended){
-    return(lipo[,c("Fraction","Compound","ID","Reference Range [Unit]","tag" )])
+
+    return(lipo[, c("Fraction",
+                    "Compound",
+                    "ID",
+                    "Reference Range [Unit]",
+                    "tag")])
+
   }else{
-    t<-lipo[,c("Value","ID")]
-    names(t)<-c("value","id")
-    t<-nmr.parser::extend_lipo(t)
-    t<-t(t)
-    ma<-lipo[,c("Max Value (ref.)","ID")]
-    names(ma)<-c("value","id")
-    ma<-nmr.parser::extend_lipo(ma)
-    mi<-lipo[,c("Min Value (ref.)","ID")]
-    names(mi)<-c("value","id")
-    mi<-nmr.parser::extend_lipo(mi)
-    ext_lipo<-data.frame(row.names = seq(1,112,1),
-                         Fraction = lipo$Fraction[match(gsub("CE","CH",sapply(strsplit(rownames(t),".",fixed = T),"[",2)),lipo$ID)],
-                         Compound = lipo$Compound[match(gsub("CE","CH",sapply(strsplit(rownames(t),".",fixed = T),"[",2)),lipo$ID)],
-                         Abbreviation = lipo$Abbreviation[match(gsub("CE","CH",sapply(strsplit(rownames(t),".",fixed = T),"[",2)),lipo$ID)],
+    t <- lipo[,c("Value","ID")]
+    names(t) <- c("value","id")
+    t <- nmr.parser::extend_lipo(t)
+    t <- t(t)
+    ma <- lipo[,c("Max Value (ref.)","ID")]
+    names(ma) <- c("value","id")
+    ma <- nmr.parser::extend_lipo(ma)
+    mi <- lipo[,c("Min Value (ref.)","ID")]
+    names(mi) <- c("value","id")
+    mi <- nmr.parser::extend_lipo(mi)
+
+    ext_lipo <- data.frame(
+                         Fraction = substr(sapply(strsplit(rownames(t),"_",fixed = T),"[",1), 1, 2),
+                         Compound = substr(sapply(strsplit(rownames(t),"_",fixed = T),"[",1), 3, 4),
+                         Abbreviation = NA,
                          ID = rownames(t),
-                         Type = sapply(strsplit(rownames(t),".",fixed = T),"[",1),
-                         Value = t,
-                         Unit = ifelse(sapply(strsplit(rownames(t),".",fixed = T),"[",1)=="calc","mg/dL","%"),
-                         "Max Value (ref.)" = t(ma),
-                         "Min Value (ref.)" = t(mi),
-                         "Reference Unit" = ifelse(sapply(strsplit(rownames(t),".",fixed = T),"[",1)=="calc","mg/dL","%")
-                         )
-    
-    
-    ext_lipo$`Reference Range [Unit]` = ifelse(ext_lipo$Min.Value..ref..<ext_lipo$Max.Value..ref..,
-                                               paste0( ext_lipo$Min.Value..ref..,
+                         maxRef = t(ma),
+                         minRef = t(mi),
+                         refUnit = factor(sapply(strsplit(rownames(t),"_",fixed = T),"[",2),
+                                                   levels = c(NA, "calc", "pct", "frac"),
+                                                   labels = c("mg/dL", "%", "a.u.")),
+                         check.names = FALSE)
+
+    row.names(ext_lipo) = seq(1,317)
+
+    ext_lipo$`Reference Range [Unit]` = ifelse(ext_lipo$minRef < ext_lipo$maxRef,
+                                               paste0( ext_lipo$minRef,
                                                        " - ",
-                                                       ext_lipo$Max.Value..ref..,
+                                                       ext_lipo$maxRef,
                                                        " (",
-                                                       ext_lipo$Reference.Unit,
+                                                       ext_lipo$refUnit,
                                                        ")"),
-                                               paste0( ext_lipo$Max.Value..ref..,
+                                               paste0( ext_lipo$maxRef,
                                                        " - ",
-                                                       ext_lipo$Min.Value..ref..,
+                                                       ext_lipo$minRef,
                                                        " (",
-                                                       ext_lipo$Reference.Unit,
+                                                       ext_lipo$refUnit,
                                                        ")"))
+
     ext_lipo$Fraction[grep("TL",ext_lipo$ID)]<-"Main Parameters"
     ext_lipo$Compound[grep("CE",ext_lipo$ID)]<-"Cholesterol Ester"
     ext_lipo$Compound[grep("TL",ext_lipo$ID)]<-"Triglycerides, Cholesterol, Phospholipids"
@@ -99,9 +107,9 @@ getLipoTable <- function(extended = FALSE) {
     ext_lipo$Abbreviation[grep("IDTL",ext_lipo$ID)] = "IDL"
     ext_lipo$Abbreviation[grep("LDTL",ext_lipo$ID)] = "LDL"
     ext_lipo$tag<-paste0(ext_lipo$Compound,", ",ext_lipo$Abbreviation)
-    names(ext_lipo)<-names(lipo)
-    lipo<-rbind(lipo,ext_lipo)
-    return(lipo[,c("Fraction","Compound","ID","Reference Range [Unit]","tag" )])
+    names(ext_lipo) <- names(lipo)[-c(5,6,7)]
+
+    return(ext_lipo[,c("Fraction","Compound","ID","Reference Range [Unit]","tag" )])
   }
 
 }
