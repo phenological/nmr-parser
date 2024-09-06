@@ -5,9 +5,9 @@
 #' @export
 getSmTable <- function() {
   sm <- get0("brxsm_pla", envir = asNamespace("nmr.parser"))
-  range <- paste0(sm$data$refMin, " - ", sm$data$refMax,
+  sm[["data"]]$range <- paste0(sm$data$refMin, " - ", sm$data$refMax,
                        " (", sm$data$refUnit, ")")
-  sm$data$range <- gsub("- -", "<", sm$data$range)
+  sm[["data"]]$range <- gsub("- -", "<", sm[["data"]]$range)
 
   setDT(sm$data)
   cols <- c("name", "rawConcUnit", "refMin", "refMax", "refUnit", "range")
