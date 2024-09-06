@@ -37,24 +37,7 @@ readQc <- function(file){
     vals <- data.table(do.call(rbind, vals))
     vals <- lapply(vals, function(column) setNames(column, vals$Name))
     tests <- c(headers, vals)
-    # tests <- mapply(list,
-    #                 tests$comment,
-    #                 tests$name,
-    #                 tests$type,
-    #                 tests$value,
-    #                 tests$unit,
-    #                 tests$refMax,
-    #                 tests$refMin,
-    #                 SIMPLIFY = FALSE)
-    # infos <- lapply(infos, function(x) setNames(x, c("comment",
-    #                                                  "name",
-    #                                                  "type",
-    #                                                  "value",
-    #                                                  "unit",
-    #                                                  "source",
-    #                                                  "unit",
-    #                                                  "vmax",
-    #                                                  "vmin")))
+
 
     res <- list(infos = infos,
                 infoNames = infoNames,
@@ -67,6 +50,7 @@ readQc <- function(file){
   }
 
 }
+
 
 
 
