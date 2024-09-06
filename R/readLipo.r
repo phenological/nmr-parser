@@ -34,7 +34,9 @@ readLipo <- function(file){
                       refMin = as.numeric(refMin),
                       refUnit)
     fi <- duplicated(res$id)
+
     return(list(data = res[!fi,], version = version))
+
   } else {
     cat(crayon::yellow("readLipo >>", file, "not found\n"))
   }

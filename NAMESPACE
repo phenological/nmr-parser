@@ -2,6 +2,7 @@
 
 export(cleanNames)
 export(extend_lipo)
+export(extend_lipo_value)
 export(getLipoTable)
 export(getSmTable)
 export(read1r)

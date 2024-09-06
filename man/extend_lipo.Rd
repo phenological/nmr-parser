@@ -6,7 +6,7 @@
 Calculates total lipids, fractions and percentages using data.frame "res"
 from readLipo.r}
 \usage{
-extend_lipo(res)
+extend_lipo(lipo)
 }
 \arguments{
 \item{res}{Data frame with lipoprotein data for a single sample}

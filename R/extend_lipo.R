@@ -1,23 +1,14 @@
-#' extend_lipo
-#' Calculates total lipids, fractions and percentages using data.frame "res"
-#' from readLipo.r
-#' @param res Data frame with lipoprotein data for a single sample
-#' @return Data frame with new parameters.
-#' **calc** is from the summation of the raw values to find TL (total lipid) and
-#' CH - FC to calculate CE.
-#' **pct** looks at subfractions considering the lipid composition, so what
-#' portion does each of the raw V1TG, V1CH, V1PL contribute to the calculated V1TL.
-#' **frac** looks at subfractions considering the lipid distribution, so what
-#' portion do each of V1TG, V2TG, V3TG, V4TG, V5TG contribute to VLTG
+#' function to extend the lipo and return a vector of values
+#' @param lipo - takes a lipo object
+#' @return a vector with values and no particular format
 #' @export
 
+extend_lipo_value <- function(lipo){
 
-extend_lipo<-function(res){
+  df <- as.data.frame(t(lipo$data$value))
+  colnames(df) <- lipo$data$id
 
-  df <- as.data.frame(t(res$value))
-  colnames(df) <- res$id
-
-#######calc###########
+  #######calc###########
   #create the required column (all in the names already)
   calc <- data.frame(
     HDTL = df$HDTG + df$HDCH + df$HDPL,
@@ -101,7 +92,7 @@ extend_lipo<-function(res){
     }
   }
 
-#########frac########
+  #########frac########
   frac <- data.frame(row.names = seq_len(nrow(df)))
 
   #"H1CE" "H2CE" "H3CE" "H4CE" "V1CE" "V2CE" "V3CE" "V4CE" "V5CE" "L1CE" "L2CE" "L3CE" "L4CE" "L5CE" "L6CE"
@@ -168,6 +159,136 @@ extend_lipo<-function(res){
   df <- cbind(df, calc, pct, frac)
 
   return(df)
+}
+
+#' extend_lipo
+#' Calculates total lipids, fractions and percentages using data.frame "res"
+#' from readLipo.r
+#' @param res Data frame with lipoprotein data for a single sample
+#' @return Data frame with new parameters.
+#' **calc** is from the summation of the raw values to find TL (total lipid) and
+#' CH - FC to calculate CE.
+#' **pct** looks at subfractions considering the lipid composition, so what
+#' portion does each of the raw V1TG, V1CH, V1PL contribute to the calculated V1TL.
+#' **frac** looks at subfractions considering the lipid distribution, so what
+#' portion do each of V1TG, V2TG, V3TG, V4TG, V5TG contribute to VLTG
+#' @export
+extend_lipo <- function(lipo) {
+
+
+  df <- extend_lipo_value(lipo)
+
+  extended_lipo_vector <- t(df)
+
+  df <- data.frame(id = rownames(extended_lipo_vector), value = extended_lipo_vector)
+  # expand lipo table to fit extra parameters from extend_lipo
+  df <- lipo$data[match(df$id, lipo$data$id),]
+  id <- row.names(extended_lipo_vector)
+  df$id <- id
+  value <- as.numeric(extended_lipo_vector)
+  df$value <- value
+
+  # refMax
+  ma <- lipo
+  ma$data$value <- lipo$data$refMax
+  ma <- extend_lipo_value(ma)
+
+  # refMin
+  mi <- lipo
+  mi$data$value <- lipo$data$refMin
+  mi <- extend_lipo_value(mi)
+
+
+
+  df$refMax <- ifelse(ma < mi, mi, ma)
+  df$refMin <- ifelse(ma > mi, mi, ma)
+
+  ## Fraction ##
+  df$fraction<-ifelse(is.na(df$fraction),
+                            lipo$data$fraction[match(gsub("CE","CH",substr(df$id,1,4)),lipo$data$id)],
+                            df$fraction)
+
+
+  df$fraction<-ifelse(is.na(df$fraction),
+                            lipo$data$fraction[match(substr(df$id,1,2),substr(lipo$data$id,1,2))],
+                            df$fraction)
+  ## name ##
+  df$name<-ifelse(is.na(df$name),
+                        lipo$data$name[match(substr(df$id,1,4),lipo$data$id)],
+                        df$name)
+  df$name<-ifelse(grepl("CE",df$id),
+                        "Cholesterol Ester",
+                        df$name)
+  df$name<-ifelse(is.na(df$name) & grepl("TL",df$id),
+                        c("Triglycerides, Cholesterol, Phospholipids"),
+                        df$name)
+  ## abbr ##
+  df$abbr<-ifelse(is.na(df$abbr),
+                        lipo$data$abbr[match(gsub("CE","CH",substr(df$id,1,4)),lipo$data$id)],
+                        df$abbr)
+
+  df$abbr<-ifelse(is.na(df$type) & grepl("CE",df$id) & !is.na(df$abbr),
+                        gsub("-Chol","-CE",df$abbr),
+                        df$abbr)
+
+  df$abbr<-ifelse(is.na(df$abbr),
+                        lipo$data$abbr[match(gsub("TL","TG",substr(df$id,1,4)),lipo$data$id)],
+                        df$abbr)
+  ## type ##
+
+  df$type<-"prediction"
+
+  ## unit ##
+  df$unit <- ifelse(grepl("calc",df$id) & df$id!="TBPN_calc","mg/dL",df$unit)
+  df$unit <- ifelse(df$id=="TBPN_calc","nmol/L",df$unit)
+  df$unit <- ifelse(is.na(df$unit),"-/-",df$unit)
+  ## refUnit ##
+  df$refUnit<-df$unit
+
+  # df$range <- paste0(df$refMin, " - ", df$refMax,
+  #                          " (", df$refUnit, ")")
+  names(df) <-c("fraction",
+                      "name",
+                      "abbr",
+                      "id",
+                      "type",
+                      "value",
+                      "unit",
+                      "refMax",
+                      "refMin",
+                      "refUnit")
+  # correcting typo in xml
+  df$name[9] <- "Apo-B100 / Apo-A1"
+  rownames(df) <- c(1:nrow(df))
+  # cleaning column text
+  #df$Compound <- gsub(" ", "", df$Compound)
+  df$abbr <- gsub(" ", "", df$abbr)
+
+  # creating label for publication
+  df$tag <- paste0(df$name, ", ", df$abbr)
+  df$tag[grep("TPTG",df$id)]<- "Triglycerides, total"
+  df$tag[grep("TPCH",df$id)] <- "Cholesterol, total"
+  df$tag[grep("LDCH",df$id)] <- "Cholesterol, LDL"
+  df$tag[grep("HDCH",df$id)]  <- "Cholesterol, HDL"
+  df$tag[grep("TPA1",df$id)]  <- "Apo-A1, total"
+  df$tag[grep("TPA2",df$id)] <- "Apo-A2, total"
+  df$tag[grep("TPAB",df$id)] <- "Apo-B100, total"
+
+  df$tag[grep("LDHD",df$id)]  <- "LDL-Chol/HDL-Chol"
+  df$tag[grep("ABA1",df$id)]  <- "Apo-B100/Apo-A1"
+  df$tag[grep("TBPN",df$id)]  <- "Apo-B100, particle number"
+  df$tag[grep("VLPN",df$id)]  <- "VLDL, particle number"
+  df$tag[grep("IDPN",df$id)]  <- "IDL, particle number"
+  df$tag[grep("LDPN",df$id)]  <- "LDL, particle number"
+  df$tag[grep("L1PN",df$id)]  <- "LD1, particle number"
+  df$tag[grep("L2PN",df$id)]  <- "LD2, particle number"
+  df$tag[grep("L3PN",df$id)]  <- "LD3, particle number"
+  df$tag[grep("L4PN",df$id)]  <- "LD4, particle number"
+  df$tag[grep("L5PN",df$id)]  <- "LD5, particle number"
+  df$tag[grep("L6PN",df$id)]  <- "LD6, particle number"
+
+
+  return(list(data = df, version = lipo$version))
 }
 
 
