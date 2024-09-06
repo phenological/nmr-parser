@@ -1,10 +1,16 @@
 #' get names and description of brxsm plasma reports
+#' @param matrixType - sample matrix type (URI, SER)
 #' @return a data.frame with information
 #' @importFrom utils data
 #' @importFrom data.table setDT
 #' @export
-getSmTable <- function() {
-  sm <- get0("brxsm_pla", envir = asNamespace("nmr.parser"))
+getSmTable <- function(matrixType = "SER") {
+  if (matrixType == "SER" | matrixType == "PLA") {
+    sm <- get0("brxsm_pla", envir = asNamespace("nmr.parser"))
+  } else if (matrixType == "URI") {
+    sm <- get0("brxsm_uri", envir = asNamespace("nmr.parser"))
+  }
+
   sm[["data"]]$range <- paste0(sm$data$refMin, " - ", sm$data$refMax,
                        " (", sm$data$refUnit, ")")
   sm[["data"]]$range <- gsub("- -", "<", sm[["data"]]$range)

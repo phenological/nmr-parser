@@ -4,7 +4,12 @@
 \alias{getSmTable}
 \title{get names and description of brxsm plasma reports}
 \usage{
-getSmTable()
+getSmTable(matrixType = "SER")
+}
+\arguments{
+\item{matrixType}{\itemize{
+\item sample matrix type (URI, SER)
+}}
 }
 \value{
 a data.frame with information
