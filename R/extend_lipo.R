@@ -102,8 +102,8 @@ extend_lipo<-function(res){
   }
 
 #########frac########
+  frac <- data.frame(row.names = seq_len(nrow(df)))
 
-  frac <- data.frame(test = rep_len(1, length.out = nrow(calc)))
   #"H1CE" "H2CE" "H3CE" "H4CE" "V1CE" "V2CE" "V3CE" "V4CE" "V5CE" "L1CE" "L2CE" "L3CE" "L4CE" "L5CE" "L6CE"
   for (letter in letters) {
     for (i in ranges[[letter]]) {
