@@ -5,7 +5,7 @@
 \alias{brxsm_pla}
 \title{Small molecules from IVDr method}
 \format{
-A data frame with 41 metabolites concentration ranges
+A data frame with 41 plasmic metabolites concentration ranges
 }
 \usage{
 data(brxsm_pla)

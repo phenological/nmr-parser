@@ -5,12 +5,12 @@
 \alias{brxsm_uri}
 \title{Small molecules from IVDr method}
 \format{
-A data frame with 26 urine metabolites concentration ranges
+A data frame with 150 urine metabolites concentration ranges
 }
 \usage{
 data(brxsm_uri)
 }
 \description{
-A dataset containing 26 metabolites from urine
+A dataset containing 150 metabolites from urine
 }
 \keyword{datasets}
