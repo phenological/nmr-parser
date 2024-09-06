@@ -5,12 +5,13 @@
 #' @export
 getSmTable <- function() {
   sm <- get0("brxsm_pla", envir = asNamespace("nmr.parser"))
-  sm$data$range <- paste0(sm$data$refMin, " - ", sm$data$refMax,
+  range <- paste0(sm$data$refMin, " - ", sm$data$refMax,
                        " (", sm$data$refUnit, ")")
   sm$data$range <- gsub("- -", "<", sm$data$range)
 
   setDT(sm$data)
   cols <- c("name", "rawConcUnit", "refMin", "refMax", "refUnit", "range")
+  cols %in% names(sm$data)
   sm$data <- sm$data[, cols, with = FALSE]
 
   names(sm$data) <- c("Compound",

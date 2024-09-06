@@ -25,3 +25,4 @@ Imports:
     signal,
     xml2,
     crayon
+LazyData: true
