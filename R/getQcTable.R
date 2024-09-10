@@ -15,9 +15,10 @@ getQcTable <- function(withValue = FALSE) {
                       testUnit = qc$tests$unit,
                       testRefMax = qc$tests$refMax,
                       testRefMin = qc$tests$refMin,
-                      testDescription = qc$tests$comment)
+                      testDescription = NA)
 
   if (withValue) {
+    tbl1$testDescription <- qc$tests$comment
     tbl1 <- cbind(tbl1, value = qc$tests$value)
   }
 
@@ -26,9 +27,10 @@ getQcTable <- function(withValue = FALSE) {
                      testUnit = NA,
                      testRefMax = NA,
                      testRefMin = NA,
-                     testDescription = qc$infos$value)
+                     testDescription = NA)
 
   if (withValue) {
+    tbl2$testDescription <- qc$infos$value
     tbl2 <- cbind(tbl2, value = NA)
   }
 
