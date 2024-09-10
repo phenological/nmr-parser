@@ -8,6 +8,8 @@ getQcTable <- function() {
                            "plasma_qc_report.xml",
                            package = "nmr.parser"))
 
+  qc <- qc$data
+
   tbl <- data.frame(testName = qc$tests$name,
                       testType = qc$tests$type,
                       testUnit = qc$tests$unit,

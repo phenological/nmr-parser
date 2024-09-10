@@ -10,6 +10,11 @@ readQc <- function(file){
   if (file.exists(file)) {
     xml <- read_xml(file, options = "NOBLANKS")
 
+    # {xml_document}
+    # <RESULTS version="BioBankQC PS 1.0.0  Reseach Use Only">
+    # [1] <SAMPLE date="23-Mar-2021 20:22:12" name="bhas20_IVDR04_BHASp27_220321_expno840.1000 ...
+    version <- xml_attr(xml, "version")
+
     infos <- list(name = (xml_attr(xml_find_all(xml, ".//INFO"), "name")),
                value = (xml_attr(xml_find_all(xml, ".//INFO"), "value")))
     # infos <- mapply(list, infos$name, infos$value, SIMPLIFY = FALSE)
@@ -39,10 +44,11 @@ readQc <- function(file){
     tests <- c(headers, vals)
 
 
-    res <- list(infos = infos,
+    res <- list(data = list(infos = infos,
                 infoNames = infoNames,
                 tests = tests,
-                testNames = testNames)
+                testNames = testNames),
+                version = version)
 
     return(res)
   } else {

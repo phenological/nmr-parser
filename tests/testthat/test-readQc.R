@@ -5,6 +5,7 @@ test_that("reading inexistent file", {
 
 test_that("reading file", {
   qc <- readQc(system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser"))
+  qc <- qc$data
   expect_equal(length(qc), 4)
   expect_equal(length(qc$infos), 2)
   expect_equal(length(qc$infoNames), 24)
