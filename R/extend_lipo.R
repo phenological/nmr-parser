@@ -158,7 +158,6 @@ extend_lipo_value <- function(lipo){
 
   df <- cbind(df, calc, pct, frac)
 
-  return(df)
 }
 
 #' extend_lipo
