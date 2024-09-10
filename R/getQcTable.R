@@ -1,21 +1,30 @@
 
 
-getQcTable <- function(withValue = FALSE) {
+getQcTable <- function(matrixType = "SER", withValue = FALSE) {
 
-  qc <- readQc(system.file("..",
-                           "tests",
-                           "testthat",
-                           "plasma_qc_report.xml",
-                           package = "nmr.parser"))
+  if (matrixType == "SER") {
+    qc <- readQc(system.file("..",
+                             "tests",
+                             "testthat",
+                             "plasma_qc_report.xml",
+                             package = "nmr.parser"))
+  } else if (matrixType == "URI") {
 
+    qc <- readQc(system.file("..",
+                             "tests",
+                             "testthat",
+                             "urine_qc_report.xml",
+                             package = "nmr.parser"))
+
+    }
   qc <- qc$data
 
   tbl1 <- data.frame(testName = qc$tests$name,
-                      testType = qc$tests$type,
-                      testUnit = qc$tests$unit,
-                      testRefMax = qc$tests$refMax,
-                      testRefMin = qc$tests$refMin,
-                      testDescription = NA)
+                     testType = qc$tests$type,
+                     testUnit = qc$tests$unit,
+                     testRefMax = qc$tests$refMax,
+                     testRefMin = qc$tests$refMin,
+                     testDescription = NA)
 
   # fixing tests with same names
   fi <- grep(":", tbl1$testType)
