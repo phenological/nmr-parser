@@ -17,6 +17,11 @@ getQcTable <- function(withValue = FALSE) {
                       testRefMin = qc$tests$refMin,
                       testDescription = NA)
 
+  # fixing tests with same names
+  fi <- grep(":", tbl1$testType)
+  tbl1$testName[fi] <- paste0(tbl1$testName[fi],
+                              sapply(tbl1$testType[fi], function(x) strsplit(x, ":")[[1]][2]))
+
   if (withValue) {
     tbl1$testDescription <- qc$tests$comment
     tbl1 <- cbind(tbl1, value = qc$tests$value)
