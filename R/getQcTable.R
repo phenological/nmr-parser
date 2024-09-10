@@ -1,6 +1,6 @@
 
 
-getQcTable <- function() {
+getQcTable <- function(withValue = FALSE) {
 
   qc <- readQc(system.file("..",
                            "tests",
@@ -10,12 +10,16 @@ getQcTable <- function() {
 
   qc <- qc$data
 
-  tbl <- data.frame(testName = qc$tests$name,
+  tbl1 <- data.frame(testName = qc$tests$name,
                       testType = qc$tests$type,
                       testUnit = qc$tests$unit,
                       testRefMax = qc$tests$refMax,
                       testRefMin = qc$tests$refMin,
                       testDescription = qc$tests$comment)
+
+  if (withValue) {
+    tbl1 <- cbind(tbl1, value = qc$tests$value)
+  }
 
   tbl2 <- data.frame(testName = qc$infos$name,
                      testType = NA,
@@ -23,6 +27,10 @@ getQcTable <- function() {
                      testRefMax = NA,
                      testRefMin = NA,
                      testDescription = qc$infos$value)
+
+  if (withValue) {
+    tbl2 <- cbind(tbl2, value = NA)
+  }
 
   return(rbind(tbl2, tbl1))
 }
