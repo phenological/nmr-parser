@@ -1,5 +1,8 @@
 
-
+#' Get a data frame with the QC table
+#' @param matrixType A string with the matrix type. It can be "SER" or "URI"
+#' @param withValue A boolean to include the value column
+#' @export
 getQcTable <- function(matrixType = "SER", withValue = FALSE) {
 
   if (matrixType == "SER") {

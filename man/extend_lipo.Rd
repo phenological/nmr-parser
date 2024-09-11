@@ -9,7 +9,7 @@ from readLipo.r}
 extend_lipo(lipo)
 }
 \arguments{
-\item{res}{Data frame with lipoprotein data for a single sample}
+\item{lipo}{Data frame with lipoprotein data for a single sample}
 }
 \value{
 Data frame with new parameters.

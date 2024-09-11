@@ -163,7 +163,7 @@ extend_lipo_value <- function(lipo){
 #' extend_lipo
 #' Calculates total lipids, fractions and percentages using data.frame "res"
 #' from readLipo.r
-#' @param res Data frame with lipoprotein data for a single sample
+#' @param lipo Data frame with lipoprotein data for a single sample
 #' @return Data frame with new parameters.
 #' **calc** is from the summation of the raw values to find TL (total lipid) and
 #' CH - FC to calculate CE.
