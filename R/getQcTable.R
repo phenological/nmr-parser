@@ -27,9 +27,13 @@ getQcTable <- function(matrixType = "SER", withValue = FALSE) {
                      testDescription = NA)
 
   # fixing tests with same names
+  if (matrixType == "SER") {
+
   fi <- grep(":", tbl1$testType)
   tbl1$testName[fi] <- paste0(tbl1$testName[fi],
                               sapply(tbl1$testType[fi], function(x) strsplit(x, ":")[[1]][2]))
+
+  }
 
   if (withValue) {
     tbl1$testDescription <- qc$tests$comment
