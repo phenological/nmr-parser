@@ -15,11 +15,18 @@ readQc <- function(file){
     # [1] <SAMPLE date="23-Mar-2021 20:22:12" name="bhas20_IVDR04_BHASp27_220321_expno840.1000 ...
     version <- xml_attr(xml, "version")
 
-    infos <- list(name = (xml_attr(xml_find_all(xml, ".//INFO"), "name")),
-               value = (xml_attr(xml_find_all(xml, ".//INFO"), "value")))
-    # infos <- mapply(list, infos$name, infos$value, SIMPLIFY = FALSE)
-    # infos <- lapply(infos, function(x) setNames(x, c("name", "value")))
-    infoNames <- unname(sapply(infos$name, function(x) cleanNames(strsplit(tolower(x), "\\(")[[1]][1])))
+    name <- xml_attr(xml_find_all(xml, ".//INFO"), "name")
+
+    value <- unname(sapply(name, function(x) gsub("\\)", "",(strsplit(tolower(x), "applied: ")[[1]][2]))))
+    ref <- unname(sapply(name, function(x) strsplit((strsplit(tolower(x), "specified: ")[[1]][2]), ",")[[1]][1]))
+    comment <- (xml_attr(xml_find_all(xml, ".//INFO"), "value"))
+
+    name <- gsub(" $", "", (unname(sapply(name, function(x) strsplit(x, "\\(")[[1]][1]))))
+    infoNames <- cleanNames(name)
+    infos <- list(name = name,
+                  comment = comment,
+                  value = value)
+
 
     tests <- xml_find_all(xml, ".//PARAMETER")
     names <- xml_attr(tests, "name")

@@ -23,36 +23,35 @@ getQcTable <- function(matrixType = "SER", withValue = FALSE) {
   qc <- qc$data
 
   tbl1 <- data.frame(testName = qc$tests$name,
-                     testType = qc$tests$type,
                      testUnit = qc$tests$unit,
                      testRefMax = qc$tests$refMax,
                      testRefMin = qc$tests$refMin,
-                     testDescription = NA)
+                     testDescription = qc$tests$type)
 
   # fixing tests with same names
   if (matrixType == "SER") {
 
-  fi <- grep(":", tbl1$testType)
+  fi <- grep(":", tbl1$testDescription)
   tbl1$testName[fi] <- paste0(tbl1$testName[fi],
-                              sapply(tbl1$testType[fi], function(x) strsplit(x, ":")[[1]][2]))
-
+                              sapply(tbl1$testDescription[fi], function(x) strsplit(x, ":")[[1]][2]))
+  tbl1$testDescription[fi] <- sapply(tbl1$testDescription[fi], function(x) gsub(" :", "", x))
+  tbl1$testDescription[fi] <- sapply(tbl1$testDescription[fi], function(x) gsub("\\.", "", x))
   }
 
   if (withValue) {
-    tbl1$testDescription <- qc$tests$comment
+    tbl1 <- cbind(tbl1, status = qc$tests$comment)
     tbl1 <- cbind(tbl1, value = qc$tests$value)
   }
 
   tbl2 <- data.frame(testName = qc$infos$name,
-                     testType = NA,
                      testUnit = NA,
                      testRefMax = NA,
                      testRefMin = NA,
                      testDescription = NA)
 
   if (withValue) {
-    tbl2$testDescription <- qc$infos$value
-    tbl2 <- cbind(tbl2, value = NA)
+    tbl2 <- cbind(tbl2, value = qc$infos$value)
+    tbl2 <- cbind(tbl2, status = qc$infos$comment)
   }
 
   return(rbind(tbl2, tbl1))
