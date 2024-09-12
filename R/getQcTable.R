@@ -47,7 +47,7 @@ getQcTable <- function(matrixType = "SER", withValue = FALSE) {
                      testUnit = NA,
                      testRefMax = NA,
                      testRefMin = NA,
-                     testDescription = NA)
+                     testDescription = qc$infos$ref)
 
   if (withValue) {
     tbl2 <- cbind(tbl2, value = qc$infos$value)

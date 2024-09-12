@@ -7,7 +7,7 @@ test_that("reading file", {
   qc <- readQc(system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser"))
   qc <- qc$data
   expect_equal(length(qc), 4)
-  expect_equal(length(qc$infos), 3)
+  expect_equal(length(qc$infos), 4)
   expect_equal(length(qc$infoNames), 24)
   expect_equal(length(qc$tests), 7)
   expect_equal(length(qc$testNames), 22)
@@ -28,7 +28,7 @@ test_that("reading file", {
   qc <- readQc(system.file("..", "tests", "testthat", "urine_qc_report.xml", package = "nmr.parser"))
   qc <- qc$data
   expect_equal(length(qc), 4)
-  expect_equal(length(qc$infos), 3)
+  expect_equal(length(qc$infos), 4)
   expect_equal(length(qc$infoNames), 27)
   expect_equal(length(qc$tests), 7)
   expect_equal(length(qc$testNames), 28)

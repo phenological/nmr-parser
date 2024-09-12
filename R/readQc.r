@@ -25,7 +25,8 @@ readQc <- function(file){
     infoNames <- cleanNames(name)
     infos <- list(name = name,
                   comment = comment,
-                  value = value)
+                  value = value,
+                  ref = ref)
 
 
     tests <- xml_find_all(xml, ".//PARAMETER")
