@@ -3,10 +3,13 @@
 #' @return a data.frame with information
 #' @importFrom utils data
 #' @export
-getLipoTable <- function(extended = FALSE) {
+getLipoTable <- function(extended = FALSE, withDensities = FALSE) {
   lipo <- get0("lipo", envir = asNamespace("nmr.parser"))
 
-
+  if (withDensities == TRUE) {
+    lipoDensities <- get0("lipoWithDensities", envir = asNamespace("nmr.parser"))
+    return(lipoDensities)
+  }
 
 
   ext_lipo <- extend_lipo(lipo)
