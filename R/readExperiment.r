@@ -160,7 +160,9 @@ readExperiment <- function(expname,
 
       # we look for eretic in the rexpno + 0 folder
       ereticPath <- paste0(substr(expname[[l]], 1, nchar(expname[[l]])-1), "0")
-      if (file.exists(file.path(ereticPath, "QuantFactorSample.xml"))) {
+      if ("eretic" %in% names(specOpts)) {
+        ereticFactor <- spectOpts$eretic
+      } else if (file.exists(file.path(ereticPath, "QuantFactorSample.xml"))) {
         eretic <- readEretic(file.path(ereticPath, "QuantFactorSample.xml"))
         ereticFactor <- eretic$ereticFactor
       } else if (file.exists(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))) {
