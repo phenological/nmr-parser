@@ -158,19 +158,25 @@ readExperiment <- function(expname,
                         length.out = 44079)
       }
 
-      # we look for eretic in the rexpno + 0 folder
+
       ereticPath <- paste0(substr(expname[[l]], 1, nchar(expname[[l]])-1), "0")
       if ("eretic" %in% names(specOpts)) {
+        # we first look for eretic in the options (so we can override it if necessary)
+        # in cases such as ileum spiking that has a wrong folder structure
         ereticFactor <- specOpts$eretic
       } else if (file.exists(file.path(ereticPath, "QuantFactorSample.xml"))) {
+        # we look for eretic in the rexpno + 0 folder
+        # to correct for pgpe and other type of experiments that need correction
         eretic <- readEretic(file.path(ereticPath, "QuantFactorSample.xml"))
         ereticFactor <- eretic$ereticFactor
       } else if (file.exists(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))) {
+        # in the case of F80 we use a different parser
         eretic <- readEreticF80(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))
         ereticFactor <- eretic$samOneMolInt
       } else {
+        # if nothing is found we set the factor to 1 and display a warning
         ereticFactor <- 1
-        cat(crayon::red("eretic:", ereticPath))
+        warning(crayon::red("eretic:", ereticPath))
       }
 
       if (!is.null(ereticFactor)) {
