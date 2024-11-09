@@ -1,3 +1,11 @@
+test_that("reading missing spectrum", {
+  spec <- readSpectrum(system.file("HB-COVID0001", "9", package = "nmr.parser"), options = list("eretic" = 1))
+  expect_equal(spec$info[[1]], NULL)
+  expect_equal(spec$spec$x[1], NULL)
+  expect_equal(spec$spec$y[1], NULL)
+  expect_equal(spec$spec$y, NULL)
+})
+
 test_that("reading spectrum", {
   spec <- readSpectrum(system.file("HB-COVID0001", "10", package = "nmr.parser"))
   expect_equal(spec$info[[1]], 600.27)

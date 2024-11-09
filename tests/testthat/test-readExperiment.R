@@ -18,6 +18,17 @@ test_that("reading experiment folder", {
   expect_equal(expe$quant$value.Acetone, "0.418")
 })
 
+test_that("reading experiment folders", {
+  expe<- readExperiment(list(system.file("HB-COVID0001", "10", package = "nmr.parser"),
+                             system.file("HB-COVID0001", "9", package = "nmr.parser"),
+                             system.file("HB-COVID0001", "11", package = "nmr.parser")))
+  expect_length(expe, 9)
+  expect_equal(expe$acqus$acqus.TITLE[1], "Parameter file, TopSpin 3.5 pl 4")
+  expect_equal(expe$acqus$acqus.NS[2], "32")
+  expect_equal(expe$procs$procs.PHC0[1], "-7.223511")
+
+})
+
 test_that("reading experiment folder acqus", {
   expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("acqus")))
   expect_length(expe, 1)
@@ -48,11 +59,29 @@ test_that("reading experiment folder qc", {
 test_that("reading experiment folder spec", {
   expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("spec")))
   expect_length(expe, 1)
+  expect_length(expe$spec$spec[[1]]$info, 5)
+  expect(expe$spec$spec[[1]]$info[[5]], 3808.272)
   expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
   expect_length(expe$spec$spec[[1]]$spec$x, 44079)
   expect_length(expe$spec$spec[[1]]$spec$y, 44079)
   expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-0.1,10.0))
   expect_equal(sum(expe$spec$spec[[1]]$spec$y), 4358580.9)
+})
+
+test_that("reading experiment folder spec", {
+  expe <- suppressWarnings(readExperiment(system.file("HB-COVID0001_noEretic",
+                                                      "10",
+                                                      package = "nmr.parser"),
+                                          options = list(what = c("spec"))))
+  expect_length(expe, 1)
+  expect_length(expe$spec$spec[[1]]$info, 5)
+  expect(expe$spec$spec[[1]]$info[[5]], 1)
+  expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
+  expect_length(expe$spec$spec[[1]]$spec$x, 44079)
+  expect_length(expe$spec$spec[[1]]$spec$y, 44079)
+  expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-0.1,10.0))
+  # the sum is larger as eretic is not applied
+  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 16598660907)
 })
 
 test_that("reading experiment folder lipo", {
