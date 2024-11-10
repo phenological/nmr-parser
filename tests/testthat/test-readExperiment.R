@@ -4,6 +4,15 @@ test_that("reading inexistent folder", {
   expect_length(expe, 9)
 })
 
+
+# test_that("reading inexistent folder", {
+#   expe <- readExperiment(list(file.path("/Users/jul/data/covid19_IVDR04_WAFollowUp_241120/10"),
+#                               file.path("/Users/jul/data/covid19_IVDR04_WAFollowUp_241120/20")))
+#   expect_length(expe, 9)
+#   expect_equal(expe$eretic[1]$ereticFactor, "3675.44705508")
+#   expect_equal(expe$eretic[2]$ereticFactor, "3693.43456106")
+# })
+
 test_that("reading experiment folder", {
   expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"))
   expect_length(expe, 9)
