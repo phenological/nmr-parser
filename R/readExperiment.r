@@ -45,8 +45,14 @@ readExperiment <- function(expname,
       path <- file.path(expname[[l]], "acqus")
       if (file.exists(path)) {
         parms <- readParams(path)
-        parms$path <- expname[[l]]
-        lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+
+        # we check for empty files
+        if (!is.null(parms)) {
+          parms$path <- expname[[l]]
+          lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+        } else {
+          lst[[l]] <- NULL
+        }
       } else {
         lst[[l]] <- NULL
       }
@@ -60,9 +66,14 @@ readExperiment <- function(expname,
     common_columns <- Reduce(intersect, lapply(lst, names))
     res$acqus <- data.table(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
     colnames(res$acqus) <- gsub("value.", "acqus.", colnames(res$acqus))
-    message(cat(crayon::blue("readExperiment >>",
-                             nrow(res$acqus),
-                             "found acqus params\n")))
+
+    if (nrow(res$acqus) == 0) {
+      message(cat(crayon::yellow("readExperiment >> 0 found acqus params\n")))
+    } else {
+      message(cat(crayon::blue("readExperiment >>",
+                               nrow(res$acqus),
+                               "found acqus params\n")))
+    }
   }
 
   if ("procs" %in% what | "all" %in% what) {
@@ -73,8 +84,15 @@ readExperiment <- function(expname,
       path <- file.path(expname[[l]], "pdata", "1", "procs")
       if (file.exists(path)) {
         parms <- readParams(path)
-        parms$path <- expname[[l]]
-        lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+
+        # we check for empty files
+        if (!is.null(parms)) {
+          parms$path <- expname[[l]]
+          lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
+        } else {
+          lst[[l]] <- NULL
+        }
+
       } else {
         lst[[l]] <- NULL
       }
@@ -88,9 +106,14 @@ readExperiment <- function(expname,
     common_columns <- Reduce(intersect, lapply(lst, names))
     res$procs <- data.table(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
     colnames(res$procs) <- gsub("value.", "procs.", colnames(res$procs))
-    message(cat(crayon::blue("readExperiment >>",
-                             nrow(res$procs),
-                             "found procs params\n")))
+
+    if (nrow(res$procs) == 0) {
+      message(cat(crayon::yellow("readExperiment >> 0 found procs\n")))
+    } else {
+      message(cat(crayon::blue("readExperiment >>",
+                               nrow(res$procs),
+                               "found procs params\n")))
+    }
   }
 
   if ("qc" %in% what | "all" %in% what) {
@@ -114,7 +137,7 @@ readExperiment <- function(expname,
     }
 
     res$qc <- data.table(do.call("rbind", lst))
-    if (is.null(nrow(res$qc))) {
+    if (nrow(res$qc) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found qc\n")))
     } else {
       message(cat(crayon::blue("readExperiment >>", nrow(res$qc), "found qc\n")))
@@ -132,9 +155,14 @@ readExperiment <- function(expname,
     }
 
     res$title <- data.table(do.call("rbind", lst))
-    message(cat(crayon::blue("readExperiment >>",
-                             nrow(res$title),
-                             "found titles\n")))
+
+    if (nrow(res$title) == 0) {
+      message(cat(crayon::yellow("readExperiment >> 0 found titles\n")))
+    } else {
+      message(cat(crayon::blue("readExperiment >>",
+                               nrow(res$title),
+                               "found titles\n")))
+    }
   }
 
   if ("eretic" %in% what | "all" %in% what) {
@@ -161,19 +189,22 @@ readExperiment <- function(expname,
       }
 
 
-        if (!is.null(ereticFactor)) {
-          lst[[l]] <- c(path = expname[[l]], ereticFactor = ereticFactor)
-        }
+      if (!is.null(ereticFactor)) {
+        lst[[l]] <- c(path = expname[[l]], ereticFactor = ereticFactor)
+      }
 
 
     }
 
 
     res$eretic <- data.table(do.call("rbind", lst))
-
-    message(cat(crayon::blue("readExperiment >>",
-                             nrow(res$eretic),
-                             "found ereticFactors\n")))
+    if (nrow(res$eretic) == 0) {
+      message(cat(crayon::yellow("readExperiment >> 0 found ereticFactors\n")))
+    } else {
+      message(cat(crayon::blue("readExperiment >>",
+                               nrow(res$eretic),
+                               "found ereticFactors\n")))
+    }
 
 
   }
@@ -231,7 +262,7 @@ readExperiment <- function(expname,
     }
 
     res$spec <- data.table(do.call("rbind", lst))
-    if (length(spec) == 0) {
+    if (nrow(res$spec) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found spectrum(a)\n")))
     } else {
       message(cat(crayon::blue("readExperiment >>",
@@ -255,7 +286,7 @@ readExperiment <- function(expname,
     }
 
     res$lipo <- data.table(do.call("rbind", lst))
-    if (length(res$lipo) == 0) {
+    if (nrow(res$lipo) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found lipo\n")))
     } else {
       lipo <- lapply(res$lipo$data,
@@ -289,7 +320,7 @@ readExperiment <- function(expname,
 
     res$pacs <- data.table(do.call("rbind", lst))
 
-    if (length(res$pacs) == 0) {
+    if (nrow(res$pacs) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found pacs\n")))
     } else {
       pacs <- lapply(res$pacs$data,
@@ -324,7 +355,7 @@ readExperiment <- function(expname,
     }
 
     res$quant <- data.table(do.call("rbind", lst))
-    if (length(res$quant) == 0) {
+    if (nrow(res$quant) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found quant\n")))
     } else {
       quant <- lapply(res$quant$data,
