@@ -10,6 +10,12 @@ readParams <- function(file) {
     txt <- readLines(buf, n = -1, warn = FALSE)
     close(buf)
 
+    # test if file is empty
+    if (length(txt) == 0) {
+      cat(crayon::yellow("readParams >>", file, " file is empty\n"))
+      return(NULL)
+    }
+
     # test for AMIX files
     if (txt[1] == "A000") {
       cat(crayon::yellow("readParams >>", file, " file is AMIX\n"))

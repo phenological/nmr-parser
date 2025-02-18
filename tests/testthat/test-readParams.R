@@ -73,3 +73,20 @@ test_that("handling amix files", {
   param <- readParams(system.file("hydroxyproline", "1dno-d2o-7-g", "acqus", package = "nmr.parser"))
   expect_equal(param, NULL)
 })
+
+test_that("test comet file", {
+  param <- readParams(system.file("EXTERNAL-comet-nmr-urine-R20-10-acqus", package = "nmr.parser"))
+  expect_equal(nrow(param), 901)
+  expect_equal(ncol(param), 3)
+})
+
+test_that("test comet file", {
+  param <- readParams(system.file("EXTERNAL-comet-nmr-urine-R20", "10", "acqus", package = "nmr.parser"))
+  expect_equal(nrow(param), 901)
+  expect_equal(ncol(param), 3)
+})
+
+test_that("test comet file", {
+  param <- readParams(system.file("EXTERNAL-comet-nmr-urine-R20", "10", "pdata" , "1", "procs", package = "nmr.parser"))
+  expect_equal(param, NULL)
+})

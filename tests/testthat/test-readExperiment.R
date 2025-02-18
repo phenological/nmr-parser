@@ -130,3 +130,16 @@ test_that("reading experiment folder quant", {
 #   expect_equal(expe$quant$value.Acetone[2], "0.062")
 # })
 
+test_that("reading comet folder", {
+  expe<- readExperiment(system.file("EXTERNAL-comet-nmr-urine-R20", "10", package = "nmr.parser"))
+  expect_length(expe, 9)
+  expect_equal(expe$acqus$acqus.TITLE, "Parameter file, TopSpin 3.5 pl 4")
+  expect_equal(expe$acqus$acqus.NS, "32")
+  expect_equal(expe$procs$procs.PHC0, "-7.223511")
+  expect_equal(expe$title$title, "PROF_PLASMA_NOESY Plasma {C:\\IVDrData\\data\\COVID19_Serum-20200701\\nmr} SamTrack {2  A3 - 203}")
+  expect_equal(expe$eretic$ereticFactor, "3808.27187511")
+  expect_equal(expe$lipo$value.TPTG, 139.84)
+  expect_equal(expe$quant$value.Ethanol, "0.000")
+  expect_equal(expe$lipo$value.TPTG, 139.84)
+  expect_equal(expe$quant$value.Acetone, "0.418")
+})

@@ -6,7 +6,7 @@
 #' originalID <-c(originalID, "ddd$ddd", "ddd@ddd", "dd_aa", "dad*")
 #' cleanNames(originalID)
 #' @export
-cleanNames <- function(names) {
+ cleanNames <- function(names) {
   names <- gsub("\\\\", " ", names)
 
   # first we remove trailing spaces
