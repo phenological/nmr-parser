@@ -210,6 +210,8 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
 
     if (uncalibrate) {
       info <- c(info, uncalibrated = 1)
+    } else {
+      info <- c(info, uncalibrated = 0)
     }
 
     if (im) {

@@ -68,7 +68,7 @@ test_that("reading experiment folder qc", {
 test_that("reading experiment folder spec", {
   expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("spec")))
   expect_length(expe, 1)
-  expect_length(expe$spec$spec[[1]]$info, 5)
+  expect_length(expe$spec$spec[[1]]$info, 6)
   expect(expe$spec$spec[[1]]$info[[5]], 3808.272)
   expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
   expect_length(expe$spec$spec[[1]]$spec$x, 44079)
@@ -83,7 +83,7 @@ test_that("reading experiment folder spec", {
                                                       package = "nmr.parser"),
                                           options = list(what = c("spec"))))
   expect_length(expe, 1)
-  expect_length(expe$spec$spec[[1]]$info, 5)
+  expect_length(expe$spec$spec[[1]]$info, 6)
   expect(expe$spec$spec[[1]]$info[[5]], 1)
   expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
   expect_length(expe$spec$spec[[1]]$spec$x, 44079)
