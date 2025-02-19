@@ -78,7 +78,7 @@ test_that("reading spectrum and uncalibrate", {
                                       "im" = TRUE,
                                       "length.out" = 8*1024,
                                       "uncalibrate" = TRUE))
-  expect_equal(spec$info[[1]], 600.27)
+  expect_equal(spec$info[[1]], 600.270002110706)
   expect_equal(spec$spec$x[1], -0.3)
   expect_equal(spec$spec$yi[1], -159.17903)
   expect_equal(length(spec$spec$yi), 8192)
@@ -86,4 +86,5 @@ test_that("reading spectrum and uncalibrate", {
   expect_equal(max(spec$spec$yi), 1158.45156)
   expect_equal(min(spec$spec$y), 3.1081375)
   expect_equal(max(spec$spec$y), 1933.97205)
+  expect_equal(spec$info[[6]], 1)
 })

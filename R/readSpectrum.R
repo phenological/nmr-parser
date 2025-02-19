@@ -207,6 +207,11 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
               PHC1 = phc1,
               SR = SR,
               ereticFactor = ereticFactor)
+
+    if (uncalibrate) {
+      info <- c(info, uncalibrated = 1)
+    }
+
     if (im) {
       spec <- list(info  = info,
                    spec = data.table(x, y, yi))
