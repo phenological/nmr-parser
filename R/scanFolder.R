@@ -47,11 +47,13 @@ scanFolder <- function(folder, options = list()) {
   expList <- data.table(do.call("rbind", expList))
 
 
-  res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
-  res <- setNames(res, c("count", "EXP@PULPROG"))
+
 
 
   if (EXP == "" & PULPROG == "") {
+    res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
+    res <- setNames(res, c("count", "EXP@PULPROG"))
+
     question <- paste0("Choose what to parse.")
     choice <- menu(choices = paste0(res$`EXP@PULPROG`, " (", res$count, ")"),
                    title = question)
@@ -59,7 +61,19 @@ scanFolder <- function(folder, options = list()) {
     fi <- grepl(choice[[1]][1], expList$EXP) &
       grepl(choice[[1]][2], expList$PULPROG)
     expList <- expList[fi,]
-  } else {
+  } else if (EXP == "ignore" & PULPROG == "") {
+    res <- stack(table(expList$PULPROG))
+    res <- setNames(res, c("count", "PULPROG"))
+
+    question <- paste0("Choose what to parse.")
+    choice <- menu(choices = paste0(res$PULPROG, " (", res$count, ")"),
+                   title = question)
+    choice <- as.character(res$PULPROG[choice])
+
+    fi <- grepl(choice, expList$PULPROG)
+    expList <- expList[fi,]
+  }
+  else {
     fi <- grepl(EXP, expList$EXP) &
       grepl(PULPROG, expList$PULPROG)
     expList <- expList[fi,]
