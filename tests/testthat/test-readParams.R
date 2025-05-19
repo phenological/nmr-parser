@@ -5,7 +5,7 @@ test_that("reading inexistent file", {
 
 test_that("checking dimensions", {
   param <- readParams(system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser"))
-  expect_equal(nrow(param), 1127)
+  expect_equal(nrow(param), 1128)
   expect_equal(ncol(param), 3)
 })
 

@@ -22,7 +22,6 @@ readParams <- function(file) {
       return(NULL)
     }
 
-
     content <- list()
     counter <- 1 # line counter
     incr <- 1
@@ -47,7 +46,7 @@ readParams <- function(file) {
           if (grepl("xwin-nmr", tolower(title))) {
             version <- "xwinnmr"
           } else if (grepl("topspin", tolower(title))) {
-            version <- "topsping"
+            version <- "topspin"
           }
         }
 
@@ -63,7 +62,7 @@ readParams <- function(file) {
 
         # get audit info
         if (grepl("^\\$\\$\\s", line)) {
-          date <- time <- timezone <- instrument <- NULL
+          date <- time <- timezone <- instrument <- dpath <- NULL
           param <- gsub("\\$\\$\\s", "", line)
           param <- gsub("\\s+", " ", param)
 
@@ -84,6 +83,10 @@ readParams <- function(file) {
             timezone <- paste0(strsplit(param, " ")[[1]][c(6,7)], collapse = " ")
             instrument <- cleanNames(strsplit(param, " ")[[1]][8])
 
+
+          } else if (grepl("^[A-Z]:", param)){
+            dpath <- param
+
           }
 
           if (!is.null(date) & !is.null(time) & !is.null(timezone) & !is.null(instrument)) {
@@ -102,6 +105,12 @@ readParams <- function(file) {
             content[[incr]] <- list(path = path[length(path)],
                                     name = "instrument",
                                     value = instrument)
+          }
+
+          if (!is.null(dpath) ) {
+            content[[incr]] <- list(path = path[length(path)],
+                                    name = "dpath",
+                                    value = dpath)
           }
 
         } else
