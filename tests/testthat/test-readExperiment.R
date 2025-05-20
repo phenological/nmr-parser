@@ -39,26 +39,26 @@ test_that("reading experiment folders", {
 })
 
 test_that("reading experiment folder acqus", {
-  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("acqus")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), opts = list(what = c("acqus")))
   expect_length(expe, 1)
   expect_equal(expe$acqus$acqus.TITLE, "Parameter file, TopSpin 3.5 pl 4")
   expect_equal(expe$acqus$acqus.NS, "32")
 })
 
 test_that("reading experiment folder procs", {
-  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("procs")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), opts = list(what = c("procs")))
   expect_length(expe, 1)
   expect_equal(expe$procs$procs.PHC0, "-7.223511")
 })
 
 test_that("reading experiment folder eretic", {
-  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("eretic")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), opts = list(what = c("eretic")))
   expect_length(expe, 1)
   expect_equal(expe$eretic$ereticFactor, "3808.27187511")
 })
 
 test_that("reading experiment folder qc", {
-  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("qc")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), opts = list(what = c("qc")))
   expect_length(expe, 1)
   expect_equal(expe$qc$infos[[1]]$name[1], "NMR Experiment Quality Test")
   expect_equal(expe$qc$tests[[1]]$name[1], "LineWidth in Hz")
@@ -66,7 +66,7 @@ test_that("reading experiment folder qc", {
 })
 
 test_that("reading experiment folder spec", {
-  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("spec")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), opts = list(what = c("spec")))
   expect_length(expe, 1)
   expect_length(expe$spec$spec[[1]]$info, 6)
   expect(expe$spec$spec[[1]]$info[[5]], 3808.272)
@@ -81,7 +81,7 @@ test_that("reading experiment folder spec", {
   expe <- suppressWarnings(readExperiment(system.file("HB-COVID0001_noEretic",
                                                       "10",
                                                       package = "nmr.parser"),
-                                          options = list(what = c("spec"))))
+                                          opts = list(what = c("spec"))))
   expect_length(expe, 1)
   expect_length(expe$spec$spec[[1]]$info, 6)
   expect(expe$spec$spec[[1]]$info[[5]], 1)
@@ -97,43 +97,43 @@ test_that("reading experiment folder spec", {
   expe <- suppressWarnings(readExperiment(system.file("HB-COVID0001_noEretic",
                                                       "10",
                                                       package = "nmr.parser"),
-                                          options = list(what = c("spec"),
+                                          opts = list(what = c("spec"),
                                                          specOpts = list(uncalibrate = TRUE))))
   expect_length(expe, 1)
   expect_length(expe$spec$spec[[1]]$info, 6)
   expect_length(expe$spec$spec[[1]]$info[[1]], 1)
   expect(expe$spec$spec[[1]]$info[[5]], 1)
   expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
-  expect_length(expe$spec$spec[[1]]$spec$x, 131072)
-  expect_length(expe$spec$spec[[1]]$spec$y, 131072)
-  expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-10.314515,19.720046))
+  expect_length(expe$spec$spec[[1]]$spec$x, 44079)
+  expect_length(expe$spec$spec[[1]]$spec$y, 44079)
+  expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-0.1,10))
   # the sum is larger as eretic is not applied
-  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 17053886624.9)
+  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 16599536616.8)
 })
 
 test_that("reading experiment folder spec testing uncalibrate", {
   expe <- suppressWarnings(readExperiment(system.file("HB-COVID0001_noEretic",
                                                       "10",
                                                       package = "nmr.parser"),
-                                          options = list(what = c("spec"),
-                                                         specOpts = list(uncalibrate = TRUE))))
+                                          opts = list(what = c("spec"),
+                                                         opts = list(uncalibrate = TRUE))))
   expect_length(expe, 1)
   expect_length(expe$spec$spec[[1]]$info, 6)
   expect_length(expe$spec$spec[[1]]$info[[1]], 1)
   expect(expe$spec$spec[[1]]$info[[5]], 1)
   expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
-  expect_length(expe$spec$spec[[1]]$spec$x, 131072)
-  expect_length(expe$spec$spec[[1]]$spec$y, 131072)
-  expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-10.314515,19.720046))
+  expect_length(expe$spec$spec[[1]]$spec$x, 44079)
+  expect_length(expe$spec$spec[[1]]$spec$y, 44079)
+  expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-0.1,10))
   # the sum is larger as eretic is not applied
-  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 17053886624.9)
+  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 16598660906.7)
 })
 
 test_that("reading experiment folder spec testing specOpt", {
   expe <- suppressWarnings(readExperiment(system.file("HB-COVID0001_noEretic",
                                                       "10",
                                                       package = "nmr.parser"),
-                                          options = list(what = c("spec"),
+                                          opts = list(what = c("spec"),
                                                          specOpts = list(uncalibrate = TRUE,
                                                          fromTo = c(-0.1, 10)))))
   expect_length(expe, 1)
@@ -141,22 +141,42 @@ test_that("reading experiment folder spec testing specOpt", {
   expect_length(expe$spec$spec[[1]]$info[[1]], 1)
   expect(expe$spec$spec[[1]]$info[[5]], 1)
   expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
-  expect_length(expe$spec$spec[[1]]$spec$x, 44076)
-  expect_length(expe$spec$spec[[1]]$spec$y, 44076)
+  expect_length(expe$spec$spec[[1]]$spec$x, 44079)
+  expect_length(expe$spec$spec[[1]]$spec$y, 44079)
   expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-0.1, 10))
   # the sum is larger as eretic is not applied
-  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 16598406835.9)
+  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 16599536616.8)
+})
+
+test_that("reading experiment folder spec testing specOpt", {
+  expe <- suppressWarnings(readExperiment(system.file("HB-COVID0001_noEretic",
+                                                      "10",
+                                                      package = "nmr.parser"),
+                                          opts = list(what = c("spec"),
+                                                      specOpts = list(uncalibrate = TRUE,
+                                                                      fromTo = c(-0.1, 8),
+                                                                      length.out = 10000))))
+  expect_length(expe, 1)
+  expect_length(expe$spec$spec[[1]]$info, 6)
+  expect_length(expe$spec$spec[[1]]$info[[1]], 1)
+  expect(expe$spec$spec[[1]]$info[[5]], 1)
+  expect_equal(expe$spec$spec[[1]]$info[[1]], 600.270002)
+  expect_length(expe$spec$spec[[1]]$spec$x, 10000)
+  expect_length(expe$spec$spec[[1]]$spec$y, 10000)
+  expect_equal(range(expe$spec$spec[[1]]$spec$x), c(-0.1, 8))
+  # the sum is larger as eretic is not applied
+  expect_equal(sum(expe$spec$spec[[1]]$spec$y), 4494275678.5)
 })
 
 test_that("reading experiment folder lipo", {
-  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("lipo")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), opts = list(what = c("lipo")))
   expect_length(expe, 1)
   # expect_equal(expe$lipo$path, "/Users/jul/git/phenological/nmr-parser/inst/HB-COVID0001/10")
   expect_equal(expe$lipo$value.TPTG, 139.84)
 })
 
 test_that("reading experiment folder quant", {
-  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), options = list(what = c("quant")))
+  expe<- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"), opts = list(what = c("quant")))
   expect_length(expe, 1)
   # expect_equal(expe$quant$path, "/Users/jul/git/phenological/nmr-parser/inst/HB-COVID0001/10")
   expect_equal(expe$quant$value.Ethanol, "0.000")

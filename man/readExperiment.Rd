@@ -4,19 +4,14 @@
 \alias{readExperiment}
 \title{read experiment from a bruker folder (expno)}
 \usage{
-readExperiment(
-  expname,
-  options = list(what = c("acqus", "procs", "qc", "title", "eretic", "spec", "lipo",
-    "quant", "pacs", "all", "specOnly"), procno = 1, specOpts = list(uncalibrate = FALSE,
-    fromTo = c(-0.1, 10), length.out = 44079))
-)
+readExperiment(expname, opts = NULL)
 }
 \arguments{
 \item{expname}{\itemize{
 \item a path (or list of) to the expNo folder(s)
 }}
 
-\item{options}{\itemize{
+\item{opts}{\itemize{
 \item object with processing parameters, if TRUE reads from the file
 }}
 

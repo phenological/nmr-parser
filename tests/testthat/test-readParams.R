@@ -82,13 +82,13 @@ test_that("handling amix files", {
 
 test_that("test comet file", {
   param <- readParams(system.file("EXTERNAL-comet-nmr-urine-R20-10-acqus", package = "nmr.parser"))
-  expect_equal(nrow(param), 901)
+  expect_equal(nrow(param), 902)
   expect_equal(ncol(param), 3)
 })
 
 test_that("test comet file", {
   param <- readParams(system.file("EXTERNAL-comet-nmr-urine-R20", "10", "acqus", package = "nmr.parser"))
-  expect_equal(nrow(param), 901)
+  expect_equal(nrow(param), 902)
   expect_equal(ncol(param), 3)
 })
 
