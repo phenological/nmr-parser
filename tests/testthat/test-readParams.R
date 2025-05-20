@@ -9,6 +9,12 @@ test_that("checking dimensions", {
   expect_equal(ncol(param), 3)
 })
 
+test_that("checking dimensions", {
+  param <- readParams(system.file("EXTERNAL-comet-nmr-urine-R20", "10", "acqus", package = "nmr.parser"))
+  expect_equal(nrow(param), 902)
+  expect_equal(ncol(param), 3)
+})
+
 test_that("checking PULPROG", {
   param <- readParams(system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser"))
   expect_equal(param$value[param$name == "PULPROG"], "noesygppr1d")
