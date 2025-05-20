@@ -189,3 +189,4 @@ test_that("reading comet folder", {
   expe<- readExperiment(system.file("EXTERNAL-comet-nmr-urine-R20", "10", package = "nmr.parser"))
   expect_length(expe, 9)
 })
+

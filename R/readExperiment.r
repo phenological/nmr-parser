@@ -2,34 +2,46 @@
 #'
 #' @param expname - a path (or list of) to the expNo folder(s)
 #' @param what - choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
-#' @param options - object with processing parameters, if TRUE reads from the file
+#' @param opts - object with processing parameters, if TRUE reads from the file
 #' @return a list with all read elements
 #'
 #' @export
 #' @importFrom stats reshape
 #' @importFrom data.table setDT
 # curl -X 'GET' $ROLDX_URL/link\?runName\=EXTr01 | jq '.list | .noesygppr1d | .[0] | keys'
-readExperiment <- function(expname,
-                           options = list(what = c("acqus",
-                                                   "procs",
-                                                   "qc",
-                                                   "title",
-                                                   "eretic",
-                                                   "spec",
-                                                   "lipo",
-                                                   "quant",
-                                                   "pacs",
-                                                   "all",
-                                                   "specOnly"),
-                                          procno = 1,
-                                          specOpts = list(uncalibrate = FALSE,
-                                                          fromTo = c(-0.1, 10),
-                                                          length.out = 44079))) {
+readExperiment <- function(expname, opts = NULL) {
+
+  defaultOptions = list(what = c("acqus",
+                          "procs",
+                          "qc",
+                          "title",
+                          "eretic",
+                          "spec",
+                          "lipo",
+                          "quant",
+                          "pacs",
+                          "all",
+                          "specOnly"),
+                 procno = 1,
+                 specOpts = list(uncalibrate = FALSE,
+                                 fromTo = c(-0.1, 10),
+                                 length.out = 44079))
+
+  # Merge provided options with defaults
+  if (is.null(opts)) {
+    opts <- defaultOptions
+  } else {
+    # Handle nested specOpts separately
+    if ("specOpts" %in% names(opts) && !is.null(opts$specOpts)) {
+      opts$specOpts <- modifyList(defaultOptions$specOpts, opts$specOpts)
+    }
+    opts <- modifyList(defaultOptions, opts)
+  }
 
   name <- path <- conc_v <- concUnit_v <- refMax <- refMin <- NULL
   id <- value <- unit <- rawConc <- NULL
 
-  what <- options$what
+  what <- opts$what
 
   if (is.character(expname)) {
     expname <- as.list(expname)
@@ -209,14 +221,14 @@ readExperiment <- function(expname,
 
   }
 
-  ifelse("procno" %in% names(options), procno <- options$procno, procno <- 1)
+  ifelse("procno" %in% names(opts), procno <- opts$procno, procno <- 1)
 
   if ("spec" %in% what | "all" %in% what | "specOnly" %in% what) {
     lst <- list()
     for (l in 1:length(expname)) {
 
-      if("specOpts" %in% names(options)) {
-        specOpts <- options$specOpts
+      if("specOpts" %in% names(opts)) {
+        specOpts <- opts$specOpts
       } else {
         specOpts = list(uncalibrate = FALSE,
                         fromTo = c(-0.1, 10),
