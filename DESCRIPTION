@@ -1,6 +1,6 @@
 Package: nmr.parser
 Title: reading what is required from NMR IVDr data
-Version: 0.3.1
+Version: 0.3.2
 Authors@R: 
     c(person(given = "Julien",
            family = "Wist",

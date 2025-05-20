@@ -84,7 +84,7 @@ readParams <- function(file) {
             instrument <- cleanNames(strsplit(param, " ")[[1]][8])
 
 
-          } else if (grepl("^[A-Z]:", param)){
+          } else if (grepl("^[A-Z]:", param) | grepl("^/u", param)){
             dpath <- param
 
           }
