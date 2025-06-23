@@ -1,13 +1,14 @@
 #' read experiment from a bruker folder (expno)
 #'
 #' @param expname - a path (or list of) to the expNo folder(s)
-#' @param what - choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
 #' @param opts - object with processing parameters, if TRUE reads from the file
+#' what - choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
 #' @return a list with all read elements
 #'
 #' @export
 #' @importFrom stats reshape
 #' @importFrom data.table setDT
+#' @importFrom utils modifyList
 # curl -X 'GET' $ROLDX_URL/link\?runName\=EXTr01 | jq '.list | .noesygppr1d | .[0] | keys'
 readExperiment <- function(expname, opts = NULL) {
 

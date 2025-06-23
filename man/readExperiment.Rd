@@ -13,10 +13,7 @@ readExperiment(expname, opts = NULL)
 
 \item{opts}{\itemize{
 \item object with processing parameters, if TRUE reads from the file
-}}
-
-\item{what}{\itemize{
-\item choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
+what - choose what to read (acqus, procs, qc, title, eretic, spec, lipo, quant, pacs, all)
 }}
 }
 \value{

@@ -8,6 +8,8 @@ getLipoTable(extended = FALSE, withDensities = FALSE)
 }
 \arguments{
 \item{extended}{if TRUE, the extended_lipo information is attached below the lipoTable}
+
+\item{withDensities}{if TRUE, the lipoWithDensities information is returned}
 }
 \value{
 a data.frame with information

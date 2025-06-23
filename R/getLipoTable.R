@@ -1,5 +1,6 @@
 #' get names and description of lipoproteins IVDr parameters
 #' @param extended if TRUE, the extended_lipo information is attached below the lipoTable
+#' @param withDensities if TRUE, the lipoWithDensities information is returned
 #' @return a data.frame with information
 #' @importFrom utils data
 #' @export
