@@ -135,6 +135,15 @@ readExperiment <- function(expname, opts = NULL) {
       cat("Reading:", l, "/", length(expname), "\r")
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = "qc_report.*\\.xml$")
+      if (length(path) > 1 &
+          any(grepl("plasma_qc_report_1_1_0.xml", path))) {
+        # if more than 1 version available pick the latest ones
+        path <- path[grepl("plasma_qc_report_1_1_0.xml", path)]
+      }else if (length(path) > 1 &
+                any(grepl("urine_qc_report_1_1_0.xml", path))){
+        path <- path[grepl("urine_qc_report_1_1_0.xml", path)]
+        
+      }
       # path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_qc_report.xml")
       # path_urine <- file.path(expname[[l]], "pdata", "1", "urine_qc_report.xml")
       if (file.exists(path)) {
@@ -289,6 +298,11 @@ readExperiment <- function(expname, opts = NULL) {
 
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*lipo.*\\.xml$")
+      if(length(path) >1 & any(grepl("plasma_lipo_report_1_1_0", path))) {
+        # if more than 1 version available pick the latest ones
+        path <- path[grepl("plasma_lipo_report_1_1_0", path)]
+      } 
+      
     if (file.exists(path)) {
         lipoproteins <- readLipo(path)
         if (!is.null(lipoproteins)) {
@@ -320,6 +334,11 @@ readExperiment <- function(expname, opts = NULL) {
     for (l in 1:length(expname)) {
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*pacs.*\\.xml$")
+      if(length(path) >1 & any(grepl("pacs_report_1_1_0", path))) {
+        # if more than 1 version available pick the latest ones
+        path <- path[grepl("pacs_report_1_1_0", path)]
+      } 
+      
       if (file.exists(path)) {
         pacs <- readPacs(path)
       } else {
@@ -354,6 +373,11 @@ readExperiment <- function(expname, opts = NULL) {
     for (l in 1:length(expname)) {
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
+      if(length(path) >1 & any(grepl("quant_report_2_1_0", path))) {
+        # if more than 1 version available pick the latest ones
+        path <- path[grepl("quant_report_2_1_0", path)]
+      } 
+      
       if (file.exists(path)) {
         quant <- readQuant(path)
       }  else {
