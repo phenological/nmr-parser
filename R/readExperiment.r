@@ -146,7 +146,7 @@ readExperiment <- function(expname, opts = NULL) {
       }
       # path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_qc_report.xml")
       # path_urine <- file.path(expname[[l]], "pdata", "1", "urine_qc_report.xml")
-      if (file.exists(path)) {
+      if (length(path)>0) {
         qc <- readQc(path)$data
       } else {
         qc <- NULL
