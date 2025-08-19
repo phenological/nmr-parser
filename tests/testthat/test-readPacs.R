@@ -13,3 +13,15 @@ test_that("reading file", {
   expect_equal(ncol(pacs$data), 6)
   expect_equal(pacs$version, "PhenoRisk PACS RuO 1.0.0  Research Use Only")
 })
+
+
+test_that("reading file", {
+  pacs <- readPacs(system.file("..", "tests", "testthat", "plasma_pacs_report_1_1_0.xml", package = "nmr.parser"))
+  expect_equal(pacs$data$name[1], "Glucose")
+  expect_equal(pacs$data$conc_v[1], "3.544")
+  expect_equal(pacs$data$refMax[1], "6.08")
+  expect_equal(pacs$data$refMin[1], "1.73")
+  expect_equal(nrow(pacs$data), 16)
+  expect_equal(ncol(pacs$data), 6)
+  expect_equal(pacs$version, "1.1.0+release.PhenoriskPCS_1.1.7fe55b9 Research Use Only")
+})

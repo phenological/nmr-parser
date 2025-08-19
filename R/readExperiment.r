@@ -133,13 +133,12 @@ readExperiment <- function(expname, opts = NULL) {
     lst <- list()
     for (l in 1:length(expname)) {
       cat("Reading:", l, "/", length(expname), "\r")
-
-      path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_qc_report.xml")
-      path_urine <- file.path(expname[[l]], "pdata", "1", "urine_qc_report.xml")
-      if (file.exists(path_serum)) {
-        qc <- readQc(path_serum)$data
-      } else if (file.exists(path_urine)) {
-        qc <- readQc(path_urine)$data
+      folderPath <- file.path(expname[[l]], "pdata", "1")
+      path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = "qc_report.*\\.xml$")
+      # path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_qc_report.xml")
+      # path_urine <- file.path(expname[[l]], "pdata", "1", "urine_qc_report.xml")
+      if (file.exists(path)) {
+        qc <- readQc(path)$data
       } else {
         qc <- NULL
       }
@@ -289,8 +288,7 @@ readExperiment <- function(expname, opts = NULL) {
     for (l in 1:length(expname)) {
 
       folderPath <- file.path(expname[[l]], "pdata", "1")
-      filename = dir(folderPath, pattern = "lipo")
-      path <- file.path(folderPath, filename)
+      path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*lipo.*\\.xml$")
     if (file.exists(path)) {
         lipoproteins <- readLipo(path)
         if (!is.null(lipoproteins)) {
@@ -320,8 +318,8 @@ readExperiment <- function(expname, opts = NULL) {
   if ("pacs" %in% what | "all" %in% what) {
     lst <- list()
     for (l in 1:length(expname)) {
-
-      path <- file.path(expname[[l]], "pdata", "1", "plasma_pacs_report.xml")
+      folderPath <- file.path(expname[[l]], "pdata", "1")
+      path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*pacs.*\\.xml$")
       if (file.exists(path)) {
         pacs <- readPacs(path)
       } else {
@@ -354,13 +352,11 @@ readExperiment <- function(expname, opts = NULL) {
   if ("quant" %in% what | "all" %in% what) {
     lst <- list()
     for (l in 1:length(expname)) {
-      path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_quant_report.xml")
-      path_urine <- file.path(expname[[l]], "pdata", "1", "urine_quant_report_e.xml")
-      if (file.exists(path_serum)) {
-        quant <- readQuant(path_serum)
-      } else if (file.exists(path_urine)) {
-        quant <- readQuant(path_urine)
-      } else {
+      folderPath <- file.path(expname[[l]], "pdata", "1")
+      path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
+      if (file.exists(path)) {
+        quant <- readQuant(path)
+      }  else {
         quant <- NULL
       }
       if (!is.null(quant)) {

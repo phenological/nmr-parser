@@ -32,3 +32,16 @@ test_that("reading file", {
   expect_equal(ncol(quant$data), 22)
   expect_equal(quant$version, "Quant-UR E.1.0.0  Reseach Use Only")
 })
+
+
+
+test_that("reading file", {
+  quant <- readQuant(system.file("..", "tests", "testthat", "plasma_quant_report_2_1_0.xml", package = "nmr.parser"))
+  expect_equal(quant$data$name[1], "Ethanol")
+  expect_equal(quant$data$rawConc[1], "0.000")
+  expect_equal(quant$data$sigCorr[1], '0')
+  expect_equal(nrow(quant$data), 41)
+  expect_equal(ncol(quant$data), 22)
+  expect_equal(quant$version, "2.1.0+release.QuantPS_2.1.b9ea40f Research Use Only")
+})
+
