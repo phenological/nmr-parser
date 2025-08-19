@@ -288,8 +288,10 @@ readExperiment <- function(expname, opts = NULL) {
     lst <- list()
     for (l in 1:length(expname)) {
 
-      path <- file.path(expname[[l]], "pdata", "1", "lipo_results.xml")
-      if (file.exists(path)) {
+      folderPath <- file.path(expname[[l]], "pdata", "1")
+      filename = dir(folderPath, pattern = "lipo")
+      path <- file.path(folderPath, filename)
+    if (file.exists(path)) {
         lipoproteins <- readLipo(path)
         if (!is.null(lipoproteins)) {
           lipoproteins$data$path <- expname[[l]]
