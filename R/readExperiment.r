@@ -303,7 +303,7 @@ readExperiment <- function(expname, opts = NULL) {
         path <- path[grepl("plasma_lipo_report_1_1_0", path)]
       } 
       
-    if (file.exists(path)) {
+    if (length(path)>0) {
         lipoproteins <- readLipo(path)
         if (!is.null(lipoproteins)) {
           lipoproteins$data$path <- expname[[l]]
@@ -339,7 +339,7 @@ readExperiment <- function(expname, opts = NULL) {
         path <- path[grepl("pacs_report_1_1_0", path)]
       } 
       
-      if (file.exists(path)) {
+      if (length(path)>0) {
         pacs <- readPacs(path)
       } else {
         pacs <- NULL
@@ -378,7 +378,7 @@ readExperiment <- function(expname, opts = NULL) {
         path <- path[grepl("quant_report_2_1_0", path)]
       } 
       
-      if (file.exists(path)) {
+      if (length(path)>0) {
         quant <- readQuant(path)
       }  else {
         quant <- NULL
