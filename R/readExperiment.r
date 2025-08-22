@@ -375,10 +375,10 @@ readExperiment <- function(expname, opts = NULL) {
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
       if(length(path) >1 & any(grepl("quant_report_2_1_0", path))) {
         # if more than 1 version available pick the latest ones  "SERUM"
-        path <- path[grepl("quant_report_2_1_0", path)]
-      } else if (length(path) >1 & any(grepl("quant_report_1_2_0", path))) {
+        path <- path[grepl("2_1_0.xml", path)]
+      } else if (length(path) >1 & any(grepl("1_2_0.xml", path))) {
         # if more than 1 version available pick the latest ones."Urine"
-        path <- path[grepl("quant_report_1_2_0", path)]
+        path <- path[grepl("1_2_0.xml", path)]
       }
       if (length(path)==1) {
         quant <- readQuant(path)
