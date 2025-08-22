@@ -73,7 +73,7 @@ readQuant <- function(file){
       }
       data <- data.frame(do.call(rbind, paramList))
 
-    } else if (version == "Quant-UR E.1.1.0  Reseach Use Only" | version == "Quant-PS 2.0.0  Reseach Use Only" | version == "2.1.0+release.QuantPS_2.1.b9ea40f Research Use Only") {
+    } else if (version == "Quant-UR E.1.1.0  Reseach Use Only" | version == "Quant-PS 2.0.0  Reseach Use Only" | version == "2.1.0+release.QuantPS_2.1.b9ea40f Research Use Only" | version == "1.2.0+release.QuantUR_E_1.2.f3ad700 Research Use Only") {
 
 
       name <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
