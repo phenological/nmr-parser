@@ -367,19 +367,51 @@ readExperiment <- function(expname, opts = NULL) {
     lst <- list()
     for (l in 1:length(expname)) {
       folderPath <- file.path(expname[[l]], "pdata", "1")
-      path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
-      if(any(grepl("2_1_0", path))) {
-        # if more than 1 version available pick the latest ones  "SERUM"
-        path <- path[grepl("2_1_0", path)]
-      } else if (any(grepl("1_2_0", path))) {
-        # if more than 1 version available pick the latest ones."Urine"
-        path <- path[grepl("1_2_0", path)]
+      # path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
+      # if(any(grepl("2_1_0", path))) {
+      #   # if more than 1 version available pick the latest ones  "SERUM"
+      #   path <- path[grepl("2_1_0", path)]
+      # } else if (any(grepl("1_2_0", path))) {
+      #   # if more than 1 version available pick the latest ones."Urine"
+      #   path <- path[grepl("1_2_0", path)]
+      # } else if (any(grepl("1_2_0", path))) {
+      #   # if more than 1 version available pick the latest ones."Urine"
+      #   path <- path[grepl("1_2_0", path)]
+      # }
+      # if (length(path)==1) {
+      #   quant <- readQuant(path)
+      # }  else {
+      #   quant <- NULL
+      # }
+      # Define version priority (highest first)
+      priority <- c("plasma_quant_report_2_1_0.xml", "urine_quant_report_e_1_2_0.xml",  "plasma_quant_report.xml",
+                    "urine_quant_report_e.xml","urine_quant_report_e_ver_1_0.xml",
+                    "urine_quant_report_b.xml","urine_quant_report_b_ver_1_0.xml",
+                    "urine_quant_report_ne.xml","urine_quant_report_ne_ver_1_0.xml")
+      
+      # Find all matching xml files
+      path <- dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
+      
+      # Pick the highest-priority match
+      chosen <- NULL
+      for (ver in priority) {
+        matches <- grep(ver, path, value = TRUE)
+        if (length(matches) > 0) {
+          chosen <- matches
+          break
+        }
       }
-      if (length(path)==1) {
-        quant <- readQuant(path)
-      }  else {
+      
+      # If exactly one file matched, read it
+      if (!is.null(chosen) && length(chosen) == 1) {
+        quant <- readQuant(chosen)
+      } else {
         quant <- NULL
       }
+      
+      
+      
+      
       if (!is.null(quant)) {
         quant$data$path <- expname[[l]]
         lst[[l]] <- quant
