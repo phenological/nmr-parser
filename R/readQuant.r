@@ -7,13 +7,10 @@
 
 readQuant <- function(file){
   if (file.exists(file)) {
-
     xml <- read_xml(file, options = "NOBLANKS")
     version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
     # check that "name" exists in xml
-    if (version == "Quant-UR E.1.0.0  Reseach Use Only") {
-
-
+    if (grepl("_ver_",file,fixed = T) ) {
       param <- xml_find_all(xml, ".//PARAMETER")
       paramList <- list()
       for (p in param) {
@@ -73,13 +70,7 @@ readQuant <- function(file){
       }
       data <- data.frame(do.call(rbind, paramList))
 
-    } else if (version == "Quant-UR E.1.1.0  Reseach Use Only" |
-               version == "Quant-UR B.1.1.0  Reseach Use Only" |
-               version == "Quant-UR NE.1.1.0  Reseach Use Only" | 
-               version == "Quant-PS 2.0.0  Reseach Use Only" | 
-               version == "2.1.0+release.QuantPS_2.1.b9ea40f Research Use Only" | 
-               version == "1.2.0+release.QuantUR_E_1.2.f3ad700 Research Use Only") {
-
+    }else if (grepl("Quant", version, fixed = T) ){
 
       name <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
       conc_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "conc")

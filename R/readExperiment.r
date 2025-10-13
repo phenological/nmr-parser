@@ -384,10 +384,11 @@ readExperiment <- function(expname, opts = NULL) {
       #   quant <- NULL
       # }
       # Define version priority (highest first)
-      priority <- c("plasma_quant_report_2_1_0.xml", "urine_quant_report_e_1_2_0.xml",  "plasma_quant_report.xml",
-                    "urine_quant_report_e.xml","urine_quant_report_e_ver_1_0.xml",
-                    "urine_quant_report_b.xml","urine_quant_report_b_ver_1_0.xml",
-                    "urine_quant_report_ne.xml","urine_quant_report_ne_ver_1_0.xml")
+      priority <- c("plasma_quant_report_2_1_0.xml","plasma_quant_report.xml",
+                    "urine_quant_report_e_1_2_0.xml",  "urine_quant_report_e_ver_1_0.xml",
+                    "urine_quant_report_e.xml",
+                    "urine_quant_report_b_ver_1_0.xml","urine_quant_report_b.xml",
+                    "urine_quant_report_ne_ver_1_0.xml","urine_quant_report_ne.xml")
       
       # Find all matching xml files
       path <- dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")

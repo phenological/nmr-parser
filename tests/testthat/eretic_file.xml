@@ -1,48 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Eretic_definition>
-   <Reference>
-      <version>2</version>
-      <refname>Water</refname>
-      <file>C:\Screening\data\Reference\Water__AIS80-4-2023-09-20\2\pdata\1\1r</file>
-      <Acquisition_date>2023-09-20 06:31:24</Acquisition_date>
-      <Processing_date>2023-09-20 08:37:44</Processing_date>
-      <Regions>[0;10]</Regions>
-      <one_mol_integral>379625212.4195</one_mol_integral>
-      <one_mol_per_region>379625212.419485</one_mol_per_region>
-      <D1>30</D1>
-      <P1>10.72</P1>
-      <RG>1</RG>
-      <NS>8</NS>
-      <SW>20.1315</SW>
-      <SI>32768</SI>
-      <OFFSET>16.2408</OFFSET>
-      <PL9>67.358</PL9>
-      <PL1>0</PL1>
-      <DS>2</DS>
-      <TE>298</TE>
-      <D8>0</D8>
-      <sysname>&lt;Fourier&gt;</sysname>
-      <PROBHD>&lt;Z181180_000062 (PH F-SEI80B-H/C-F-5.0-Z)&gt;</PROBHD>
-   </Reference>
-   <Sample>
-      <version>2</version>
-      <file>C:\Screening\data\CL-PS-SOLOMON_PARK_RESEARCH_LABS-230227_2023-KW38\32565\20\pdata\1\1r</file>
-      <Acquisition_date>2023-09-20 23:03:39</Acquisition_date>
-      <Processing_date>2023-09-21 01:18:54</Processing_date>
-      <one_mol_integral>4467976882.4925</one_mol_integral>
-      <D1>4</D1>
-      <P1>10.93</P1>
-      <RG>1</RG>
-      <NS>96</NS>
-      <SW>29.7179</SW>
-      <SI>32768</SI>
-      <OFFSET>19.6863</OFFSET>
-      <PL9>63.6646</PL9>
-      <PL1>0</PL1>
-      <DS>4</DS>
-      <TE>298</TE>
-      <D8>0.05</D8>
-      <sysname>&lt;Fourier&gt;</sysname>
-      <PROBHD>&lt;Z181180_000062 (PH F-SEI80B-H/C-F-5.0-Z)&gt;</PROBHD>
-   </Sample>
+    <Reference>
+        <version>acpEretic-1.1</version>
+        <name>Water_LS_pulsecal_opt</name>
+        <standard_type>External Standard</standard_type>
+        <file>C:\Bruker\System_checks\ERETIC\Water_07112024\10\pdata\1\1r</file>
+        <Acquisition_date>2024-11-07 02:06:54</Acquisition_date>
+        <Processing_date>07-Nov-2024 10:13:06</Processing_date>
+        <Regions>[0.077 9.998]</Regions>
+        <original_regions>[0.077 9.998]</original_regions>
+        <autodetect_internal_standard_pos>false</autodetect_internal_standard_pos>
+        <autodetect_internal_standard_tolerance>0.15</autodetect_internal_standard_tolerance>
+        <dilution_factor>1</dilution_factor>
+        <NH>2</NH>
+        <C>1000</C>
+        <unity>g/l</unity>
+        <MM>18.02</MM>
+        <xc>1</xc>
+        <SpectralSize>32768</SpectralSize>
+        <field>80.138</field>
+        <one_mol_integral>386156259.9109</one_mol_integral>
+        <one_mol_per_region>386156259.9109</one_mol_per_region>
+        <D1>30</D1>
+        <P1>12.4084</P1>
+        <RG>1</RG>
+        <NS>8</NS>
+        <SW>20.1264</SW>
+        <SI>32768</SI>
+        <OFFSET>16.0481</OFFSET>
+        <PL9>66.8206</PL9>
+        <PL1>0.44553</PL1>
+        <DS>2</DS>
+        <TE>298</TE>
+        <D8>0</D8>
+        <sysname>Fourier</sysname>
+        <SPECT>4CE05022LG</SPECT>
+        <PROBHD>Z181180_000028 (PHF-DUL80B-H/C/F-5.0-Z)</PROBHD>
+        <PULPROG>zg</PULPROG>
+        <EXP>Plasma_Water_Reference</EXP>
+        <SOLVENT>H2O</SOLVENT>
+    </Reference>
+    <Sample>
+        <file>C:\Experiments\data\covid19_mauritiusC2_PLA_NMR-F80-298K@fEPP_COVr52_COVp298\830\pdata\1\1r</file>
+        <Acquisition_date>2024-11-08 15:35:49</Acquisition_date>
+        <Processing_date>08-Nov-2024 23:47:01</Processing_date>
+        <one_mol_integral>4626842576.2483</one_mol_integral>
+        <D1>4</D1>
+        <P1>12.4272</P1>
+        <RG>1</RG>
+        <NS>96</NS>
+        <SW>29.7105</SW>
+        <SI>32768</SI>
+        <OFFSET>19.6805</OFFSET>
+        <PL9>62.995</PL9>
+        <PL1>0.44553</PL1>
+        <DS>4</DS>
+        <TE>298</TE>
+        <D8>0.016667</D8>
+        <sysname>Fourier</sysname>
+        <SPECT>4CE05022LG</SPECT>
+        <PROBHD>Z181180_000028 (PHF-DUL80B-H/C/F-5.0-Z)</PROBHD>
+        <PULPROG>noesygppr1d</PULPROG>
+        <EXP>plasma_inf_opt</EXP>
+        <SOLVENT>Plasma</SOLVENT>
+    </Sample>
 </Eretic_definition>

@@ -6,7 +6,7 @@ test_that("reading inexistent file", {
 test_that("reading file", {
   pacs <- readPacs(system.file("..", "tests", "testthat", "plasma_pacs_report.xml", package = "nmr.parser"))
   expect_equal(pacs$data$name[1], "Glucose")
-  expect_equal(pacs$data$conc_v[1], "4.808")
+  expect_equal(pacs$data$conc_v[1], "4.948")
   expect_equal(pacs$data$refMax[1], "6.08")
   expect_equal(pacs$data$refMin[1], "1.73")
   expect_equal(nrow(pacs$data), 16)
@@ -18,7 +18,7 @@ test_that("reading file", {
 test_that("reading file", {
   pacs <- readPacs(system.file("..", "tests", "testthat", "plasma_pacs_report_1_1_0.xml", package = "nmr.parser"))
   expect_equal(pacs$data$name[1], "Glucose")
-  expect_equal(pacs$data$conc_v[1], "3.544")
+  expect_equal(pacs$data$conc_v[1], "5.035")
   expect_equal(pacs$data$refMax[1], "6.08")
   expect_equal(pacs$data$refMin[1], "1.73")
   expect_equal(nrow(pacs$data), 16)

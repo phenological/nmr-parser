@@ -15,8 +15,8 @@ test_that("reading file", {
   expect_equal(qc$infoNames[1], "nmr-experiment-quality-test")
   expect_equal(qc$infos$name[1], "NMR Experiment Quality Test")
   expect_equal(is.na(qc$infos$value[1]), TRUE )
-  expect_equal(qc$tests$comment[1], "not passed")
-  expect_equal(qc$tests$value[1], "1.6")
+  expect_equal(qc$tests$comment[1], "passed")
+  expect_equal(qc$tests$value[1], "1.5")
   expect_equal(length(qc$tests[[1]]), 22)
   expect_equal(qc$testNames[2], "residual-water-signal-in-mmol-l")
   expect_equal(qc$tests$name[2], "Residual Water Signal in mmol/L")
@@ -63,3 +63,4 @@ test_that("reading file", {
   expect_equal(qc$tests$name[2], "Residual Water Signal in mmol/L")
   expect_equal(qc$tests$type[22], "Contamination Test")
 })
+
