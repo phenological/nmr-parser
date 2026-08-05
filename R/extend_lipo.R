@@ -113,15 +113,14 @@ extend_lipo_value <- function(lipo){
   #note that these values are calculated using only the raw data (df not calc denominator), this is still acceptable since, for example, V1PL_frac can be calculated using V1PL_raw/VLPL_raw
   #OR V1PL_raw/(V1PL_raw + V2PL_raw + V4PL_raw + V4PL_raw + V5PL_raw). The denominators should be the same (the raw should be the sum of V1 to V5), sometimes there is a slight discrepancy
   #between the raw and adding these parts but it is only slight and due to experimental error
+  letter_to_prefix <- c(H = "HD", V = "VL", L = "LD")
+  
   for (letter in letters) {
     for (i in ranges[[letter]]) {
       for (suffix in suffixes) {
-        for (prefix in prefixes){
-          if (prefix == "ID") next  # Skip "ID"
-          col <- paste0(letter, i, suffix)
-          col2 <- paste0(prefix, suffix)
-          frac[[col]] <- round(df[[col]] / df[[col2]], 4) * 100
-        }
+        col  <- paste0(letter, i, suffix)
+        col2 <- paste0(letter_to_prefix[[letter]], suffix)
+        frac[[col]] <- round(df[[col]] / df[[col2]], 4) * 100
       }
     }
   }
