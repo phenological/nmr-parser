@@ -211,3 +211,24 @@ test_that("reading comet folder", {
   expect_length(expe, 9)
 })
 
+
+test_that("an unknown report version alongside a known one does not stop the run", {
+  #there is one report per pdata, but a new version can sit next to the old
+  #one. dir() then returns both, and readLipo()/readPacs()/readQc() error on a
+  #vector of paths, taking the whole run down. The latest one wins.
+  expno <- file.path(tempdir(), "versions", "10")
+  pdata <- file.path(expno, "pdata", "1")
+  dir.create(pdata, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(file.path(tempdir(), "versions"), recursive = TRUE), add = TRUE)
+
+  fixture <- function(x) system.file("..", "tests", "testthat", x, package = "nmr.parser")
+  file.copy(fixture("plasma_lipo_report_1_1_0.xml"), file.path(pdata, "plasma_lipo_report.xml"))
+  file.copy(fixture("plasma_lipo_report_1_1_0.xml"), file.path(pdata, "plasma_lipo_report_9_9_9.xml"))
+  file.copy(fixture("plasma_pacs_report.xml"), file.path(pdata, "plasma_pacs_report.xml"))
+  file.copy(fixture("plasma_pacs_report.xml"), file.path(pdata, "plasma_pacs_report_9_9_9.xml"))
+
+  expe <- readExperiment(expno, opts = list(what = c("lipo", "pacs")))
+
+  expect_equal(nrow(expe$lipo), 1)
+  expect_equal(nrow(expe$pacs), 1)
+})

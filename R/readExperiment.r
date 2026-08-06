@@ -139,6 +139,12 @@ readExperiment <- function(expname, opts = NULL) {
         # if more than 1 version available pick the latest ones
         path <- path[grepl("1_1_0.xml", path)]
       }
+      # there is only one report per pdata, so anything left over is a version
+      # variant we do not know about. dir() sorts, so the last one is the
+      # latest. readQc() would error on a vector of paths.
+      if (length(path) > 1) {
+        path <- path[length(path)]
+      }
       # path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_qc_report.xml")
       # path_urine <- file.path(expname[[l]], "pdata", "1", "urine_qc_report.xml")
       if (length(path)>0) {
@@ -296,8 +302,13 @@ readExperiment <- function(expname, opts = NULL) {
       if(any(grepl("1_1_0", path))) {
         # if more than 1 version available pick the latest ones
         path <- path[grepl("1_1_0", path)]
-      } 
-      
+      }
+      # only one report per pdata, so keep the latest of any leftover version
+      # variants. readLipo() would error on a vector of paths.
+      if (length(path) > 1) {
+        path <- path[length(path)]
+      }
+
     if (length(path)>0) {
         lipoproteins <- readLipo(path)
         if (!is.null(lipoproteins)) {
@@ -332,8 +343,13 @@ readExperiment <- function(expname, opts = NULL) {
       if(any(grepl("1_1_0", path))) {
         # if more than 1 version available pick the latest ones
         path <- path[grepl("1_1_0", path)]
-      } 
-      
+      }
+      # only one report per pdata, so keep the latest of any leftover version
+      # variants. readPacs() would error on a vector of paths.
+      if (length(path) > 1) {
+        path <- path[length(path)]
+      }
+
       if (length(path)>0) {
         pacs <- readPacs(path)
       } else {
@@ -403,9 +419,10 @@ readExperiment <- function(expname, opts = NULL) {
         }
       }
       
-      # If exactly one file matched, read it
-      if (!is.null(chosen) && length(chosen) == 1) {
-        quant <- readQuant(chosen)
+      # Read the match, keeping the latest when the same report shows up twice
+      # (dropping the sample here would lose it silently)
+      if (!is.null(chosen)) {
+        quant <- readQuant(chosen[length(chosen)])
       } else {
         quant <- NULL
       }
