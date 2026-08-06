@@ -154,8 +154,7 @@ extend_lipo_value <- function(lipo){
   #frac
   colnames(frac) <- paste(colnames(frac), "frac", sep = "_")
 
-  df <- cbind(df, calc, pct, frac)
-
+  return(cbind(df, calc, pct, frac))
 }
 
 #' extend_lipo
