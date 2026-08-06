@@ -52,7 +52,7 @@ extend_lipo_value <- function(lipo){
     IDPN = round(df$IDPN / calc$TBPN, 4) * 100
   )
 
-  letters <- c("H", "V", "L")
+  classes <- c("H", "V", "L")  #subfraction letters
   ranges <- list(H = 1:4, V = 1:5, L = 1:6)
   prefixes <- c("HD", "VL", "ID", "LD")
   parent <- c(H = "HD", V = "VL", L = "LD")  #subfraction letter -> parent class
@@ -60,7 +60,7 @@ extend_lipo_value <- function(lipo){
   suffixes2 <- c("A1", "A2")
 
   #"H1CE" "H2CE" "H3CE" "H4CE" "V1CE" "V2CE" "V3CE" "V4CE" "V5CE" "L1CE" "L2CE" "L3CE" "L4CE" "L5CE" "L6CE"
-  for (letter in letters) {
+  for (letter in classes) {
     for (i in ranges[[letter]]) {
       ch_col <- paste0(letter, i, "CH")
       fc_col <- paste0(letter, i, "FC")
@@ -73,7 +73,7 @@ extend_lipo_value <- function(lipo){
   #"H1TG" "H1FC"  "H1PL"  "H2TG"  "H2FC"  "H2PL"  "H3TG"  "H3FC"  "H3PL"  "H4TG"  "H4FC"  "H4PL"  "V1TG"  "V1FC"  "V1PL"  "V2TG"  "V2FC"  "V2PL"  "V3TG"
   # "V3FC"  "V3PL"  "V4TG"  "V4FC"  "V4PL"  "V5TG"  "V5FC"  "V5PL"  "L1TG"  "L1FC"  "L1PL"  "L2TG"  "L2FC"  "L2PL"  "L3TG"  "L3FC"  "L3PL"  "L4TG"
   # "L4FC"  "L4PL"  "L5TG"  "L5FC"  "L5PL"  "L6TG"  "L6FC"  "L6PL"
-  for (letter in letters) {
+  for (letter in classes) {
     for (i in ranges[[letter]]) {
       for (suffix in suffixes) {
         if(suffix == "CH") next
@@ -97,7 +97,7 @@ extend_lipo_value <- function(lipo){
   frac <- data.frame(row.names = seq_len(nrow(df)))
 
   #"H1CE" "H2CE" "H3CE" "H4CE" "V1CE" "V2CE" "V3CE" "V4CE" "V5CE" "L1CE" "L2CE" "L3CE" "L4CE" "L5CE" "L6CE"
-  for (letter in letters) {
+  for (letter in classes) {
     for (i in ranges[[letter]]) {
       ch_col <- paste0(letter, i, "CH")
       fc_col <- paste0(letter, i, "FC")
@@ -114,7 +114,7 @@ extend_lipo_value <- function(lipo){
   #note that these values are calculated using only the raw data (df not calc denominator), this is still acceptable since, for example, V1PL_frac can be calculated using V1PL_raw/VLPL_raw
   #OR V1PL_raw/(V1PL_raw + V2PL_raw + V4PL_raw + V4PL_raw + V5PL_raw). The denominators should be the same (the raw should be the sum of V1 to V5), sometimes there is a slight discrepancy
   #between the raw and adding these parts but it is only slight and due to experimental error
-  for (letter in letters) {
+  for (letter in classes) {
     for (i in ranges[[letter]]) {
       for (suffix in suffixes) {
         col <- paste0(letter, i, suffix)
