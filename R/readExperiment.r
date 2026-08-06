@@ -380,6 +380,13 @@ readExperiment <- function(expname, opts = NULL) {
   }
 
   if ("quant" %in% what | "all" %in% what) {
+    # Define version priority (highest first)
+    quantPriority <- c("plasma_quant_report_2_1_0.xml","plasma_quant_report.xml",
+                       "urine_quant_report_e_1_2_0.xml",  "urine_quant_report_e_ver_1_0.xml",
+                       "urine_quant_report_e.xml",
+                       "urine_quant_report_b_ver_1_0.xml","urine_quant_report_b.xml",
+                       "urine_quant_report_ne_ver_1_0.xml","urine_quant_report_ne.xml")
+
     lst <- list()
     for (l in 1:length(expname)) {
       folderPath <- file.path(expname[[l]], "pdata", "1")
@@ -399,20 +406,14 @@ readExperiment <- function(expname, opts = NULL) {
       # }  else {
       #   quant <- NULL
       # }
-      # Define version priority (highest first)
-      priority <- c("plasma_quant_report_2_1_0.xml","plasma_quant_report.xml",
-                    "urine_quant_report_e_1_2_0.xml",  "urine_quant_report_e_ver_1_0.xml",
-                    "urine_quant_report_e.xml",
-                    "urine_quant_report_b_ver_1_0.xml","urine_quant_report_b.xml",
-                    "urine_quant_report_ne_ver_1_0.xml","urine_quant_report_ne.xml")
-      
       # Find all matching xml files
       path <- dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
-      
-      # Pick the highest-priority match
+
+      # Pick the highest-priority match, on the file name rather than on the
+      # priority entry read as a regexp, where the . before xml is a wildcard
       chosen <- NULL
-      for (ver in priority) {
-        matches <- grep(ver, path, value = TRUE)
+      for (ver in quantPriority) {
+        matches <- path[basename(path) == ver]
         if (length(matches) > 0) {
           chosen <- matches
           break
