@@ -232,3 +232,17 @@ test_that("an unknown report version alongside a known one does not stop the run
   expect_equal(nrow(expe$lipo), 1)
   expect_equal(nrow(expe$pacs), 1)
 })
+
+test_that("a trailing slash on the expno still finds the eretic folder", {
+  #the last character of the whole path used to be replaced, so ".../11/"
+  #became ".../110", no QuantFactorSample.xml was found and the spectrum
+  #came back scaled by 1 instead of the eretic factor, behind a warning
+  expno <- system.file("HB-COVID0001", "11", package = "nmr.parser")
+
+  bare <- readExperiment(expno, opts = list(what = "spec"))
+  slash <- readExperiment(paste0(expno, "/"), opts = list(what = "spec"))
+
+  expect_equal(slash$spec$spec[[1]]$info[["ereticFactor"]],
+               bare$spec$spec[[1]]$info[["ereticFactor"]])
+  expect_false(slash$spec$spec[[1]]$info[["ereticFactor"]] == 1)
+})

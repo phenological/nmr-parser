@@ -247,7 +247,11 @@ readExperiment <- function(expname, opts = NULL) {
 
       # we always look in the first folder (ANPC folder structure)
       # this is pretty safe but may be wrong for some reruns
-      ereticPath <- paste0(substr(expname[[l]], 1, nchar(expname[[l]])-1), "0")
+      # replace the last digit of the expno, not the last character of the
+      # whole path, which a trailing slash turns into a different expno
+      expno <- basename(expname[[l]])
+      ereticPath <- file.path(dirname(expname[[l]]),
+                              paste0(substr(expno, 1, nchar(expno) - 1), "0"))
 
       if ("eretic" %in% names(specOpts)) {
 
