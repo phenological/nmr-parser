@@ -20,7 +20,6 @@
 
   # last we curate from other weird characters
   names <- tolower(names)
-  make.unique(names, sep = "#")
   names <- gsub("[*]$", "-S", names)
   names <- gsub("[*]", "T", names)
   names <- gsub("[+]", "P", names)
@@ -33,7 +32,14 @@
   names <- gsub("-+", "-", names)
   names <- gsub("^-", "", names)
 
-  # last we remove trailing dashes
+  # then we remove trailing dashes
   names <- gsub("[-]*$", "", names)
+
+  # last we suffix replicates with #1, #2, ... This has to come after the
+  # cleaning above: names that differ only in punctuation ("dd.aa", "dd_aa")
+  # are distinct on input but collide once cleaned, so deduplicating earlier
+  # would let duplicates through.
+  names <- make.unique(names, sep = "#")
+
   return(names)
 }
