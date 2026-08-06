@@ -10,7 +10,7 @@ readQuant <- function(file){
     xml <- read_xml(file, options = "NOBLANKS")
     version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
     # check that "name" exists in xml
-    if (grepl("_ver_",file,fixed = T) ) {
+    if (grepl("_ver_",file,fixed = TRUE) ) {
       param <- xml_find_all(xml, ".//PARAMETER")
       paramList <- list()
       for (p in param) {
@@ -70,7 +70,7 @@ readQuant <- function(file){
       }
       data <- data.frame(do.call(rbind, paramList))
 
-    }else if (grepl("Quant", version, fixed = T) ){
+    }else if (grepl("Quant", version, fixed = TRUE) ){
 
       name <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
       conc_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "conc")
