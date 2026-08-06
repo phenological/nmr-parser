@@ -17,8 +17,8 @@ readParam <- function(path, paramName){
       if (length(paramName) == 1) {
         
         idx <- grep(paste0(paramName, "="), txt)
-        
-        if (length(idx > 0)) {
+
+        if (length(idx) > 0) {
           parameter <- strsplit(txt[idx], "=")[[1]][2]
         } else {
           cat(crayon::yellow("readParam param", paramName, "not found:\n"))
@@ -39,8 +39,8 @@ readParam <- function(path, paramName){
         for (p in 1:length(paramName)) {
           
           idx <- grep(paste0(paramName[p], "="), txt)
-          
-          if (length(idx > 0)) {
+
+          if (length(idx) > 0) {
             prm <- strsplit(txt[idx], "=")[[1]][2]
             
             if (grepl("<", prm) == TRUE) {
