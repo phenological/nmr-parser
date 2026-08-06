@@ -44,12 +44,12 @@ extend_lipo_value <- function(lipo){
   #create fracentage df use calc and df
   #initialisation (6 rows)
   pct <- data.frame(
-    HDCE = round(calc$HDCE / calc$HDTL, 4) * 100,
-    VLCE = round(calc$VLCE / calc$VLTL, 4) * 100,
-    IDCE = round(calc$IDCE / calc$IDTL, 4) * 100,
-    LDCE = round(calc$LDCE / calc$LDTL, 4) * 100,
-    VLPN = round(df$VLPN / calc$TBPN, 4) * 100,
-    IDPN = round(df$IDPN / calc$TBPN, 4) * 100
+    HDCE = round(100 * calc$HDCE / calc$HDTL, 2),
+    VLCE = round(100 * calc$VLCE / calc$VLTL, 2),
+    IDCE = round(100 * calc$IDCE / calc$IDTL, 2),
+    LDCE = round(100 * calc$LDCE / calc$LDTL, 2),
+    VLPN = round(100 * df$VLPN / calc$TBPN, 2),
+    IDPN = round(100 * df$IDPN / calc$TBPN, 2)
   )
 
   classes <- c("H", "V", "L")  #subfraction letters
@@ -66,7 +66,7 @@ extend_lipo_value <- function(lipo){
       fc_col <- paste0(letter, i, "FC")
       ce_col <- paste0(letter, i, "CE")
       calc_col <- paste0(letter, i, "TL")
-      pct[[ce_col]] <- round((df[[ch_col]] - df[[fc_col]]) / calc[[calc_col]], 4) * 100
+      pct[[ce_col]] <- round(100 * (df[[ch_col]] - df[[fc_col]]) / calc[[calc_col]], 2)
     }
   }
 
@@ -79,7 +79,7 @@ extend_lipo_value <- function(lipo){
         if(suffix == "CH") next
         col <- paste0(letter, i, suffix)
         calc_col <- paste0(letter, i, "TL")
-        pct[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+        pct[[col]] <- round(100 * df[[col]] / calc[[calc_col]], 2)
       }
     }
   }
@@ -89,7 +89,7 @@ extend_lipo_value <- function(lipo){
     for (suffix in suffixes) {
       col <- paste0(prefix, suffix)
       calc_col <- paste0(prefix, "TL")
-      pct[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+      pct[[col]] <- round(100 * df[[col]] / calc[[calc_col]], 2)
     }
   }
 
@@ -103,7 +103,7 @@ extend_lipo_value <- function(lipo){
       fc_col <- paste0(letter, i, "FC")
       ce_col <- paste0(letter, i, "CE")
       calc_col <- paste0(parent[[letter]], "CE")
-      frac[[ce_col]] <- round((df[[ch_col]] - df[[fc_col]]) / calc[[calc_col]], 4) * 100
+      frac[[ce_col]] <- round(100 * (df[[ch_col]] - df[[fc_col]]) / calc[[calc_col]], 2)
     }
   }
 
@@ -119,7 +119,7 @@ extend_lipo_value <- function(lipo){
       for (suffix in suffixes) {
         col <- paste0(letter, i, suffix)
         col2 <- paste0(parent[[letter]], suffix)
-        frac[[col]] <- round(df[[col]] / df[[col2]], 4) * 100
+        frac[[col]] <- round(100 * df[[col]] / df[[col2]], 2)
       }
     }
   }
@@ -129,7 +129,7 @@ extend_lipo_value <- function(lipo){
     for (suffix in suffixes2) {
       col <- paste0("H", i, suffix)
       calc_col <- paste0("HD", suffix)
-      frac[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+      frac[[col]] <- round(100 * df[[col]] / calc[[calc_col]], 2)
     }
   }
 
@@ -137,11 +137,11 @@ extend_lipo_value <- function(lipo){
   for (i in ranges[["L"]]) {
     col <- paste0("L", i, "AB")
     calc_col <- paste0("LDAB")
-    frac[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+    frac[[col]] <- round(100 * df[[col]] / calc[[calc_col]], 2)
 
     col <- paste0("L", i, "PN")
     calc_col <- paste0("TBPN")
-    frac[[col]] <- round(df[[col]] / calc[[calc_col]], 4) * 100
+    frac[[col]] <- round(100 * df[[col]] / calc[[calc_col]], 2)
   }
 
   #column names

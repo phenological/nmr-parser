@@ -28,14 +28,14 @@ test_that("frac divides each subfraction by its own parent class", {
   frac <- function(id) res$value[match(paste0(id, "_frac"), res$id)]
 
   #H* is a share of HD, V* of VL, L* of LD (github issue #2: all three used LD)
-  expect_equal(frac("H1PL"), round(raw$H1PL / raw$HDPL, 4) * 100)
-  expect_equal(frac("H2FC"), round(raw$H2FC / raw$HDFC, 4) * 100)
-  expect_equal(frac("V1TG"), round(raw$V1TG / raw$VLTG, 4) * 100)
-  expect_equal(frac("V3CH"), round(raw$V3CH / raw$VLCH, 4) * 100)
-  expect_equal(frac("L1TG"), round(raw$L1TG / raw$LDTG, 4) * 100)
+  expect_equal(frac("H1PL"), round(100 * raw$H1PL / raw$HDPL, 2))
+  expect_equal(frac("H2FC"), round(100 * raw$H2FC / raw$HDFC, 2))
+  expect_equal(frac("V1TG"), round(100 * raw$V1TG / raw$VLTG, 2))
+  expect_equal(frac("V3CH"), round(100 * raw$V3CH / raw$VLCH, 2))
+  expect_equal(frac("L1TG"), round(100 * raw$L1TG / raw$LDTG, 2))
 
   #same rule for the derived CE columns
-  expect_equal(frac("V1CE"), round((raw$V1CH - raw$V1FC) / (raw$VLCH - raw$VLFC), 4) * 100)
+  expect_equal(frac("V1CE"), round(100 * (raw$V1CH - raw$V1FC) / (raw$VLCH - raw$VLFC), 2))
 })
 
 test_that("pct closes at 100% for every particle", {
@@ -44,7 +44,7 @@ test_that("pct closes at 100% for every particle", {
   pct <- function(ids) sum(res$value[match(paste0(ids, "_pct"), res$id)])
 
   #TL is defined as TG + CH + PL, so the composition must sum to 100.
-  #round(x, 4) * 100 quantises each term to 0.01, so a 4 term sum can drift
+  #round(100 * x, 2) quantises each term to 0.01, so a 4 term sum can drift
   #by up to 0.02; 5e-4 relative (0.05) is the tightest safe bound
   for (p in c("HD", "VL", "ID", "LD")) {
     expect_equal(pct(paste0(p, c("TG", "CH", "PL"))), 100, tolerance = 5e-4)
