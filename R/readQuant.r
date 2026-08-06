@@ -2,7 +2,7 @@
 #'
 #' @param file - the path to the expName folder
 #' @return the values
-#' @importFrom xml2 xml_find_first xml_find_all xml_attr
+#' @importFrom xml2 read_xml xml_find_first xml_find_all xml_attr
 #' @export
 
 readQuant <- function(file){

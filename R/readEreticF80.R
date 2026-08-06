@@ -5,6 +5,7 @@
 #'
 #' @export
 #' @importFrom xml2 read_xml xml_text xml_find_first
+#' @importFrom data.table data.table
 readEreticF80 <- function(file){
   if (file.exists(file)) {
     xml <- read_xml(file, options = "NOBLANKS")
