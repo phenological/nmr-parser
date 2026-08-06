@@ -119,3 +119,18 @@ test_that("a file truncated on a vector header does not overrun", {
 
   expect_equal(param$name, c("TITLE", "PULPROG"))
 })
+
+test_that("only the < > delimiters are stripped from a value", {
+  #[<->] is a range from < to >, so it swallowed = as well
+  acqus <- file.path(tempdir(), "delimiters_acqus")
+  on.exit(unlink(acqus), add = TRUE)
+  writeLines(c("##TITLE= Parameter file, TopSpin 3.6.1",
+               "##$USERA1= <a=b>",
+               "##$USERA2= <plain>",
+               "##END="), acqus)
+
+  param <- readParams(acqus)
+
+  expect_equal(param$value[param$name == "USERA1"], "a=b")
+  expect_equal(param$value[param$name == "USERA2"], "plain")
+})

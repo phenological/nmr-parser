@@ -139,7 +139,9 @@ readParams <- function(file) {
 
               }
             } else {
-              cleanValue <- gsub("[<->]", "", value)
+              # strip the < > Bruker wraps strings in. [<->] would be a range
+              # from < to >, which also takes = with it
+              cleanValue <- gsub("[<>]", "", value)
               content[[incr]] <- list(path = path[length(path)],
                                       name = gsub("##\\$", "", param[1]),
                                       value = cleanValue)
