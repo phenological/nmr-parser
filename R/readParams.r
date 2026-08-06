@@ -25,7 +25,7 @@ readParams <- function(file) {
     content <- list()
     counter <- 1 # line counter
     incr <- 1
-    while (counter < length(txt)) {
+    while (counter <= length(txt)) {
 
 
       line <- txt[[counter]]
@@ -123,6 +123,10 @@ readParams <- function(file) {
 
             # looking for vectors
             if (grepl("\\([0-9]+..[0-9]+\\)", value)) {
+              # the values sit on the next line, which a truncated file lacks
+              if (counter == length(txt)) {
+                break
+              }
               counter <- counter + 1
               vect <- txt[[counter]]
               value <- strsplit(vect, " ")

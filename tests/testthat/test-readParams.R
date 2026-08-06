@@ -96,3 +96,26 @@ test_that("test comet file", {
   param <- readParams(system.file("EXTERNAL-comet-nmr-urine-R20", "10", "pdata" , "1", "procs", package = "nmr.parser"))
   expect_equal(param, NULL)
 })
+
+test_that("the last line of the file is read", {
+  #the loop ran while counter < length(txt), so the final parameter was
+  #dropped whenever the file did not end on ##END=
+  param <- readParams(system.file("xwinnmr_acqus", package = "nmr.parser"))
+
+  expect_equal(param$name[nrow(param)], "SUBNAM7")
+  expect_equal(nrow(param), 850)
+})
+
+test_that("a file truncated on a vector header does not overrun", {
+  #a vector parameter reads its values from the next line, which is not
+  #there when the file ends on the header
+  acqus <- file.path(tempdir(), "truncated_acqus")
+  on.exit(unlink(acqus), add = TRUE)
+  writeLines(c("##TITLE= Parameter file, TopSpin 3.6.1",
+               "##$PULPROG= <noesygppr1d>",
+               "##$AMP= (0..31)"), acqus)
+
+  param <- readParams(acqus)
+
+  expect_equal(param$name, c("TITLE", "PULPROG"))
+})
