@@ -22,6 +22,7 @@ readParams <- function(file) {
       return(NULL)
     }
 
+    fileName <- basename(file)
     content <- list()
     counter <- 1 # line counter
     incr <- 1
@@ -36,26 +37,15 @@ readParams <- function(file) {
       }
 
 
-      path <- strsplit(file, "/")[[1]]
       # get titles
       if (grepl("^##[A-Z]", line)) {
-
-        # get version first to get info right
-        if (grepl("^##TITLE", line)) {
-          title <- strsplit(line, "= ")[[1]][2]
-          if (grepl("xwin-nmr", tolower(title))) {
-            version <- "xwinnmr"
-          } else if (grepl("topspin", tolower(title))) {
-            version <- "topspin"
-          }
-        }
 
         param <- strsplit(line, "= ")[[1]]
         value <- param[2]
         cleanValue <- gsub("\\t", " ", value)
         cleanValue <- gsub("\\$\\$", "", cleanValue)
         cleanValue <- gsub("\\s+", " ", cleanValue)
-        content[[incr]] <- list(path = path[length(path)],
+        content[[incr]] <- list(path = fileName,
                                 name = gsub("##", "", param[1]),
                                 value = cleanValue)
       } else
@@ -90,25 +80,25 @@ readParams <- function(file) {
           }
 
           if (!is.null(date) & !is.null(time) & !is.null(timezone) & !is.null(instrument)) {
-            content[[incr]] <- list(path = path[length(path)],
+            content[[incr]] <- list(path = fileName,
                                     name = "instrumentDate",
                                     value = date)
             incr <- incr + 1
-            content[[incr]] <- list(path = path[length(path)],
+            content[[incr]] <- list(path = fileName,
                                     name = "instrumentTime",
                                     value = time)
             incr <- incr + 1
-            content[[incr]] <- list(path = path[length(path)],
+            content[[incr]] <- list(path = fileName,
                                     name = "instrumentTimeZone",
                                     value = timezone)
             incr <- incr + 1
-            content[[incr]] <- list(path = path[length(path)],
+            content[[incr]] <- list(path = fileName,
                                     name = "instrument",
                                     value = instrument)
           }
 
           if (!is.null(dpath) ) {
-            content[[incr]] <- list(path = path[length(path)],
+            content[[incr]] <- list(path = fileName,
                                     name = "dpath",
                                     value = dpath)
           }
@@ -131,7 +121,7 @@ readParams <- function(file) {
               vect <- txt[[counter]]
               value <- strsplit(vect, " ")
               for (i in 1:length(value[[1]])) {
-                content[[incr]] <- list(path = path[length(path)],
+                content[[incr]] <- list(path = fileName,
                                         name = paste0(gsub("##\\$", "", param[1]), "_", i - 1),
                                         value = value[[1]][i])
 
@@ -142,7 +132,7 @@ readParams <- function(file) {
               # strip the < > Bruker wraps strings in. [<->] would be a range
               # from < to >, which also takes = with it
               cleanValue <- gsub("[<>]", "", value)
-              content[[incr]] <- list(path = path[length(path)],
+              content[[incr]] <- list(path = fileName,
                                       name = gsub("##\\$", "", param[1]),
                                       value = cleanValue)
             }
