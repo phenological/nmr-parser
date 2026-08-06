@@ -4,7 +4,7 @@
 #' @return the values
 #'
 #' @export
-#' @importFrom xml2 read_xml xml_find_all xml_find_first xml_attr xml_attrs
+#' @importFrom xml2 read_xml xml_find_all xml_find_first xml_attr
 
 readPacs <- function(file){
   if (file.exists(file)) {

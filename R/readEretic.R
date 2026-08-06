@@ -4,7 +4,7 @@
 #' @return the title
 #'
 #' @export
-#' @importFrom xml2 read_xml xml_text xml_find_all xml_find_first xml_attr xml_attrs
+#' @importFrom xml2 read_xml xml_text xml_find_all xml_attr
 readEretic <- function(path){
   path <- file.path(path)
   if (file.exists(path)) {

@@ -4,7 +4,7 @@
 #' @return the values
 #'
 #' @export
-#' @importFrom xml2 read_xml xml_attr xml_attrs xml_find_all xml_find_first
+#' @importFrom xml2 read_xml xml_attr xml_find_all xml_find_first
 #' @importFrom data.table data.table
 #' @importFrom stats setNames
 readQc <- function(file){
