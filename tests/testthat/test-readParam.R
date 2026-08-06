@@ -41,3 +41,22 @@ test_that("a param missing among several comes back as NA in place", {
   expect_equal(names(prms), NULL)
   expect_length(readParam(acqus, c("PULPROG", "NOSUCHPARAM")), 2)
 })
+
+test_that("a missing first param does not discard the rest", {
+  #the whole file used to be tested on paramName[1] only, so an acqus
+  #without an EXP line returned NULL and scanFolder() died indexing prms[[1]]
+  acqus <- system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser")
+  prms <- readParam(acqus, c("NOSUCHPARAM", "PULPROG"))
+
+  expect_length(prms, 2)
+  expect_true(is.na(prms[[1]]))
+  expect_equal(prms[[2]], "noesygppr1d")
+})
+
+test_that("a param absent from every position still returns NA in place", {
+  acqus <- system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser")
+  prms <- readParam(acqus, c("NOSUCHPARAM", "NOSUCHEITHER"))
+
+  expect_length(prms, 2)
+  expect_true(all(is.na(unlist(prms))))
+})
