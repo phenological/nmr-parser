@@ -11,7 +11,13 @@ Authors@R:
            family = "Masuda",
            role = c("aut"),
            email = "reika.masuda@murdoch.edu.au"))
-Description: What the package does (one paragraph).
+Description: Reads Bruker IVDr NMR data into R: acquisition and processing
+    parameters, processed spectra placed on a common chemical shift grid and
+    corrected for ERETIC, experiment titles, and the XML reports Bruker
+    produces for small molecule quantification, lipoprotein subfractions,
+    PACS and quality control. Lipoprotein results can be extended with the
+    total lipid, cholesterol ester, composition and distribution parameters
+    derived from them.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
