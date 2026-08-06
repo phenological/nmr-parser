@@ -145,8 +145,6 @@ readExperiment <- function(expname, opts = NULL) {
       if (length(path) > 1) {
         path <- path[length(path)]
       }
-      # path_serum <- file.path(expname[[l]], "pdata", "1", "plasma_qc_report.xml")
-      # path_urine <- file.path(expname[[l]], "pdata", "1", "urine_qc_report.xml")
       if (length(path)>0) {
         qc <- readQc(path)$data
       } else {
@@ -394,22 +392,6 @@ readExperiment <- function(expname, opts = NULL) {
     lst <- list()
     for (l in 1:length(expname)) {
       folderPath <- file.path(expname[[l]], "pdata", "1")
-      # path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
-      # if(any(grepl("2_1_0", path))) {
-      #   # if more than 1 version available pick the latest ones  "SERUM"
-      #   path <- path[grepl("2_1_0", path)]
-      # } else if (any(grepl("1_2_0", path))) {
-      #   # if more than 1 version available pick the latest ones."Urine"
-      #   path <- path[grepl("1_2_0", path)]
-      # } else if (any(grepl("1_2_0", path))) {
-      #   # if more than 1 version available pick the latest ones."Urine"
-      #   path <- path[grepl("1_2_0", path)]
-      # }
-      # if (length(path)==1) {
-      #   quant <- readQuant(path)
-      # }  else {
-      #   quant <- NULL
-      # }
       # Find all matching xml files
       path <- dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")
 
@@ -431,10 +413,7 @@ readExperiment <- function(expname, opts = NULL) {
       } else {
         quant <- NULL
       }
-      
-      
-      
-      
+
       if (!is.null(quant)) {
         quant$data$path <- expname[[l]]
         lst[[l]] <- quant
