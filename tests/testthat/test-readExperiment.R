@@ -221,11 +221,12 @@ test_that("an unknown report version alongside a known one does not stop the run
   dir.create(pdata, recursive = TRUE, showWarnings = FALSE)
   on.exit(unlink(file.path(tempdir(), "versions"), recursive = TRUE), add = TRUE)
 
-  fixture <- function(x) system.file("..", "tests", "testthat", x, package = "nmr.parser")
-  file.copy(fixture("plasma_lipo_report_1_1_0.xml"), file.path(pdata, "plasma_lipo_report.xml"))
-  file.copy(fixture("plasma_lipo_report_1_1_0.xml"), file.path(pdata, "plasma_lipo_report_9_9_9.xml"))
-  file.copy(fixture("plasma_pacs_report.xml"), file.path(pdata, "plasma_pacs_report.xml"))
-  file.copy(fixture("plasma_pacs_report.xml"), file.path(pdata, "plasma_pacs_report_9_9_9.xml"))
+  lipoFixture <- system.file("..", "tests", "testthat", "plasma_lipo_report_1_1_0.xml", package = "nmr.parser")
+  pacsFixture <- system.file("extdata", "plasma_pacs_report.xml", package = "nmr.parser")
+  file.copy(lipoFixture, file.path(pdata, "plasma_lipo_report.xml"))
+  file.copy(lipoFixture, file.path(pdata, "plasma_lipo_report_9_9_9.xml"))
+  file.copy(pacsFixture, file.path(pdata, "plasma_pacs_report.xml"))
+  file.copy(pacsFixture, file.path(pdata, "plasma_pacs_report_9_9_9.xml"))
 
   expe <- readExperiment(expno, opts = list(what = c("lipo", "pacs")))
 

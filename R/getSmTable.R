@@ -1,13 +1,17 @@
 #' get names and description of brxsm plasma reports
-#' @param matrixType - sample matrix type (URI, SER)
+#' @param matrixType - sample matrix type (SER, PLA, URI). SER and PLA are
+#'   the same report.
 #' @return a data.frame with information
 #' @importFrom utils data
 #' @importFrom data.table setDT
 #' @export
-getSmTable <- function(matrixType = "SER") {
+getSmTable <- function(matrixType = c("SER", "PLA", "URI")) {
+
+  matrixType <- match.arg(matrixType)
+
   if (matrixType == "SER" | matrixType == "PLA") {
     sm <- get0("brxsm_pla", envir = asNamespace("nmr.parser"))
-  } else if (matrixType == "URI") {
+  } else {
     sm <- get0("brxsm_uri", envir = asNamespace("nmr.parser"))
   }
 

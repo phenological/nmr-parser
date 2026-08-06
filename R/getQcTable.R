@@ -1,25 +1,15 @@
 
 #' Get a data frame with the QC table
-#' @param matrixType A string with the matrix type. It can be "SER" or "URI"
+#' @param matrixType A string with the matrix type, "SER" or "URI"
 #' @param withValue A boolean to include the value column
 #' @export
-getQcTable <- function(matrixType = "SER", withValue = FALSE) {
+getQcTable <- function(matrixType = c("SER", "URI"), withValue = FALSE) {
 
-  if (matrixType == "SER") {
-    qc <- readQc(system.file("..",
-                             "tests",
-                             "testthat",
-                             "plasma_qc_report.xml",
-                             package = "nmr.parser"))
-  } else if (matrixType == "URI") {
+  matrixType <- match.arg(matrixType)
 
-    qc <- readQc(system.file("..",
-                             "tests",
-                             "testthat",
-                             "urine_qc_report.xml",
-                             package = "nmr.parser"))
+  report <- c(SER = "plasma_qc_report.xml", URI = "urine_qc_report.xml")[[matrixType]]
 
-    }
+  qc <- readQc(system.file("extdata", report, package = "nmr.parser"))
   qc <- qc$data
 
   tbl1 <- data.frame(testName = qc$tests$name,

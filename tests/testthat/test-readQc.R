@@ -4,7 +4,7 @@ test_that("reading inexistent file", {
 })
 
 test_that("reading file", {
-  qc <- readQc(system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser"))
+  qc <- readQc(system.file("extdata", "plasma_qc_report.xml", package = "nmr.parser"))
   qc <- qc$data
   expect_equal(length(qc), 4)
   expect_equal(length(qc$infos), 4)
@@ -25,7 +25,7 @@ test_that("reading file", {
 
 
 test_that("reading file", {
-  qc <- readQc(system.file("..", "tests", "testthat", "urine_qc_report.xml", package = "nmr.parser"))
+  qc <- readQc(system.file("extdata", "urine_qc_report.xml", package = "nmr.parser"))
   qc <- qc$data
   expect_equal(length(qc), 4)
   expect_equal(length(qc$infos), 4)
@@ -65,7 +65,7 @@ test_that("reading file", {
 })
 
 test_that("tests is a flat list of parallel, unnamed vectors", {
-  qc <- readQc(system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser"))$data
+  qc <- readQc(system.file("extdata", "plasma_qc_report.xml", package = "nmr.parser"))$data
 
   expect_equal(names(qc$tests), c("comment", "name", "type", "value", "unit", "refMax", "refMin"))
   expect_true(all(lengths(qc$tests) == length(qc$tests$name)))
@@ -76,4 +76,11 @@ test_that("tests is a flat list of parallel, unnamed vectors", {
   for (column in c("value", "unit", "refMax", "refMin")) {
     expect_null(names(qc$tests[[column]]))
   }
+})
+
+test_that("getQcTable validates its matrix type", {
+  #an unknown type used to leave qc undefined and fail on an unrelated line
+  expect_error(getQcTable(matrixType = "PLASMA"), "should be one of")
+  expect_s3_class(getQcTable("SER"), "data.frame")
+  expect_s3_class(getQcTable("URI"), "data.frame")
 })

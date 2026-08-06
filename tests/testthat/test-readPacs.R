@@ -4,7 +4,7 @@ test_that("reading inexistent file", {
 })
 
 test_that("reading file", {
-  pacs <- readPacs(system.file("..", "tests", "testthat", "plasma_pacs_report.xml", package = "nmr.parser"))
+  pacs <- readPacs(system.file("extdata", "plasma_pacs_report.xml", package = "nmr.parser"))
   expect_equal(pacs$data$name[1], "Glucose")
   expect_equal(pacs$data$conc_v[1], "4.948")
   expect_equal(pacs$data$refMax[1], "6.08")
@@ -24,4 +24,10 @@ test_that("reading file", {
   expect_equal(nrow(pacs$data), 16)
   expect_equal(ncol(pacs$data), 6)
   expect_equal(pacs$version, "1.1.0+release.PhenoriskPCS_1.1.7fe55b9 Research Use Only")
+})
+
+test_that("getPacsTable reads its report from the installed extdata", {
+  #it used to reach into ../tests/testthat, which is not installed
+  expect_true(file.exists(system.file("extdata", "plasma_pacs_report.xml", package = "nmr.parser")))
+  expect_s3_class(getPacsTable(), "data.frame")
 })

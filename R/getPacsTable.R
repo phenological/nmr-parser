@@ -2,9 +2,7 @@
 #' This function is used to get the table of PACS data from the test data
 #' @export
 getPacsTable <- function() {
-  pacs <- readPacs(system.file("..",
-                               "tests",
-                               "testthat",
+  pacs <- readPacs(system.file("extdata",
                                "plasma_pacs_report.xml",
                                package = "nmr.parser"))
 
