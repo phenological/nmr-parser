@@ -197,8 +197,14 @@ extend_lipo <- function(lipo) {
 
 
 
-  df$refMax <- ifelse(ma < mi, mi, ma)
-  df$refMin <- ifelse(ma > mi, mi, ma)
+  # extend_lipo_value() returns a one row data.frame, so ifelse() would hand
+  # back a 1 x n matrix and turn these into list columns. unlist() first, then
+  # pmax/pmin, to keep them numeric like the ones readLipo() produces.
+  ma <- unlist(ma, use.names = FALSE)
+  mi <- unlist(mi, use.names = FALSE)
+
+  df$refMax <- pmax(ma, mi)
+  df$refMin <- pmin(ma, mi)
 
   ## Fraction ##
   df$fraction<-ifelse(is.na(df$fraction),

@@ -74,3 +74,25 @@ test_that("frac closes at 100% wherever the denominator is a calculated total", 
                tolerance = 5e-4)
 })
 
+
+test_that("reference bounds stay numeric and ordered", {
+  lipo <- readLipo(system.file("..", "tests", "testthat", "lipo_results.xml", package = "nmr.parser"))
+  res <- nmr.parser::extend_lipo(lipo)$data
+
+  #these used to come back as list columns, since ifelse() on the one row
+  #data.frame returned by extend_lipo_value() yields a 1 x n matrix
+  expect_true(is.numeric(res$refMax))
+  expect_true(is.numeric(res$refMin))
+  expect_type(res$refMax, "double")
+  expect_type(res$refMin, "double")
+
+  #which is what readLipo() hands over in the first place
+  expect_equal(class(res$refMax), class(lipo$data$refMax))
+
+  expect_length(res$refMax, nrow(res))
+  expect_true(all(res$refMin <= res$refMax, na.rm = TRUE))
+
+  #the raw parameters are passed through untouched
+  expect_equal(res$refMax[match("TPTG", res$id)], lipo$data$refMax[match("TPTG", lipo$data$id)])
+  expect_equal(res$refMin[match("TPTG", res$id)], lipo$data$refMin[match("TPTG", lipo$data$id)])
+})
