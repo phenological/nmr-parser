@@ -55,6 +55,7 @@ extend_lipo_value <- function(lipo){
   letters <- c("H", "V", "L")
   ranges <- list(H = 1:4, V = 1:5, L = 1:6)
   prefixes <- c("HD", "VL", "ID", "LD")
+  parent <- c(H = "HD", V = "VL", L = "LD")  #subfraction letter -> parent class
   suffixes <- c("TG", "CH", "FC", "PL")
   suffixes2 <- c("A1", "A2")
 
@@ -101,7 +102,7 @@ extend_lipo_value <- function(lipo){
       ch_col <- paste0(letter, i, "CH")
       fc_col <- paste0(letter, i, "FC")
       ce_col <- paste0(letter, i, "CE")
-      calc_col <- if (letter == "V") "VLCE" else paste0(letter, "DCE")
+      calc_col <- paste0(parent[[letter]], "CE")
       frac[[ce_col]] <- round((df[[ch_col]] - df[[fc_col]]) / calc[[calc_col]], 4) * 100
     }
   }
@@ -116,12 +117,9 @@ extend_lipo_value <- function(lipo){
   for (letter in letters) {
     for (i in ranges[[letter]]) {
       for (suffix in suffixes) {
-        for (prefix in prefixes){
-          if (prefix == "ID") next  # Skip "ID"
-          col <- paste0(letter, i, suffix)
-          col2 <- paste0(prefix, suffix)
-          frac[[col]] <- round(df[[col]] / df[[col2]], 4) * 100
-        }
+        col <- paste0(letter, i, suffix)
+        col2 <- paste0(parent[[letter]], suffix)
+        frac[[col]] <- round(df[[col]] / df[[col2]], 4) * 100
       }
     }
   }
