@@ -48,7 +48,6 @@ readQc <- function(file){
     })
 
     vals <- data.table(do.call(rbind, vals))
-    vals <- lapply(vals, function(column) setNames(column, vals$Name))
     tests <- c(headers, vals)
 
 

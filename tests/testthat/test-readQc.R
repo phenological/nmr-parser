@@ -64,3 +64,16 @@ test_that("reading file", {
   expect_equal(qc$tests$type[22], "Contamination Test")
 })
 
+test_that("tests is a flat list of parallel, unnamed vectors", {
+  qc <- readQc(system.file("..", "tests", "testthat", "plasma_qc_report.xml", package = "nmr.parser"))$data
+
+  expect_equal(names(qc$tests), c("comment", "name", "type", "value", "unit", "refMax", "refMin"))
+  expect_true(all(lengths(qc$tests) == length(qc$tests$name)))
+
+  #the test names live in qc$tests$name, the value/unit/ref vectors carry
+  #none of their own. A setNames() call here used to reference a column that
+  #does not exist, so it stripped names that were never set
+  for (column in c("value", "unit", "refMax", "refMin")) {
+    expect_null(names(qc$tests[[column]]))
+  }
+})
