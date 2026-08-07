@@ -221,3 +221,31 @@ test_that("the extended shape keeps a compound with no REFERENCE", {
   expect_equal(quant$data$refMax, c("19", NA, "19"))
   expect_equal(quant$data$conc_v, c("1", "2", "3"))
 })
+
+test_that("creatinine keeps its reference range in both shapes", {
+  #the extended branch special cased Creatinine to NA although its
+  #REFERENCE is present and identical to the one the other branch reads,
+  #so the same sample carried a range in one report version and not in
+  #the other
+  fixture <- function(x) system.file("..", "tests", "testthat", x, package = "nmr.parser")
+
+  pairs <- list(c(system.file("HB-COVID0001", "10", "pdata", "1",
+                              "plasma_quant_report_ver_1_0.xml", package = "nmr.parser"),
+                  fixture("plasma_quant_report.xml")),
+                c(fixture("urine_quant_report_b_ver_1_0.xml"), fixture("urine_quant_report_b.xml")),
+                c(fixture("urine_quant_report_e_ver_1_0.xml"), fixture("urine_quant_report_e.xml")),
+                c(fixture("urine_quant_report_ne_ver_1_0.xml"), fixture("urine_quant_report_ne.xml")))
+
+  reference <- function(f) {
+    d <- readQuant(f)$data
+    i <- match("Creatinine", d$name)
+    c(d$refMax[i], d$refMin[i], d$refUnit[i])
+  }
+
+  for (p in pairs) {
+    extended <- reference(p[1])
+    plain <- reference(p[2])
+    expect_false(any(is.na(extended)))
+    expect_equal(extended, plain)
+  }
+})

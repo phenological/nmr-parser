@@ -53,21 +53,16 @@ readQuant <- function(file){
         rawConc <- xml_attr(firstValue, "valueext")
         errConc <- NA
         errConcUnit <- NA
-        # creatinine is the reference itself, its own range is not reported
-        if (name != "Creatinine") {
-          # xml_find_first, not xml_find_all: a parameter carrying no
-          # REFERENCE gave a zero row data.frame and dropped out of the
-          # report entirely, one carrying two gave two rows
-          refMax <- xml_attr(reference, "vmax")
-          refMin <- xml_attr(reference, "vmin")
-          refUnit <- xml_attr(reference, "unit")
-
-        } else {
-          refMax <- NA
-          refMin <- NA
-          refUnit <- NA
-
-        }
+        # xml_find_first, not xml_find_all: a parameter carrying no
+        # REFERENCE gave a zero row data.frame and dropped out of the report
+        # entirely, one carrying two gave two rows.
+        # Creatinine used to be special cased to NA here, although its
+        # REFERENCE is present and identical to the one the other shape
+        # reads, so the same sample gave a range in one report version and
+        # not in the other
+        refMax <- xml_attr(reference, "vmax")
+        refMin <- xml_attr(reference, "vmin")
+        refUnit <- xml_attr(reference, "unit")
 
         # appended, not keyed by name: a repeated compound used to
         # overwrite the earlier one instead of getting its own row
