@@ -1,3 +1,46 @@
+#' look one parameter up in the lines of a bruker file
+#'
+#' Anchored on the declaration itself. grep(paste0(paramName, "=")) matched
+#' the name anywhere in the line, so it read the first line that happened to
+#' contain it: acqus files are ordered alphabetically, which put LOCSW ahead
+#' of SW, DATE ahead of TE and CPDPRG ahead of RG. 21 of the 195 parameters
+#' in inst/HB-COVID0001/10/acqus collide that way.
+#'
+#' Compared as a prefix rather than matched as a regexp, so that a name
+#' containing . or + is not read as a pattern.
+#'
+#' @param txt - the lines of the file
+#' @param paramName - the name of a single parameter
+#' @param path - the file, for the diagnostic
+#' @return the parsed value, or NULL when the parameter is not declared
+#' @noRd
+findParam <- function(txt, paramName, path) {
+
+  # ##$NAME= for parameters, ##NAME= for the header fields
+  idx <- which(startsWith(txt, paste0("##$", paramName, "=")) |
+                 startsWith(txt, paste0("##", paramName, "=")))
+
+  if (length(idx) == 0) {
+    return(NULL)
+  }
+
+  if (length(idx) > 1) {
+    cat(crayon::yellow("readParam param", paramName, "declared",
+                       length(idx), "times, using the first:\n"))
+    cat(crayon::blue(path, "\n"))
+  }
+
+  # everything after the first =, so that a value containing one survives
+  # strsplit(line, "=")[[1]][2] used to cut it there
+  value <- sub("^[^=]*=[[:blank:]]?", "", txt[idx[1]])
+
+  if (grepl("<", value)) {
+    return(gsub(" ", "", (gsub("<", "", (gsub(">", "", value))))))
+  } else {
+    return(as.numeric(value))
+  }
+}
+
 #' extract a parameter from a bruker file (procs or acqus)
 #'
 #' @param path - the path to the expName folder
@@ -15,22 +58,16 @@ readParam <- function(path, paramName){
     # test for that before going on
     if (length(paramName) == 1) {
 
-      idx <- grep(paste0(paramName, "="), txt)
+      parameter <- findParam(txt, paramName, path)
 
-      if (length(idx) == 0) {
+      if (is.null(parameter)) {
         cat(crayon::yellow("readParam param", paramName, "not found or ... \n"))
         cat(crayon::yellow("readParam file is empty or corrupted:\n"))
         cat(crayon::blue(path, "\n"))
         return(NULL)
       }
 
-      parameter <- strsplit(txt[idx], "=")[[1]][2]
-
-      if (grepl("<", parameter) == TRUE) {
-        return(gsub(" ", "", (gsub("<", "", (gsub(">", "", parameter))))))
-      } else {
-        return(as.numeric(parameter))
-      }
+      return(parameter)
     }
 
     # if param is length > 1 each one is looked up on its own and a miss is NA
@@ -39,18 +76,9 @@ readParam <- function(path, paramName){
     parameters <- list()
     for (p in seq_along(paramName)) {
 
-      idx <- grep(paste0(paramName[p], "="), txt)
+      prm <- findParam(txt, paramName[p], path)
 
-      if (length(idx) > 0) {
-        prm <- strsplit(txt[idx], "=")[[1]][2]
-
-        if (grepl("<", prm) == TRUE) {
-          prm <- gsub(" ", "", (gsub("<", "", (gsub(">", "", prm)))))
-        } else {
-          prm <- as.numeric(prm)
-        }
-
-      } else {
+      if (is.null(prm)) {
         cat(crayon::yellow("readParam param", paramName[p], "not found:\n"))
         cat(crayon::blue(path, "\n"))
         prm <- NA

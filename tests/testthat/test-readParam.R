@@ -60,3 +60,54 @@ test_that("a param absent from every position still returns NA in place", {
   expect_length(prms, 2)
   expect_true(all(is.na(unlist(prms))))
 })
+
+test_that("a param name is matched against the declaration, not the whole line", {
+  #grep(paste0(paramName, "=")) matched the name anywhere in the line, and
+  #acqus is ordered alphabetically, so the first hit was often a longer
+  #parameter ending in the same letters: LOCSW before SW, DATE before TE,
+  #CPDPRG before RG
+  acqus <- system.file("HB-COVID0001", "10", "acqus", package = "nmr.parser")
+
+  expect_equal(readParam(acqus, "SW"), 30.0344201255777)   #not LOCSW's 0
+  expect_equal(readParam(acqus, "TE"), 310.0016)           #not DATE's timestamp
+  expect_equal(readParam(acqus, "RG"), 83.46)              #not CPDPRG, which gave NA
+
+  #the ones that never collided are untouched
+  expect_equal(readParam(acqus, "NS"), 32)
+  expect_equal(readParam(acqus, "DE"), 6.794558)
+  expect_equal(readParam(acqus, "BF1"), 600.27)
+  expect_equal(readParam(acqus, "PULPROG"), "noesygppr1d")
+})
+
+test_that("a param absent from the file is not satisfied by a longer one", {
+  procs <- system.file("HB-COVID0001", "10", "pdata", "1", "procs", package = "nmr.parser")
+
+  #procs has no EXP, but it has MddCEXP, which used to answer for it
+  expect_null(readParam(procs, "EXP"))
+})
+
+test_that("a value containing = is not cut at the first one", {
+  #strsplit(line, "=")[[1]][2] kept only the part before the next =
+  acqus <- file.path(tempdir(), "equals_acqus")
+  on.exit(unlink(acqus), add = TRUE)
+  writeLines(c("##TITLE= Parameter file, TopSpin 3.6.1",
+               "##$USERA1= <a=b>",
+               "##$PULPROG= <noesygppr1d>",
+               "##END="), acqus)
+
+  expect_equal(readParam(acqus, "USERA1"), "a=b")
+  expect_equal(readParam(acqus, "PULPROG"), "noesygppr1d")
+})
+
+test_that("a name carrying regexp characters is taken literally", {
+  acqus <- file.path(tempdir(), "regexp_acqus")
+  on.exit(unlink(acqus), add = TRUE)
+  writeLines(c("##TITLE= Parameter file, TopSpin 3.6.1",
+               "##$A.B= 1",
+               "##$AXB= 2",
+               "##END="), acqus)
+
+  #"A.B" as a pattern would match AXB too, and AXB comes second
+  expect_equal(readParam(acqus, "A.B"), 1)
+  expect_equal(readParam(acqus, "AXB"), 2)
+})
