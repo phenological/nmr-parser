@@ -72,28 +72,41 @@ readQuant <- function(file){
 
     }else if (grepl("Quant", version, fixed = TRUE) ){
 
-      name <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
-      conc_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "conc")
-      concUnit_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "concUnit")
-      lod_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "lod")
-      lodUnit_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "lodUnit")
-      loq_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "loq")
-      loqUnit_v <- xml_attr(xml_find_all(xml, ".//VALUE"), "loqUnit")
-      conc_vr <- c(NA, xml_attr(xml_find_all(xml, ".//VALUERELATIVE"), "conc"))
-      concUnit_vr <- c(NA, xml_attr(xml_find_all(xml, ".//VALUERELATIVE"), "concUnit"))
-      lod_vr <- c(NA, xml_attr(xml_find_all(xml, ".//VALUERELATIVE"), "lod"))
-      lodUnit_vr <- c(NA, xml_attr(xml_find_all(xml, ".//VALUERELATIVE"), "lodUnit"))
-      loq_vr <- c(NA, xml_attr(xml_find_all(xml, ".//VALUERELATIVE"), "loq"))
-      loqUnit_vr <- c(NA, xml_attr(xml_find_all(xml, ".//VALUERELATIVE"), "loqUnit"))
-      sigCorrUnit <- xml_attr(xml_find_all(xml, ".//RELDATA"), "sigCorrUnit")
-      sigCorr <- xml_attr(xml_find_all(xml, ".//RELDATA"), "sigCorr")
-      rawConcUnit <- xml_attr(xml_find_all(xml, ".//RELDATA"), "rawConcUnit")
-      rawConc <- xml_attr(xml_find_all(xml, ".//RELDATA"), "rawConc")
-      errConc <- xml_attr(xml_find_all(xml, ".//RELDATA"), "errConc")
-      errConcUnit <- xml_attr(xml_find_all(xml, ".//RELDATA"), "errConcUnit")
-      refMax <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmax")
-      refMin <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmin")
-      refUnit <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "unit")
+      # each PARAMETER carries its own VALUE, VALUERELATIVE, RELDATA and
+      # REFERENCE, so read them from inside it. Sweeping the whole document
+      # once per attribute lines the lists up by position, and the lists are
+      # not the same length: Creatinine has no VALUERELATIVE, which is what
+      # the c(NA, ...) that used to sit on the six _vr vectors was padding
+      # for. That pad is only right while the parameter without a
+      # VALUERELATIVE is the first one
+      params <- xml_find_all(xml, ".//PARAMETER")
+      values <- lapply(params, function(p) xml_find_first(p, "./VALUE"))
+      valuesRel <- lapply(params, function(p) xml_find_first(p, "./VALUERELATIVE"))
+      relData <- lapply(params, function(p) xml_find_first(p, "./RELDATA"))
+      refs <- lapply(params, function(p) xml_find_first(p, "./REFERENCE"))
+
+      name <- xml_attr(params, "name")
+      conc_v <- vapply(values, xml_attr, character(1), "conc")
+      concUnit_v <- vapply(values, xml_attr, character(1), "concUnit")
+      lod_v <- vapply(values, xml_attr, character(1), "lod")
+      lodUnit_v <- vapply(values, xml_attr, character(1), "lodUnit")
+      loq_v <- vapply(values, xml_attr, character(1), "loq")
+      loqUnit_v <- vapply(values, xml_attr, character(1), "loqUnit")
+      conc_vr <- vapply(valuesRel, xml_attr, character(1), "conc")
+      concUnit_vr <- vapply(valuesRel, xml_attr, character(1), "concUnit")
+      lod_vr <- vapply(valuesRel, xml_attr, character(1), "lod")
+      lodUnit_vr <- vapply(valuesRel, xml_attr, character(1), "lodUnit")
+      loq_vr <- vapply(valuesRel, xml_attr, character(1), "loq")
+      loqUnit_vr <- vapply(valuesRel, xml_attr, character(1), "loqUnit")
+      sigCorrUnit <- vapply(relData, xml_attr, character(1), "sigCorrUnit")
+      sigCorr <- vapply(relData, xml_attr, character(1), "sigCorr")
+      rawConcUnit <- vapply(relData, xml_attr, character(1), "rawConcUnit")
+      rawConc <- vapply(relData, xml_attr, character(1), "rawConc")
+      errConc <- vapply(relData, xml_attr, character(1), "errConc")
+      errConcUnit <- vapply(relData, xml_attr, character(1), "errConcUnit")
+      refMax <- vapply(refs, xml_attr, character(1), "vmax")
+      refMin <- vapply(refs, xml_attr, character(1), "vmin")
+      refUnit <- vapply(refs, xml_attr, character(1), "unit")
       version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
 
       data <- data.frame(name,

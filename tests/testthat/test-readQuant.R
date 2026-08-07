@@ -90,3 +90,44 @@ test_that("reading urine_quant_report_ne.xml file", {
   expect_equal(quant$version, "Quant-UR NE.1.1.0  Reseach Use Only")
 })
 
+
+test_that("a parameter keeps its own values when a sibling lacks a node", {
+  #every attribute used to be swept from the whole document and the lists
+  #lined up by position, so a PARAMETER carrying fewer children than its
+  #neighbours shifted all the later ones onto the wrong compound. The six
+  #_vr vectors even had a hard coded c(NA, ...) pad for it, correct only
+  #while the parameter without a VALUERELATIVE is the first one
+  report <- file.path(tempdir(), "gappy_quant_report.xml")
+  on.exit(unlink(report), add = TRUE)
+
+  parameter <- function(name, conc, rel, ref) paste0(
+    '<PARAMETER name="', name, '" type="quantification">',
+    '<VALUE conc="', conc, '" concUnit="mmol/L" lod="-" lodUnit="mmol/L" loq="-" loqUnit="mmol/L"/>',
+    if (rel) paste0('<VALUERELATIVE conc="', conc, '9" concUnit="mmol/mol" lod="-" lodUnit="-" loq="-" loqUnit="-"/>') else "",
+    '<RELDATA errConc="-" errConcUnit="mmol/L" rawConc="', conc, '5" rawConcUnit="mmol/L" sigCorr="100" sigCorrUnit="%"/>',
+    if (ref) '<REFERENCE source="NMR Database" unit="mmol/L" vmax="9" vmin="0"/>' else "",
+    '</PARAMETER>')
+
+  writeLines(c('<?xml version="1.0" encoding="utf-8"?>',
+               '<RESULTS version="Quant-UR B.1.1.0  Reseach Use Only">',
+               '<QUANTIFICATION version="Quant-UR B.1.1.0  Reseach Use Only">',
+               #the middle one carries neither a VALUERELATIVE nor a REFERENCE
+               parameter("Alpha", 1, TRUE,  TRUE),
+               parameter("Beta",  2, FALSE, FALSE),
+               parameter("Gamma", 3, TRUE,  TRUE),
+               '</QUANTIFICATION>',
+               '</RESULTS>'), report)
+
+  quant <- readQuant(report)
+
+  expect_equal(quant$data$name, c("Alpha", "Beta", "Gamma"))
+
+  #each compound keeps its own numbers
+  expect_equal(quant$data$conc_v, c("1", "2", "3"))
+  expect_equal(quant$data$rawConc, c("15", "25", "35"))
+
+  #and the gaps land on the compound that has them, not on its neighbour
+  expect_equal(quant$data$conc_vr, c("19", NA, "39"))
+  expect_equal(quant$data$refMax, c("9", NA, "9"))
+  expect_equal(quant$data$refMin, c("0", NA, "0"))
+})
