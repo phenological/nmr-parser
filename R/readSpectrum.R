@@ -3,7 +3,9 @@
 #' @param expno - the path to the expNo folder
 #' @param procno - chose procno to read from
 #' @param procs - the name of the folder with experiments
-#' @param options - options (uncalibrate, eretic, fromTo, length.out)
+#' @param options - options (uncalibrate, eretic, fromTo, length.out, im,
+#'   verbose). verbose = FALSE keeps the routine notes quiet, failures are
+#'   always reported
 #' @return a vector with spectra (real part and x axis)
 #' @importFrom signal interp1
 #' @importFrom data.table data.table
@@ -21,24 +23,31 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
   }
   fileAcqus <- file.path(expno, "acqus")
 
+  # The routine notes below describe what was done rather than what went
+  # wrong, and there is one set per spectrum, so a rack of 1000 prints
+  # thousands of lines all saying the same thing. readExperiment() turns
+  # them off and reports its own tally; a direct call still narrates itself.
+  # Failures are never silenced.
+  verbose <- !isFALSE(options$verbose)
+
   # checking that file is not empty
   if (file.exists(fileProcs)) {
     if (is.null(readParam(fileProcs, "NC_proc"))) {
-      cat(crayon::yellow("readSpectrum >> empty procs file for", expno, "                 \n"))
+      message(crayon::yellow(paste("readSpectrum >> empty procs file for", expno)))
       return(NULL)
     }
   } else {
-    cat(crayon::yellow("readSpectrum >> procs file not found for", expno, "               \n"))
+    message(crayon::yellow(paste("readSpectrum >> procs file not found for", expno)))
     return(NULL)
   }
 
   if (file.exists(fileAcqus)) {
     if (is.null(readParam(fileAcqus, "BF1"))) {
-      cat(crayon::yellow("readSpectrum >> empty acqus for", expno, "                      \n"))
+      message(crayon::yellow(paste("readSpectrum >> empty acqus for", expno)))
       return(NULL)
     }
   } else {
-    cat(crayon::yellow("readSpectrum >> acqus file not found for", expno, "               \n"))
+    message(crayon::yellow(paste("readSpectrum >> acqus file not found for", expno)))
     return(NULL)
   }
 
@@ -51,7 +60,7 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
 
     if (im) {
       if (!file.exists(file1i)) {
-        cat(crayon::yellow("readSpectrum >> imaginary data not found for", expno, "       \n"))
+        message(crayon::yellow(paste("readSpectrum >> imaginary data not found for", expno)))
         return(NULL)
       }
     }
@@ -94,9 +103,9 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
 
     fi <- vapply(params, function(x) length(x) != 1 || is.na(x), logical(1))
     if (sum(fi) > 0) {
-      cat(crayon::yellow("readSpectrum >> empty parameter",
+      message(crayon::yellow(paste("readSpectrum >> empty parameter",
                          paste(names(params)[fi], collapse = ", "),
-                         "for", expno, "                    \n"))
+                         "for", expno)))
       return(NULL)
     }
 
@@ -107,8 +116,8 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
     }
 
     if (phc1 != 0) {
-      cat(crayon::yellow("readSpectrum >> phc1 is expected to be 0 in IVDr experiments. Found:",
-                         phc1, "                    \r"))
+      message(crayon::yellow(paste("readSpectrum >> phc1 is expected to be 0 in IVDr experiments. Found:",
+                         phc1)))
     }
 
     # removing SR (useful for JEDI experiments)
@@ -119,9 +128,10 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
       # a negative SR value means an uncalibrated signal on the right of 0
       offset <- offset + SR_p
 
-      cat(crayon::blue("readSpectrum >> calibration (SR) removed:",
-                       SR_p, "ppm", SR, "Hz",
-                       "\n"))
+      if (verbose) {
+        message(crayon::blue(paste("readSpectrum >> calibration (SR) removed:",
+                                   SR_p, "ppm", SR, "Hz")))
+      }
     }
 
     # computing increment, ppm axis and reading spectra
@@ -137,7 +147,7 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
       yi <- rev(yi)
       # check for length
       if (length(yi) != length(y)) {
-        cat(crayon::yellow("readSpectrum >> Im and Re have different dimensions", expno, "      \n"))
+        message(crayon::yellow(paste("readSpectrum >> Im and Re have different dimensions", expno)))
         return(NULL)
       }
     }
@@ -150,9 +160,10 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
         yi <- yi / ereticFactor
       }
 
-      cat(crayon::blue("readSpectrum >> spectra corrected for eretic:",
-                       ereticFactor,
-                       "\r"))
+      if (verbose) {
+        message(crayon::blue(paste("readSpectrum >> spectra corrected for eretic:",
+                                   ereticFactor)))
+      }
     } else {
       # NA rather than NULL: c() drops NULL, so info below would come back
       # one element shorter and callers reading it by position would shift
@@ -167,7 +178,7 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
       to <- options$fromTo[2]
 
       if (from > to) {
-        cat(crayon::blue("readSpectrum >> from should be smaller than to\n"))
+        message(crayon::blue(paste("readSpectrum >> from should be smaller than to")))
       }
 
       if ("length.out" %in% names(options)) {
@@ -190,10 +201,8 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
                      method = "spline")
       } else {
 
-        cat(crayon::red("readSpectrum >> x and y are of different length\n"))
-        cat(crayon::blue("readSpectrum >>", expno, "\n"))
-        cat(crayon::blue("readSpectrum >> length(x)", length(x), "\n"))
-        cat(crayon::blue("readSpectrum >> length(y)", length(y), "\n"))
+        message(crayon::red(paste0("readSpectrum >> x and y are of different length (",
+                                   length(x), " and ", length(y), ") for ", expno)))
         return(NULL)
 
       }
@@ -208,17 +217,11 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
 
       x <- newX
 
-      cat(crayon::blue("readSpectrum >> spectra in common grid (from:",
-                       from,
-                       "to:",
-                       to,
-                       "dim:",
-                       length.out,
-                       "orig.size:",
-                       size,
-                       "trimmed.size:",
-                       trimmedSize,
-                       ")\r"))
+      if (verbose) {
+        message(crayon::blue(paste0("readSpectrum >> common grid ", from, " to ", to,
+                                    " ppm, ", length.out, " points (from ", size,
+                                    ", ", trimmedSize, " in range)")))
+      }
     }
 
     info <- c(SF = sf,
@@ -244,6 +247,6 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
     return(spec)
 
   } else {
-    cat(crayon::yellow("readSpectrum >> data not found for", expno, "                       \n"))
+    message(crayon::yellow(paste("readSpectrum >> data not found for", expno)))
   }
 }

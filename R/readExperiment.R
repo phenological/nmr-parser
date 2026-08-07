@@ -1,3 +1,31 @@
+#' report how many expnos yielded one kind of data
+#'
+#' One line per category, in one shape, so that a run reads as a tally
+#' rather than as nine differently worded sentences. The counts used to be
+#' phrased four ways ("0 found pacs", "1 found spectrum(a)") and gave the
+#' number found without the number asked for, which is the interesting part
+#' when a run is meant to cover a rack.
+#'
+#' message() rather than message(cat(...)): cat() prints to stdout and
+#' returns NULL, so the text escaped suppressMessages() and every call also
+#' emitted an empty line to stderr.
+#'
+#' @param what - the category
+#' @param found - how many expnos produced something
+#' @param asked - how many were looked at
+#' @return nothing, called for the message
+#' @noRd
+reportFound <- function(what, found, asked) {
+
+  line <- paste0("readExperiment >> ", what, ": ", found, "/", asked)
+
+  if (found == 0) {
+    message(crayon::yellow(line))
+  } else {
+    message(crayon::blue(line))
+  }
+}
+
 #' read one parameter file from every expno and stack the results
 #'
 #' The acqus and the procs blocks were the same code twice over, differing
@@ -16,7 +44,10 @@ readParamTable <- function(expname, relPath, prefix) {
   lst <- list()
 
   for (l in seq_along(expname)) {
-    cat("Reading:", l, "/", length(expname), "\r")
+    # a running count is worth showing over a rack, not over one expno
+    if (length(expname) > 1) {
+      cat("Reading:", l, "/", length(expname), "\r")
+    }
 
     path <- file.path(expname[[l]], relPath)
 
@@ -98,7 +129,10 @@ readExperiment <- function(expname, opts = NULL) {
                  procno = 1,
                  specOpts = list(uncalibrate = FALSE,
                                  fromTo = c(-0.1, 10),
-                                 length.out = 44079))
+                                 length.out = 44079,
+                                 # one set of notes per spectrum drowns the
+                                 # run, the tally below says the same thing
+                                 verbose = FALSE))
 
   # Merge provided options with defaults
   if (is.null(opts)) {
@@ -116,8 +150,26 @@ readExperiment <- function(expname, opts = NULL) {
 
   what <- opts$what
 
+  # a typo in what used to read nothing and say nothing about why
+  unknown <- setdiff(what, defaultOptions$what)
+  if (length(unknown) > 0) {
+    warning(crayon::red(paste0("readExperiment >> unknown what: ",
+                               paste(unknown, collapse = ", "),
+                               ". Known: ",
+                               paste(defaultOptions$what, collapse = ", "))),
+            call. = FALSE)
+  }
+
   if (is.character(expname)) {
     expname <- as.list(expname)
+  }
+
+  # nor did anything say that the folders were not there
+  missing <- !vapply(expname, dir.exists, logical(1))
+  if (any(missing)) {
+    message(crayon::yellow(paste0("readExperiment >> ", sum(missing), "/",
+                                  length(expname), " expno folders not found, first: ",
+                                  expname[missing][[1]])))
   }
 
   res <- list()
@@ -125,31 +177,21 @@ readExperiment <- function(expname, opts = NULL) {
   if ("acqus" %in% what | "all" %in% what) {
     res$acqus <- readParamTable(expname, "acqus", "acqus")
 
-    if (nrow(res$acqus) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found acqus params\n")))
-    } else {
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$acqus),
-                               "found acqus params\n")))
-    }
+    reportFound("acqus", nrow(res$acqus), length(expname))
   }
 
   if ("procs" %in% what | "all" %in% what) {
     res$procs <- readParamTable(expname, file.path("pdata", "1", "procs"), "procs")
 
-    if (nrow(res$procs) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found procs\n")))
-    } else {
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$procs),
-                               "found procs params\n")))
-    }
+    reportFound("procs", nrow(res$procs), length(expname))
   }
 
   if ("qc" %in% what | "all" %in% what) {
     lst <- list()
     for (l in seq_along(expname)) {
-      cat("Reading:", l, "/", length(expname), "\r")
+      if (length(expname) > 1) {
+        cat("Reading:", l, "/", length(expname), "\r")
+      }
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = "qc_report.*\\.xml$")
       if (any(grepl("1_1_0.xml", path))) {
@@ -174,11 +216,7 @@ readExperiment <- function(expname, opts = NULL) {
     }
 
     res$qc <- data.table(do.call("rbind", lst))
-    if (nrow(res$qc) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found qc\n")))
-    } else {
-      message(cat(crayon::blue("readExperiment >>", nrow(res$qc), "found qc\n")))
-    }
+    reportFound("qc", nrow(res$qc), length(expname))
   }
 
   if ("title" %in% what | "all" %in% what) {
@@ -193,13 +231,7 @@ readExperiment <- function(expname, opts = NULL) {
 
     res$title <- data.table(do.call("rbind", lst))
 
-    if (nrow(res$title) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found titles\n")))
-    } else {
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$title),
-                               "found titles\n")))
-    }
+    reportFound("title", nrow(res$title), length(expname))
   }
 
   if ("eretic" %in% what | "all" %in% what) {
@@ -218,13 +250,7 @@ readExperiment <- function(expname, opts = NULL) {
 
 
     res$eretic <- data.table(do.call("rbind", lst))
-    if (nrow(res$eretic) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found ereticFactors\n")))
-    } else {
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$eretic),
-                               "found ereticFactors\n")))
-    }
+    reportFound("eretic", nrow(res$eretic), length(expname))
 
 
   }
@@ -238,9 +264,7 @@ readExperiment <- function(expname, opts = NULL) {
       if("specOpts" %in% names(opts)) {
         specOpts <- opts$specOpts
       } else {
-        specOpts = list(uncalibrate = FALSE,
-                        fromTo = c(-0.1, 10),
-                        length.out = 44079)
+        specOpts = defaultOptions$specOpts
       }
 
       # we always look in the first folder (ANPC folder structure)
@@ -281,13 +305,7 @@ readExperiment <- function(expname, opts = NULL) {
     }
 
     res$spec <- data.table(do.call("rbind", lst))
-    if (nrow(res$spec) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found spectrum(a)\n")))
-    } else {
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$spec),
-                               "found spectrum(a)\n")))
-    }
+    reportFound("spec", nrow(res$spec), length(expname))
   }
 
   if ("lipo" %in% what | "all" %in% what) {
@@ -317,7 +335,7 @@ readExperiment <- function(expname, opts = NULL) {
 
     res$lipo <- data.table(do.call("rbind", lst))
     if (nrow(res$lipo) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found lipo\n")))
+      reportFound("lipo", 0, length(expname))
     } else {
       lipo <- lapply(res$lipo$data,
                      function(x) reshape(setDT(x)[, .(id, path, value, unit, refMax, refMin),],
@@ -326,9 +344,7 @@ readExperiment <- function(expname, opts = NULL) {
                                          direction = "wide"))
       lipo <- do.call("rbind", lipo)
       res$lipo <- lipo
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$lipo),
-                               "found lipo\n")))
+      reportFound("lipo", nrow(res$lipo), length(expname))
     }
   }
 
@@ -361,7 +377,7 @@ readExperiment <- function(expname, opts = NULL) {
     res$pacs <- data.table(do.call("rbind", lst))
 
     if (nrow(res$pacs) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found pacs\n")))
+      reportFound("pacs", 0, length(expname))
     } else {
       pacs <- lapply(res$pacs$data,
                      function(x) reshape(setDT(x)[, .(name, path, conc_v, concUnit_v, refMax, refMin),],
@@ -372,7 +388,7 @@ readExperiment <- function(expname, opts = NULL) {
       colnames(pacs) <- gsub("conc_v.", "value.", colnames(pacs))
       colnames(pacs) <- gsub("concUnit_v.", "unit.", colnames(pacs))
       res$pacs <- pacs
-      message(cat(crayon::blue("readExperiment >>", nrow(res$pacs), "found pacs\n")))
+      reportFound("pacs", nrow(res$pacs), length(expname))
     }
   }
 
@@ -417,7 +433,7 @@ readExperiment <- function(expname, opts = NULL) {
 
     res$quant <- data.table(do.call("rbind", lst))
     if (nrow(res$quant) == 0) {
-      message(cat(crayon::yellow("readExperiment >> 0 found quant\n")))
+      reportFound("quant", 0, length(expname))
     } else {
       quant <- lapply(res$quant$data,
                       function(x) reshape(setDT(x)[, .(name, path, rawConc, concUnit_v, refMax, refMin),],
@@ -428,9 +444,7 @@ readExperiment <- function(expname, opts = NULL) {
       colnames(quant) <- gsub("rawConc.", "value.", colnames(quant))
       colnames(quant) <- gsub("concUnit_v.", "unit.", colnames(quant))
       res$quant <- quant
-      message(cat(crayon::blue("readExperiment >>",
-                               nrow(res$quant),
-                               "found quant\n")))
+      reportFound("quant", nrow(res$quant), length(expname))
     }
   }
 

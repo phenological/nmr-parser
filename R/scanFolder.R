@@ -129,10 +129,7 @@ scanFolder <- function(folder, options = list()) {
 
   res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
   for (i in seq_len(nrow(res))) {
-    message(cat(crayon::blue("scanFolder >> ",
-                             paste0(res$ind[i],
-                                    ": ",
-                                    res$values[i]))))
+    message(crayon::blue(paste0("scanFolder >> ", res$ind[i], ": ", res$values[i])))
   }
   expList$file <- gsub("/acqus", "", expList$file)
   return(expList)
