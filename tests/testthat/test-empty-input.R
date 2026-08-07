@@ -41,3 +41,26 @@ test_that("an empty scan feeds into readExperiment without error", {
 
   expect_equal(nrow(res$acqus), 0)
 })
+
+test_that("scanFolder says how to avoid the prompt instead of failing at it", {
+  #menu() returns 0 without asking when there is no prompt to ask at, which
+  #was read as a selection and failed with "subscript out of bounds"
+  root <- system.file("HB-COVID0001", package = "nmr.parser")
+
+  expect_error(scanFolder(root), "cannot prompt")
+  expect_error(scanFolder(root, options = list(EXP = "ignore", PULPROG = "")), "cannot prompt")
+
+  #and the message names the way out
+  expect_error(scanFolder(root), "options = list")
+})
+
+test_that("scanFolder options still select by pattern", {
+  root <- system.file("HB-COVID0001", package = "nmr.parser")
+
+  exact <- scanFolder(root, options = list(EXP = "prof-plasma-noesy", PULPROG = "noesygppr1d"))
+  partial <- scanFolder(root, options = list(EXP = "prof-plasma", PULPROG = "noesy"))
+
+  expect_equal(nrow(exact), 1)
+  expect_equal(exact$PULPROG, "noesygppr1d")
+  expect_equal(partial, exact)
+})

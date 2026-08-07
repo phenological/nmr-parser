@@ -1,6 +1,37 @@
+#' ask the user to pick one of the experiment types found
+#'
+#' menu() only works at a prompt: run from Rscript it returns 0 without
+#' asking, which used to be read as a selection and fail on a subscript out
+#' of bounds. Zero is also what the user gets for choosing 0 to exit.
+#'
+#' @param choices - the labels to offer
+#' @param what - what is being chosen, for the message
+#' @return the index chosen, or NULL when there is no choice to be had
+#' @noRd
+askFor <- function(choices, what) {
+
+  if (!interactive()) {
+    stop("scanFolder >> cannot prompt for ", what, " outside an interactive ",
+         "session. Pass it in, e.g. ",
+         "scanFolder(folder, options = list(EXP = \"...\", PULPROG = \"...\"))",
+         call. = FALSE)
+  }
+
+  choice <- menu(choices = choices, title = paste("Choose what to parse:", what))
+
+  if (choice == 0) {
+    message(crayon::yellow("scanFolder >> nothing selected"))
+    return(NULL)
+  }
+
+  return(choice)
+}
+
 #' function to scan a folder and get a list of paths to parse
 #' @param folder - the root folder(s) to scan
-#' @param options - options to skip the prompt
+#' @param options - options to skip the prompt. EXP and PULPROG are matched
+#'   as patterns, so "noesy" selects noesygppr1d. EXP = "ignore" prompts for
+#'   the PULPROG alone
 #' @returns a list of paths
 #' @importFrom data.table data.table
 #' @importFrom stats setNames
@@ -64,26 +95,32 @@ scanFolder <- function(folder, options = list()) {
     res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
     res <- setNames(res, c("count", "EXP@PULPROG"))
 
-    question <- paste0("Choose what to parse.")
-    choice <- menu(choices = paste0(res$`EXP@PULPROG`, " (", res$count, ")"),
-                   title = question)
-    choice <- strsplit(as.character(res$`EXP@PULPROG`[choice]), "@")
-    fi <- grepl(choice[[1]][1], expList$EXP) &
-      grepl(choice[[1]][2], expList$PULPROG)
+    choice <- askFor(paste0(res$`EXP@PULPROG`, " (", res$count, ")"),
+                     "EXP and PULPROG")
+    if (is.null(choice)) {
+      return(expList[0, ])
+    }
+
+    # the choice comes from the data, so it is compared, not matched: an
+    # EXP or PULPROG carrying a regexp character would select the wrong rows
+    choice <- strsplit(as.character(res$`EXP@PULPROG`[choice]), "@")[[1]]
+    fi <- expList$EXP == choice[1] & expList$PULPROG == choice[2]
     expList <- expList[fi,]
   } else if (EXP == "ignore" & PULPROG == "") {
     res <- stack(table(expList$PULPROG))
     res <- setNames(res, c("count", "PULPROG"))
 
-    question <- paste0("Choose what to parse.")
-    choice <- menu(choices = paste0(res$PULPROG, " (", res$count, ")"),
-                   title = question)
-    choice <- as.character(res$PULPROG[choice])
+    choice <- askFor(paste0(res$PULPROG, " (", res$count, ")"), "PULPROG")
+    if (is.null(choice)) {
+      return(expList[0, ])
+    }
 
-    fi <- grepl(choice, expList$PULPROG)
+    fi <- expList$PULPROG == as.character(res$PULPROG[choice])
     expList <- expList[fi,]
   }
   else {
+    # EXP and PULPROG given in options stay patterns, so that a caller can
+    # ask for "noesy" and get noesygppr1d
     fi <- grepl(EXP, expList$EXP) &
       grepl(PULPROG, expList$PULPROG)
     expList <- expList[fi,]
