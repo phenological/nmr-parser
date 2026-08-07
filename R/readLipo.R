@@ -8,14 +8,24 @@
 readLipo <- function(file){
   if (file.exists(file)) {
     xml <- read_xml(file, options = "NOBLANKS")
-    comment <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "comment")
-    id <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "name")
-    type <- xml_attr(xml_find_all(xml, ".//PARAMETER"), "type")
-    value <- xml_attr(xml_find_all(xml, ".//VALUE"), "value")
-    unit <- xml_attr(xml_find_all(xml, ".//VALUE"), "unit")
-    refMax <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmax")
-    refMin <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "vmin")
-    refUnit <- xml_attr(xml_find_all(xml, ".//REFERENCE"), "unit")
+
+    # take each PARAMETER's VALUE and REFERENCE from inside that PARAMETER.
+    # Sweeping the whole document once per attribute instead lines the lists
+    # up by position, which silently shifts every later parameter onto its
+    # neighbour's numbers as soon as one of them carries a different number
+    # of children
+    params <- xml_find_all(xml, ".//PARAMETER")
+    values <- lapply(params, function(p) xml_find_first(p, ".//VALUE"))
+    refs <- lapply(params, function(p) xml_find_first(p, ".//REFERENCE"))
+
+    comment <- xml_attr(params, "comment")
+    id <- xml_attr(params, "name")
+    type <- xml_attr(params, "type")
+    value <- vapply(values, xml_attr, character(1), "value")
+    unit <- vapply(values, xml_attr, character(1), "unit")
+    refMax <- vapply(refs, xml_attr, character(1), "vmax")
+    refMin <- vapply(refs, xml_attr, character(1), "vmin")
+    refUnit <- vapply(refs, xml_attr, character(1), "unit")
     version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
     version <- strsplit(version, " ")[[1]][1]
 
@@ -33,6 +43,7 @@ readLipo <- function(file){
                       refMax = as.numeric(refMax),
                       refMin = as.numeric(refMin),
                       refUnit)
+    # these reports carry LDCH and HDCH twice, keep the first of each
     fi <- duplicated(res$id)
 
     return(list(data = res[!fi,], version = version))
