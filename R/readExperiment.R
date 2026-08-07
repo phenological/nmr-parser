@@ -52,7 +52,7 @@ readExperiment <- function(expname, opts = NULL) {
 
   if ("acqus" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
       cat("Reading:", l, "/", length(expname), "\r")
 
       path <- file.path(expname[[l]], "acqus")
@@ -91,7 +91,7 @@ readExperiment <- function(expname, opts = NULL) {
 
   if ("procs" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
       cat("Reading:", l, "/", length(expname), "\r")
 
       path <- file.path(expname[[l]], "pdata", "1", "procs")
@@ -131,7 +131,7 @@ readExperiment <- function(expname, opts = NULL) {
 
   if ("qc" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
       cat("Reading:", l, "/", length(expname), "\r")
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = "qc_report.*\\.xml$")
@@ -166,7 +166,7 @@ readExperiment <- function(expname, opts = NULL) {
 
   if ("title" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
 
       path <- file.path(expname[[l]], "pdata", "1", "title")
       if (file.exists(path)) {
@@ -188,7 +188,7 @@ readExperiment <- function(expname, opts = NULL) {
   if ("eretic" %in% what | "all" %in% what) {
     lst <- list()
 
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
 
       ereticPath <- file.path(expname[[l]])
 
@@ -233,7 +233,7 @@ readExperiment <- function(expname, opts = NULL) {
 
   if ("spec" %in% what | "all" %in% what | "specOnly" %in% what) {
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
 
       if("specOpts" %in% names(opts)) {
         specOpts <- opts$specOpts
@@ -297,7 +297,7 @@ readExperiment <- function(expname, opts = NULL) {
 
   if ("lipo" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
 
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*lipo.*\\.xml$")
@@ -339,7 +339,7 @@ readExperiment <- function(expname, opts = NULL) {
 
   if ("pacs" %in% what | "all" %in% what) {
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
       folderPath <- file.path(expname[[l]], "pdata", "1")
       path = dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*pacs.*\\.xml$")
       if(any(grepl("1_1_0", path))) {
@@ -390,7 +390,7 @@ readExperiment <- function(expname, opts = NULL) {
                        "urine_quant_report_ne_ver_1_0.xml","urine_quant_report_ne.xml")
 
     lst <- list()
-    for (l in 1:length(expname)) {
+    for (l in seq_along(expname)) {
       folderPath <- file.path(expname[[l]], "pdata", "1")
       # Find all matching xml files
       path <- dir(folderPath, full.names = TRUE, recursive = TRUE, pattern = ".*quant.*\\.xml$")

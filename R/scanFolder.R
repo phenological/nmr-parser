@@ -33,9 +33,19 @@ scanFolder <- function(folder, options = list()) {
   # remove trailing slash
   acqusFiles <- gsub("//", "/", acqusFiles)
 
+  # nothing to scan. Falling through would reach menu() with no choices,
+  # which errors non-interactively and offers an empty list otherwise
+  if (length(acqusFiles) == 0) {
+    message(crayon::yellow(paste("scanFolder >> no acqus found under",
+                                 paste(folder, collapse = ", "))))
+    return(data.table(file = character(0),
+                      EXP = character(0),
+                      PULPROG = character(0),
+                      USERA2 = character(0)))
+  }
 
   expList <- list()
-  for (i in 1:length(acqusFiles)) {
+  for (i in seq_along(acqusFiles)) {
     prms <- readParam(acqusFiles[i], c("EXP", "PULPROG", "USERA2"))
     cat("Scanning:", i, "/", length(acqusFiles), "\r")
 
@@ -81,7 +91,7 @@ scanFolder <- function(folder, options = list()) {
 
 
   res <- stack(table(paste0(expList$EXP, "@", expList$PULPROG)))
-  for (i in 1:nrow(res)) {
+  for (i in seq_len(nrow(res))) {
     message(cat(crayon::blue("scanFolder >> ",
                              paste0(res$ind[i],
                                     ": ",

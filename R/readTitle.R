@@ -11,7 +11,7 @@ readTitle <- function(file){
     txt <- readLines(buf, n = -1, warn = FALSE)
     close(buf)
     content <- list()
-    for (i in 1:length(txt)) {
+    for (i in seq_along(txt)) {
       if (txt[i] != "") {
         cnt <- gsub("\\s*$", "", txt[i])
         content <- c(content, list(c(path = "title", name = "title", value = cnt)))

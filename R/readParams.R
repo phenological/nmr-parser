@@ -120,7 +120,7 @@ readParams <- function(file) {
               counter <- counter + 1
               vect <- txt[[counter]]
               value <- strsplit(vect, " ")
-              for (i in 1:length(value[[1]])) {
+              for (i in seq_along(value[[1]])) {
                 content[[incr]] <- list(path = fileName,
                                         name = paste0(gsub("##\\$", "", param[1]), "_", i - 1),
                                         value = value[[1]][i])
