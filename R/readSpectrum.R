@@ -63,12 +63,7 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
     }
 
     # reading important parameters
-    if(readParam(fileProcs, "BYTORDP") == 0) {
-      endian <- "little"
-    } else {
-      endian = "big"
-    }
-
+    bytordp <- readParam(fileProcs, "BYTORDP")
     nc <- readParam(fileProcs, "NC_proc")
     size <- readParam(fileProcs, "FTSIZE") # it should be equivalent to use SI
     sf <-readParam(fileProcs, "SF") # SF is equal to acqus/BF1
@@ -81,12 +76,34 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
 
     bf1 <- readParam(fileAcqus, "BF1")
 
-    # checking for empty params
-    params <- c(endian, nc, size, sf, sw_p, offset, phc0, phc1, bf1)
-    fi <- is.na(params)
+    # checking for empty params. readParam() returns NULL for a parameter it
+    # cannot find and c() drops NULL without trace, so the missing ones have
+    # to be counted while they still have a name attached. Reaching the
+    # arithmetic below with one of them NULL does not fail here, it fails
+    # further down with 'argument is of length zero' or "'to' must be of
+    # length 1", which aborts the whole readExperiment run over one file
+    params <- list(BYTORDP = bytordp,
+                   NC_proc = nc,
+                   FTSIZE = size,
+                   SF = sf,
+                   SW_p = sw_p,
+                   OFFSET = offset,
+                   PHC0 = phc0,
+                   PHC1 = phc1,
+                   BF1 = bf1)
+
+    fi <- vapply(params, function(x) length(x) != 1 || is.na(x), logical(1))
     if (sum(fi) > 0) {
-      cat(crayon::yellow("readSpectrum >> empty parameter for", expno, "                    \n"))
+      cat(crayon::yellow("readSpectrum >> empty parameter",
+                         paste(names(params)[fi], collapse = ", "),
+                         "for", expno, "                    \n"))
       return(NULL)
+    }
+
+    if (bytordp == 0) {
+      endian <- "little"
+    } else {
+      endian = "big"
     }
 
     if (phc1 != 0) {
@@ -137,7 +154,9 @@ readSpectrum <- function(expno, procno = 1, procs = TRUE, options = list()){
                        ereticFactor,
                        "\r"))
     } else {
-      ereticFactor <- NULL
+      # NA rather than NULL: c() drops NULL, so info below would come back
+      # one element shorter and callers reading it by position would shift
+      ereticFactor <- NA
     }
 
     # if upper and lower bounds are provided the spectra is extrapolated to fit

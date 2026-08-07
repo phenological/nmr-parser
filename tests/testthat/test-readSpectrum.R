@@ -88,3 +88,45 @@ test_that("reading spectrum and uncalibrate", {
   expect_equal(max(spec$spec$y), 1933.97205)
   expect_equal(spec$info[[6]], 1)
 })
+
+test_that("a procs missing a parameter is refused, not crashed on", {
+  #readParam returns NULL for a parameter it cannot find and c() drops NULL
+  #without trace, so the "empty parameter" guard counted nothing and the
+  #arithmetic below failed instead, with messages like "argument is of
+  #length zero". Inside readExperiment that aborts the whole run over one
+  #bad file rather than skipping it
+  src <- system.file("HB-COVID0001", "10", package = "nmr.parser")
+  procs <- readLines(file.path(src, "pdata", "1", "procs"), warn = FALSE)
+
+  for (param in c("BYTORDP", "SW_p", "OFFSET")) {
+    expno <- file.path(tempdir(), paste0("missing_", param))
+    dir.create(file.path(expno, "pdata", "1"), recursive = TRUE, showWarnings = FALSE)
+    on.exit(unlink(expno, recursive = TRUE), add = TRUE)
+
+    file.copy(file.path(src, "acqus"), file.path(expno, "acqus"), overwrite = TRUE)
+    file.create(file.path(expno, "pdata", "1", "1r"))
+    writeLines(grep(paste0("^##\\$", param, "="), procs, value = TRUE, invert = TRUE),
+               file.path(expno, "pdata", "1", "procs"))
+
+    #an error would come back as its message rather than NULL
+    result <- tryCatch(readSpectrum(expno), error = function(e) conditionMessage(e))
+    expect_null(result)
+  }
+})
+
+test_that("info always reports an eretic factor", {
+  #it was NULL when no correction was applied, and c() drops NULL, so info
+  #came back one element short and everything after it moved up an index
+  expno <- system.file("HB-COVID0001", "10", package = "nmr.parser")
+
+  plain <- readSpectrum(expno)
+  corrected <- readSpectrum(expno, options = list(eretic = 2))
+
+  expect_equal(names(plain$info), names(corrected$info))
+  expect_true(is.na(plain$info[["ereticFactor"]]))
+  expect_equal(corrected$info[["ereticFactor"]], 2)
+
+  #so a caller indexing info by position is not shifted by the difference
+  expect_equal(which(names(plain$info) == "uncalibrated"),
+               which(names(corrected$info) == "uncalibrated"))
+})
