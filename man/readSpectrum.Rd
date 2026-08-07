@@ -20,7 +20,9 @@ readSpectrum(expno, procno = 1, procs = TRUE, options = list())
 }}
 
 \item{options}{\itemize{
-\item options (uncalibrate, eretic, fromTo, length.out)
+\item options (uncalibrate, eretic, fromTo, length.out, im,
+verbose). verbose = FALSE keeps the routine notes quiet, failures are
+always reported
 }}
 }
 \value{

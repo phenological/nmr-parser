@@ -4,15 +4,16 @@
 \name{nmr.parser-package}
 \alias{nmr.parser}
 \alias{nmr.parser-package}
-\title{nmr.parser: reading what is required from NMR IVDr data}
+\title{nmr.parser: Reading What is Required from NMR IVDr Data}
 \description{
-What the package does (one paragraph).
+Reads Bruker IVDr NMR data into R: acquisition and processing parameters, processed spectra placed on a common chemical shift grid and corrected for ERETIC, experiment titles, and the XML reports Bruker produces for small molecule quantification, lipoprotein subfractions, PACS and quality control. Lipoprotein results can be extended with the total lipid, cholesterol ester, composition and distribution parameters derived from them.
 }
 \author{
 \strong{Maintainer}: Julien Wist \email{julien.wist@murdoch.edu.au} (\href{https://orcid.org/0000-0002-3416-2572}{ORCID})
 
 Authors:
 \itemize{
+  \item Julien Wist \email{julien.wist@murdoch.edu.au} (\href{https://orcid.org/0000-0002-3416-2572}{ORCID})
   \item Reika Masuda \email{reika.masuda@murdoch.edu.au}
 }
 

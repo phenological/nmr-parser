@@ -20,17 +20,25 @@ export(readQuant)
 export(readSpectrum)
 export(readTitle)
 export(scanFolder)
-importFrom(data.table,data.table)
-importFrom(data.table,setDT)
+importFrom(data.table,
+  data.table,
+  setDT
+)
 importFrom(signal,interp1)
-importFrom(stats,reshape)
-importFrom(stats,setNames)
-importFrom(utils,data)
-importFrom(utils,menu)
-importFrom(utils,modifyList)
-importFrom(utils,stack)
-importFrom(xml2,read_xml)
-importFrom(xml2,xml_attr)
-importFrom(xml2,xml_find_all)
-importFrom(xml2,xml_find_first)
-importFrom(xml2,xml_text)
+importFrom(stats,
+  reshape,
+  setNames
+)
+importFrom(utils,
+  data,
+  menu,
+  modifyList,
+  stack
+)
+importFrom(xml2,
+  read_xml,
+  xml_attr,
+  xml_find_all,
+  xml_find_first,
+  xml_text
+)

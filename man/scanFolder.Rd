@@ -12,7 +12,9 @@ scanFolder(folder, options = list())
 }}
 
 \item{options}{\itemize{
-\item options to skip the prompt
+\item options to skip the prompt. EXP and PULPROG are matched
+as patterns, so "noesy" selects noesygppr1d. EXP = "ignore" prompts for
+the PULPROG alone
 }}
 }
 \value{

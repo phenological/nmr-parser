@@ -4,7 +4,7 @@
 \alias{extend_lipo}
 \title{extend_lipo
 Calculates total lipids, fractions and percentages using data.frame "res"
-from readLipo.r}
+from readLipo.R}
 \usage{
 extend_lipo(lipo)
 }
@@ -23,5 +23,5 @@ portion do each of V1TG, V2TG, V3TG, V4TG, V5TG contribute to VLTG
 \description{
 extend_lipo
 Calculates total lipids, fractions and percentages using data.frame "res"
-from readLipo.r
+from readLipo.R
 }

@@ -4,10 +4,10 @@
 \alias{getQcTable}
 \title{Get a data frame with the QC table}
 \usage{
-getQcTable(matrixType = "SER", withValue = FALSE)
+getQcTable(matrixType = c("SER", "URI"), withValue = FALSE)
 }
 \arguments{
-\item{matrixType}{A string with the matrix type. It can be "SER" or "URI"}
+\item{matrixType}{A string with the matrix type, "SER" or "URI"}
 
 \item{withValue}{A boolean to include the value column}
 }

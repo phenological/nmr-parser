@@ -4,11 +4,12 @@
 \alias{getSmTable}
 \title{get names and description of brxsm plasma reports}
 \usage{
-getSmTable(matrixType = "SER")
+getSmTable(matrixType = c("SER", "PLA", "URI"))
 }
 \arguments{
 \item{matrixType}{\itemize{
-\item sample matrix type (URI, SER)
+\item sample matrix type (SER, PLA, URI). SER and PLA are
+the same report.
 }}
 }
 \value{
