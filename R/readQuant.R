@@ -9,34 +9,58 @@ readQuant <- function(file){
   if (file.exists(file)) {
     xml <- read_xml(file, options = "NOBLANKS")
     version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
-    # check that "name" exists in xml
-    if (grepl("_ver_",file,fixed = TRUE) ) {
+
+    # Ask the document which shape it is, not the file name. Bruker gives
+    # both shapes the same version attribute (plasma_quant_report.xml and
+    # plasma_quant_report_ver_1_0.xml both say "Quant-PS 2.0.0"), so the
+    # version cannot tell them apart and the name used to. A name is an
+    # external label: copy a report out of pdata/1 under a tidier name and
+    # the wrong branch reads it, which yields a full set of compounds with
+    # every concentration NA rather than an error.
+    # The two shapes are unambiguous in their content: this one puts
+    # valueext on its VALUE nodes and carries no RELDATA.
+    isExtended <- length(xml_find_all(xml, ".//VALUE[@valueext]")) > 0
+    hasRelData <- length(xml_find_all(xml, ".//RELDATA")) > 0
+
+    if (isExtended) {
       param <- xml_find_all(xml, ".//PARAMETER")
       paramList <- list()
       for (p in param) {
         name <- xml_attr(p, "name")
-        conc_v <- xml_attr(xml_find_first(p, ".//VALUE"), "valueext")
-        concUnit_v <- xml_attr(xml_find_first(p, ".//VALUE"), "unit")
-        lod_v <- xml_attr(xml_find_first(p, ".//VALUE"), "lod")
-        lodUnit_v <- xml_attr(xml_find_first(p, ".//VALUE"), "unit")
-        loq_v <- xml_attr(xml_find_first(p, ".//VALUE"), "loq")
-        loqUnit_v <- xml_attr(xml_find_first(p, ".//VALUE"), "unit")
-        conc_vr <- xml_attr(xml_find_all(p, ".//VALUE"), "valueext")[2]
-        concUnit_vr <- xml_attr(xml_find_all(p, ".//VALUE"), "unit")[2]
-        lod_vr <- xml_attr(xml_find_all(p, ".//VALUE"), "lod")[2]
-        lodUnit_vr <- xml_attr(xml_find_all(p, ".//VALUE"), "unit")[2]
-        loq_vr <- xml_attr(xml_find_all(p, ".//VALUE"), "loq")[2]
-        loqUnit_vr <- xml_attr(xml_find_all(p, ".//VALUE"), "unit")[2]
+
+        # the absolute concentration is on the first VALUE and the
+        # creatinine relative one on the second, where there is one
+        values <- xml_find_all(p, "./VALUE")
+        firstValue <- xml_find_first(p, "./VALUE")
+        reference <- xml_find_first(p, "./REFERENCE")
+        relative <- function(attribute) xml_attr(values, attribute)[2]
+
+        conc_v <- xml_attr(firstValue, "valueext")
+        concUnit_v <- xml_attr(firstValue, "unit")
+        lod_v <- xml_attr(firstValue, "lod")
+        lodUnit_v <- xml_attr(firstValue, "unit")
+        loq_v <- xml_attr(firstValue, "loq")
+        loqUnit_v <- xml_attr(firstValue, "unit")
+        conc_vr <- relative("valueext")
+        concUnit_vr <- relative("unit")
+        lod_vr <- relative("lod")
+        lodUnit_vr <- relative("unit")
+        loq_vr <- relative("loq")
+        loqUnit_vr <- relative("unit")
         sigCorrUnit <- NA
         sigCorr <- NA
-        rawConcUnit <- xml_attr(xml_find_first(p, ".//VALUE"), "unit")
-        rawConc <- xml_attr(xml_find_first(p, ".//VALUE"), "valueext")
+        rawConcUnit <- xml_attr(firstValue, "unit")
+        rawConc <- xml_attr(firstValue, "valueext")
         errConc <- NA
         errConcUnit <- NA
+        # creatinine is the reference itself, its own range is not reported
         if (name != "Creatinine") {
-          refMax <- xml_attr(xml_find_all(p, ".//REFERENCE"), "vmax")
-          refMin <- xml_attr(xml_find_all(p, ".//REFERENCE"), "vmin")
-          refUnit <- xml_attr(xml_find_all(p, ".//REFERENCE"), "unit")
+          # xml_find_first, not xml_find_all: a parameter carrying no
+          # REFERENCE gave a zero row data.frame and dropped out of the
+          # report entirely, one carrying two gave two rows
+          refMax <- xml_attr(reference, "vmax")
+          refMin <- xml_attr(reference, "vmin")
+          refUnit <- xml_attr(reference, "unit")
 
         } else {
           refMax <- NA
@@ -44,10 +68,10 @@ readQuant <- function(file){
           refUnit <- NA
 
         }
-        version <- xml_attr(xml_find_first(xml, ".//QUANTIFICATION"), "version")
 
-
-        paramList[[name]] <- data.frame(name,
+        # appended, not keyed by name: a repeated compound used to
+        # overwrite the earlier one instead of getting its own row
+        paramList[[length(paramList) + 1]] <- data.frame(name,
                                         conc_v,
                                         concUnit_v,
                                         lod_v,
@@ -70,7 +94,7 @@ readQuant <- function(file){
       }
       data <- data.frame(do.call(rbind, paramList))
 
-    }else if (grepl("Quant", version, fixed = TRUE) ){
+    } else if (hasRelData && grepl("Quant", version, fixed = TRUE)) {
 
       # each PARAMETER carries its own VALUE, VALUERELATIVE, RELDATA and
       # REFERENCE, so read them from inside it. Sweeping the whole document
@@ -130,7 +154,8 @@ readQuant <- function(file){
                          errConcUnit,
                          refMax, refMin, refUnit)
     } else {
-      cat(crayon::red("readQuant >>", file, "version not recognized\n"))
+      # neither shape, rather than the wrong one read silently
+      cat(crayon::red("readQuant >>", file, "version not recognized:", version, "\n"))
       return(NULL)
     }
 

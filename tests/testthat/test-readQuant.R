@@ -131,3 +131,93 @@ test_that("a parameter keeps its own values when a sibling lacks a node", {
   expect_equal(quant$data$refMax, c("9", NA, "9"))
   expect_equal(quant$data$refMin, c("0", NA, "0"))
 })
+
+test_that("the document decides which shape it is, not the file name", {
+  #Bruker gives both shapes the same version attribute, so the file name
+  #used to pick the branch. Renaming a report then read it with the wrong
+  #parser, which returned every compound with a NA concentration
+  fixtures <- c("tests" = "urine_quant_report_b_ver_1_0.xml",
+                "plain" = "urine_quant_report_b.xml")
+
+  renamed <- file.path(tempdir(), c("urine_quant_report_b_renamed.xml",
+                                    "urine_quant_report_b_ver_renamed.xml"))
+  on.exit(unlink(renamed), add = TRUE)
+
+  #the extended document under a name that says it is not, and vice versa
+  file.copy(system.file("..", "tests", "testthat", fixtures[["tests"]], package = "nmr.parser"),
+            renamed[1], overwrite = TRUE)
+  file.copy(system.file("..", "tests", "testthat", fixtures[["plain"]], package = "nmr.parser"),
+            renamed[2], overwrite = TRUE)
+
+  original <- lapply(fixtures, function(f)
+    readQuant(system.file("..", "tests", "testthat", f, package = "nmr.parser"))$data)
+
+  expect_equal(readQuant(renamed[1])$data, original[["tests"]])
+  expect_equal(readQuant(renamed[2])$data, original[["plain"]])
+
+  #and the concentrations really are there, not a frame full of NA
+  expect_false(all(is.na(readQuant(renamed[1])$data$conc_v)))
+  expect_false(all(is.na(readQuant(renamed[2])$data$conc_v)))
+})
+
+test_that("a document of neither shape is refused rather than guessed at", {
+  report <- file.path(tempdir(), "not_a_quant_report.xml")
+  on.exit(unlink(report), add = TRUE)
+  writeLines(c('<?xml version="1.0" encoding="utf-8"?>',
+               '<RESULTS version="Quant-UR B.1.1.0  Reseach Use Only">',
+               '<QUANTIFICATION version="Quant-UR B.1.1.0  Reseach Use Only">',
+               '<PARAMETER name="Alpha" type="quantification"/>',
+               '</QUANTIFICATION>', '</RESULTS>'), report)
+
+  expect_null(readQuant(report))
+})
+
+test_that("the extended shape keeps a compound that appears twice", {
+  #paramList was keyed by compound name, so a repeat overwrote the first
+  report <- file.path(tempdir(), "repeated_quant_report.xml")
+  on.exit(unlink(report), add = TRUE)
+
+  parameter <- function(name, conc) paste0(
+    '<PARAMETER name="', name, '" type="quantification">',
+    '<VALUE lod="0.3" loq="-" unit="mmol/L" value="', conc, '" valueext="', conc, '"/>',
+    '<REFERENCE source="NMR Database" unit="mmol/L" vmax="19" vmin="1"/>',
+    '</PARAMETER>')
+
+  writeLines(c('<?xml version="1.0" encoding="utf-8"?>',
+               '<RESULTS version="Quant-UR B.1.1.0  Reseach Use Only">',
+               '<QUANTIFICATION version="Quant-UR B.1.1.0  Reseach Use Only">',
+               parameter("Alanine", 1), parameter("Betaine", 2), parameter("Alanine", 3),
+               '</QUANTIFICATION>', '</RESULTS>'), report)
+
+  quant <- readQuant(report)
+
+  expect_equal(nrow(quant$data), 3)
+  expect_equal(quant$data$name, c("Alanine", "Betaine", "Alanine"))
+  expect_equal(quant$data$conc_v, c("1", "2", "3"))
+})
+
+test_that("the extended shape keeps a compound with no REFERENCE", {
+  #refMax came from xml_find_all, so no REFERENCE meant a zero row
+  #data.frame and the compound vanished from the report
+  report <- file.path(tempdir(), "noref_quant_report.xml")
+  on.exit(unlink(report), add = TRUE)
+
+  parameter <- function(name, conc, ref) paste0(
+    '<PARAMETER name="', name, '" type="quantification">',
+    '<VALUE lod="0.3" loq="-" unit="mmol/L" value="', conc, '" valueext="', conc, '"/>',
+    if (ref) '<REFERENCE source="NMR Database" unit="mmol/L" vmax="19" vmin="1"/>' else "",
+    '</PARAMETER>')
+
+  writeLines(c('<?xml version="1.0" encoding="utf-8"?>',
+               '<RESULTS version="Quant-UR B.1.1.0  Reseach Use Only">',
+               '<QUANTIFICATION version="Quant-UR B.1.1.0  Reseach Use Only">',
+               parameter("Alanine", 1, TRUE), parameter("Betaine", 2, FALSE),
+               parameter("Glycine", 3, TRUE),
+               '</QUANTIFICATION>', '</RESULTS>'), report)
+
+  quant <- readQuant(report)
+
+  expect_equal(quant$data$name, c("Alanine", "Betaine", "Glycine"))
+  expect_equal(quant$data$refMax, c("19", NA, "19"))
+  expect_equal(quant$data$conc_v, c("1", "2", "3"))
+})
