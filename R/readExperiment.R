@@ -1,3 +1,75 @@
+#' read one parameter file from every expno and stack the results
+#'
+#' The acqus and the procs blocks were the same code twice over, differing
+#' only in the file to read and the prefix to put on the columns.
+#'
+#' Only the columns every expno has in common survive, since the parameter
+#' sets differ between acquisition types.
+#'
+#' @param expname - the expno folders
+#' @param relPath - the file to read, relative to the expno
+#' @param prefix - what to call the value columns
+#' @return a data.table, empty when nothing could be read
+#' @noRd
+readParamTable <- function(expname, relPath, prefix) {
+
+  lst <- list()
+
+  for (l in seq_along(expname)) {
+    cat("Reading:", l, "/", length(expname), "\r")
+
+    path <- file.path(expname[[l]], relPath)
+
+    if (file.exists(path)) {
+      parms <- readParams(path)
+
+      # we check for empty files
+      if (!is.null(parms)) {
+        parms$path <- expname[[l]]
+        lst[[length(lst) + 1]] <- reshape(parms,
+                                          idvar = "path",
+                                          timevar = "name",
+                                          direction = "wide")
+      }
+    }
+  }
+
+  if (length(lst) == 0) {
+    return(data.table())
+  }
+
+  common_columns <- Reduce(intersect, lapply(lst, names))
+  res <- data.table(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
+  colnames(res) <- gsub("value.", paste0(prefix, "."), colnames(res))
+
+  return(res)
+}
+
+#' find the eretic factor an expno carries
+#'
+#' Two file layouts, and the choice between them was written out twice, once
+#' in the eretic block and once in the spec block.
+#'
+#' @param expno - the folder to look in
+#' @return the factor, or NULL when the folder carries neither file
+#' @noRd
+readEreticFactor <- function(expno) {
+
+  quantFactor <- file.path(expno, "QuantFactorSample.xml")
+  ereticFile <- file.path(expno, "pdata", "1", "eretic_file.xml")
+
+  if (file.exists(quantFactor)) {
+    return(readEretic(quantFactor)$ereticFactor)
+  }
+
+  # in the case of F80 we use a different parser
+  if (file.exists(ereticFile)) {
+    return(readEreticF80(ereticFile)$samOneMolInt)
+  }
+
+  return(NULL)
+}
+
 #' read experiment from a bruker folder (expno)
 #'
 #' @param expname - a path (or list of) to the expNo folder(s)
@@ -51,34 +123,7 @@ readExperiment <- function(expname, opts = NULL) {
   res <- list()
 
   if ("acqus" %in% what | "all" %in% what) {
-    lst <- list()
-    for (l in seq_along(expname)) {
-      cat("Reading:", l, "/", length(expname), "\r")
-
-      path <- file.path(expname[[l]], "acqus")
-      if (file.exists(path)) {
-        parms <- readParams(path)
-
-        # we check for empty files
-        if (!is.null(parms)) {
-          parms$path <- expname[[l]]
-          lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
-        } else {
-          lst[[l]] <- NULL
-        }
-      } else {
-        lst[[l]] <- NULL
-      }
-    }
-
-    # we remove NULL elements from lst
-    if (length(lst) > 0) {
-      lst <- lst[sapply(lst, function(x) !is.null(x))]
-    }
-
-    common_columns <- Reduce(intersect, lapply(lst, names))
-    res$acqus <- data.table(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
-    colnames(res$acqus) <- gsub("value.", "acqus.", colnames(res$acqus))
+    res$acqus <- readParamTable(expname, "acqus", "acqus")
 
     if (nrow(res$acqus) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found acqus params\n")))
@@ -90,35 +135,7 @@ readExperiment <- function(expname, opts = NULL) {
   }
 
   if ("procs" %in% what | "all" %in% what) {
-    lst <- list()
-    for (l in seq_along(expname)) {
-      cat("Reading:", l, "/", length(expname), "\r")
-
-      path <- file.path(expname[[l]], "pdata", "1", "procs")
-      if (file.exists(path)) {
-        parms <- readParams(path)
-
-        # we check for empty files
-        if (!is.null(parms)) {
-          parms$path <- expname[[l]]
-          lst[[l]] <- reshape(parms, idvar = "path", timevar = "name", direction = "wide")
-        } else {
-          lst[[l]] <- NULL
-        }
-
-      } else {
-        lst[[l]] <- NULL
-      }
-    }
-
-    # we remove NULL elements from lst
-    if (length(lst) > 0) {
-      lst <- lst[sapply(lst, function(x) !is.null(x))]
-    }
-
-    common_columns <- Reduce(intersect, lapply(lst, names))
-    res$procs <- data.table(do.call("rbind", lapply(lst, function(vec) vec[common_columns])))
-    colnames(res$procs) <- gsub("value.", "procs.", colnames(res$procs))
+    res$procs <- readParamTable(expname, file.path("pdata", "1", "procs"), "procs")
 
     if (nrow(res$procs) == 0) {
       message(cat(crayon::yellow("readExperiment >> 0 found procs\n")))
@@ -190,30 +207,13 @@ readExperiment <- function(expname, opts = NULL) {
 
     for (l in seq_along(expname)) {
 
-      ereticPath <- file.path(expname[[l]])
-
-      if (file.exists(file.path(ereticPath, "QuantFactorSample.xml"))) {
-        # we look for eretic in the rexpno + 0 folder
-        # to correct for pgpe and other type of experiments that need correction
-        eretic <- readEretic(file.path(ereticPath, "QuantFactorSample.xml"))
-        ereticFactor <- eretic$ereticFactor
-
-      } else if (file.exists(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))) {
-        # in the case of F80 we use a different parser
-        eretic <- readEreticF80(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))
-        ereticFactor <- eretic$samOneMolInt
-
-      } else {
-        ereticFactor <- NULL
-
-      }
-
+      # this block reports what the expno itself carries, the spec block
+      # below looks in the expno ending in 0 instead
+      ereticFactor <- readEreticFactor(expname[[l]])
 
       if (!is.null(ereticFactor)) {
         lst[[l]] <- c(path = expname[[l]], ereticFactor = ereticFactor)
       }
-
-
     }
 
 
@@ -256,20 +256,15 @@ readExperiment <- function(expname, opts = NULL) {
         # we first look for eretic in the options (so we can override it if necessary)
         # in cases such as ileum spiking that has a wrong folder structure
         ereticFactor <- specOpts$eretic
-      } else if (file.exists(file.path(ereticPath, "QuantFactorSample.xml"))) {
+      } else {
         # we look for eretic in the rexpno + 0 folder
         # to correct for pgpe and other type of experiments that need correction
-        eretic <- readEretic(file.path(ereticPath, "QuantFactorSample.xml"))
-        ereticFactor <- eretic$ereticFactor
+        ereticFactor <- readEreticFactor(ereticPath)
 
-      } else if (file.exists(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))) {
-        # in the case of F80 we use a different parser
-        eretic <- readEreticF80(file.path(ereticPath, "pdata", "1", "eretic_file.xml"))
-        ereticFactor <- eretic$samOneMolInt
-
-      } else {
         # if nothing was found we set the factor to 1 and display a warning
-        ereticFactor <- 1
+        if (is.null(ereticFactor)) {
+          ereticFactor <- 1
+        }
       }
 
       specOpts$eretic <- ereticFactor
