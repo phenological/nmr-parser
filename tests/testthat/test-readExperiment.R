@@ -247,3 +247,35 @@ test_that("a trailing slash on the expno still finds the eretic folder", {
                bare$spec$spec[[1]]$info[["ereticFactor"]])
   expect_false(slash$spec$spec[[1]]$info[["ereticFactor"]] == 1)
 })
+
+test_that("an expno holding only the extended plasma report still yields quant", {
+  #plasma_quant_report_ver_1_0.xml was missing from the priority list, so it
+  #was found by the dir() scan, fell through every entry, and the sample was
+  #silently dropped from res$quant. It is the most common quant report in the
+  #archive, 20276 files against 11309 of the plain one.
+  expno <- file.path(tempdir(), "ver_only", "10")
+  pdata <- file.path(expno, "pdata", "1")
+  dir.create(pdata, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(file.path(tempdir(), "ver_only"), recursive = TRUE), add = TRUE)
+
+  file.copy(system.file("HB-COVID0001", "10", "pdata", "1",
+                        "plasma_quant_report_ver_1_0.xml", package = "nmr.parser"),
+            file.path(pdata, "plasma_quant_report_ver_1_0.xml"))
+
+  expe <- readExperiment(expno, opts = list(what = "quant"))
+
+  expect_equal(nrow(expe$quant), 1)
+  expect_true("value.Ethanol" %in% names(expe$quant))
+})
+
+test_that("the plain plasma report still wins when both are present", {
+  #the extended report sits below the plain one, so an expno holding both
+  #keeps reading what it always read
+  expe <- readExperiment(system.file("HB-COVID0001", "10", package = "nmr.parser"),
+                         opts = list(what = "quant"))
+
+  expect_equal(nrow(expe$quant), 1)
+  #the plain report carries RELDATA, so sigCorr is populated; the extended
+  #shape has none
+  expect_equal(as.character(expe$quant$value.Ethanol), "0.000")
+})
